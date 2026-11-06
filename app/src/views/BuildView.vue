@@ -83,6 +83,8 @@ const shareMenu = useId();
 const sharing = ref(false);
 const teamsMenu = useId();
 const teamsOpen = ref(false);
+const fileMenu = useId();
+const fileOpen = ref(false);
 const search = useSearchStore();
 const route = useRoute();
 const router = useRouter();
@@ -674,12 +676,14 @@ const gemPosition = (position: number): Position => ({
       />
       <button
         type="button"
-        class="teams-key"
+        class="icon-button teams-key"
+        aria-label="Teams"
+        title="Teams"
         aria-haspopup="menu"
         :aria-expanded="teamsOpen"
         :popovertarget="teamsMenu"
       >
-        Teams<i class="icon icon-down"></i>
+        <i class="icon icon-down"></i>
       </button>
       <FloatingMenu :id="teamsMenu" v-slot="{ close }" v-model:open="teamsOpen" label="Teams">
         <button
@@ -748,6 +752,44 @@ const gemPosition = (position: number): Position => ({
           "
         >
           Share
+        </button>
+      </FloatingMenu>
+      <button
+        type="button"
+        class="icon-button more-key"
+        aria-label="Export and Import"
+        title="Export and Import"
+        aria-haspopup="menu"
+        :aria-expanded="fileOpen"
+        :popovertarget="fileMenu"
+      >
+        <i class="icon icon-more"></i>
+      </button>
+      <FloatingMenu
+        :id="fileMenu"
+        v-slot="{ close }"
+        v-model:open="fileOpen"
+        label="Export and Import"
+      >
+        <button
+          type="button"
+          role="menuitem"
+          @click="
+            close();
+            exportTeam();
+          "
+        >
+          Export team
+        </button>
+        <button
+          type="button"
+          role="menuitem"
+          @click="
+            close();
+            chooseImport();
+          "
+        >
+          Import team
         </button>
       </FloatingMenu>
     </div>
@@ -966,13 +1008,7 @@ const gemPosition = (position: number): Position => ({
         </template>
       </CharacterPanel>
       <section v-if="!page" class="slot notes-panel" aria-label="Notes">
-        <h2>
-          Notes
-          <span class="notes-actions">
-            <button type="button" aria-label="Export team" @click="exportTeam">Export</button>
-            <button type="button" aria-label="Import team" @click="chooseImport()">Import</button>
-          </span>
-        </h2>
+        <h2>Notes</h2>
         <textarea
           ref="notesField"
           aria-label="Team notes"
@@ -1108,29 +1144,22 @@ const gemPosition = (position: number): Position => ({
   border-color: var(--line);
 }
 .teams-key {
-  flex: none;
-  gap: var(--space-4);
-  min-height: var(--field);
-  padding: 0 var(--space-8) 0 var(--space-12);
+  --key-line: transparent;
 }
-.share-key {
+.teams-key:not(:hover, :active, [aria-expanded="true"]) {
+  background-color: transparent;
+}
+.share-key,
+.more-key {
   width: var(--field);
   min-width: var(--field);
   height: var(--field);
+}
+.share-key {
   margin-left: auto;
 }
 .notes-panel {
   align-self: start;
-}
-.notes-actions {
-  display: flex;
-  gap: 4px;
-  margin-left: auto;
-}
-.notes-actions > button {
-  min-height: var(--control-compact);
-  padding: 0 10px;
-  font-size: var(--fs-13);
 }
 .notes-panel > textarea {
   display: block;

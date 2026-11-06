@@ -17,7 +17,7 @@ const props = withDefaults(
 const open = defineModel<boolean>("open", { default: false });
 
 const panel = ref<HTMLElement | null>(null);
-const offset = ref({ top: 0, right: 0 });
+const offset = ref({ top: "0", right: "auto", left: "auto" });
 const GAP = 4;
 const EDGE = 8;
 
@@ -28,9 +28,12 @@ function place() {
   const { width, height } = panel.value.getBoundingClientRect();
   const viewport = document.documentElement.clientWidth;
   const below = at.bottom + GAP;
+  const top = below + height > innerHeight - EDGE ? Math.max(EDGE, at.top - GAP - height) : below;
+  const startsLeft = at.left + at.width / 2 < viewport / 2;
   offset.value = {
-    top: below + height > innerHeight - EDGE ? Math.max(EDGE, at.top - GAP - height) : below,
-    right: Math.min(viewport - at.right, viewport - width - EDGE),
+    top: `${top}px`,
+    right: startsLeft ? "auto" : `${Math.min(viewport - at.right, viewport - width - EDGE)}px`,
+    left: startsLeft ? `${Math.min(at.left, viewport - width - EDGE)}px` : "auto",
   };
 }
 
@@ -77,7 +80,11 @@ const close = () => panel.value?.hidePopover?.();
     popover="auto"
     :role="role"
     :aria-label="label"
-    :style="{ '--menu-top': `${offset.top}px`, '--menu-right': `${offset.right}px` }"
+    :style="{
+      '--menu-top': offset.top,
+      '--menu-right': offset.right,
+      '--menu-left': offset.left,
+    }"
     @beforetoggle="place"
     @toggle="onToggle"
     @keydown="onKeydown"
