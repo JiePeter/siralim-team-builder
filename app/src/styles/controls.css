@@ -112,8 +112,6 @@ a.added-mark:hover {
    The brackets follow each element's --focus-ink, so they are declared where they are used, and
    component styles set the background shorthand, so focus applies them as important. */
 button,
-.file-button,
-summary.icon-button,
 input,
 select,
 textarea {
@@ -126,9 +124,7 @@ textarea {
     left 2px bottom 2px, right 2px bottom 2px, right 2px bottom 2px;
   --brackets-size: 6px 2px, 2px 6px, 6px 2px, 2px 6px, 6px 2px, 2px 6px, 6px 2px, 2px 6px;
 }
-button,
-.file-button,
-summary.icon-button {
+button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -138,7 +134,7 @@ summary.icon-button {
   padding: 0 14px;
   background-color: var(--raised);
   color: var(--text);
-  border: 1px solid transparent;
+  border: 1px solid var(--key-line);
   border-radius: 0;
   font: inherit;
   font-size: var(--fs-15);
@@ -149,21 +145,16 @@ summary.icon-button {
 }
 /* A touch screen keeps :hover on whatever was tapped last. */
 @media (hover: hover) {
-  button:hover,
-  .file-button:hover,
-  summary.icon-button:hover {
+  button:hover {
     background-color: var(--raised-hover);
     border-color: var(--strong);
   }
 }
-button:active:not(:disabled),
-summary.icon-button:active {
+button:active:not(:disabled) {
   background-color: var(--ground);
   border-color: var(--text);
 }
-button:focus-visible,
-.file-button:focus-within,
-summary.icon-button:focus-visible {
+button:focus-visible {
   outline: none;
   border-color: var(--focus-ink);
   background-image: var(--brackets) !important;
@@ -177,7 +168,7 @@ button:disabled {
 }
 button:disabled:hover {
   background-color: var(--raised);
-  border-color: transparent;
+  border-color: var(--key-line);
 }
 button[aria-busy="true"] {
   cursor: progress;
@@ -201,23 +192,33 @@ button[aria-busy="true"]::after {
     mask-size: 24px 24px;
   }
 }
-/* A short list of actions dropped below the control that opened it; its parent is positioned. */
+/* A short list of actions in the top layer: dropped below its trigger, a bottom sheet on phone. */
 .menu-panel {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  z-index: 6;
+  position: fixed;
+  inset: var(--menu-top) var(--menu-right) auto auto;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background: none;
+  border: 0;
+  color: var(--text);
+}
+.menu-body {
   display: grid;
   min-width: 176px;
+  max-width: min(320px, calc(100vw - 16px));
+  max-height: min(60dvh, calc(100dvh - 16px));
   padding: 4px;
+  overflow: auto;
   background: var(--raised);
   border: 1px solid var(--strong);
   box-shadow: var(--elevation);
 }
-.menu-panel > button {
+.menu-body > button:not(.primary) {
   justify-content: flex-start;
   text-align: left;
   width: 100%;
+  min-width: 0;
   min-height: var(--control);
   margin: 0;
   background: none;
@@ -225,8 +226,60 @@ button[aria-busy="true"]::after {
   color: var(--text);
   font-size: var(--fs-15);
 }
-.menu-panel > button:hover {
+.menu-body > button:not(.primary):hover {
   background: var(--raised-hover);
+}
+.menu-body > button > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu-body > button > .menu-mark {
+  margin-left: auto;
+}
+.menu-body > button[aria-checked="true"] {
+  font-weight: 700;
+}
+.menu-body > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--control);
+  margin: 0;
+  padding: 0 14px;
+  color: var(--text);
+  font-size: var(--fs-15);
+  cursor: pointer;
+}
+.menu-body > button.primary {
+  width: 100%;
+  margin-top: 4px;
+}
+.menu-body > hr {
+  width: 100%;
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid var(--strong);
+}
+/* The panel is its own backdrop: ::backdrop lets the closing press through to the page below. */
+@media (max-width: 767px) {
+  .menu-panel {
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    background: rgb(6 8 16 / 0.72);
+  }
+  .menu-panel:popover-open {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .menu-body {
+    width: 100%;
+    max-width: 100%;
+    padding-bottom: calc(4px + env(safe-area-inset-bottom));
+    border-width: 1px 0 0;
+  }
 }
 /* Empties a whole area after a confirmation; sits at the end of the area's heading. */
 button.clear {
@@ -237,6 +290,7 @@ button.clear {
   padding: 0;
   background-color: transparent;
   color: var(--muted);
+  --key-line: transparent;
 }
 button.clear:hover {
   color: var(--text);
@@ -285,7 +339,7 @@ button[aria-pressed="true"]:not(.object-cell) {
   margin-left: -1px;
 }
 
-/* Text-like buttons, cells, list rows and bar segments are not keys. */
+/* Text-like buttons, cells, list rows and bar segments drop the key drawing. */
 .link,
 button.object-cell,
 .choice,
@@ -585,13 +639,14 @@ input[type="number"] {
   color: var(--muted);
 }
 
-/* An empty field is a sunk well; the outline appears only while something can be placed in it. */
+/* An empty field is a sunk well; the dashed outline appears only while something can be placed in it. */
 .drop-target {
   justify-content: flex-start;
   width: 100%;
   min-height: var(--field);
   padding: 0 12px;
   background: var(--ground);
+  border-color: var(--rest-line);
   color: var(--muted);
   font-size: var(--fs-15);
 }
@@ -610,6 +665,7 @@ input[type="number"] {
   color: var(--on-accent);
   font-weight: 700;
   --focus-ink: var(--on-accent);
+  --rest-line: transparent;
 }
 .drop-target.next:hover {
   background: var(--accent-hover);
@@ -623,6 +679,7 @@ input[type="number"] {
   min-height: var(--row);
   padding: 8px 12px;
   background: var(--cell);
+  border-color: var(--rest-line);
   text-align: left;
 }
 .choice + .choice {

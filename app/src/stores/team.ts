@@ -16,7 +16,14 @@ import {
   type CharacterField,
   type Position,
 } from "@/domain/assembly";
-import { excessTrait, MAX_TRAIT_COPIES, newRepeat, REPEATED_TRAIT } from "@/domain/placement";
+import {
+  applySwap,
+  excessTrait,
+  MAX_TRAIT_COPIES,
+  newRepeat,
+  REPEATED_TRAIT,
+  type TraitSwap,
+} from "@/domain/placement";
 import { encodeTeam, decodeTeam } from "@/domain/share";
 import {
   itemId,
@@ -217,6 +224,10 @@ export const useTeamStore = defineStore("team", () => {
     return change((next) => moveEquipment(next, source, target));
   }
 
+  function swapTraits(swap: TraitSwap) {
+    return change((next) => applySwap(next, swap));
+  }
+
   /** Swap two team slots with everything they hold. */
   function swapSlots(a: number, b: number) {
     return change((next) => {
@@ -377,6 +388,7 @@ export const useTeamStore = defineStore("team", () => {
     take,
     install,
     move,
+    swapTraits,
     swapSlots,
     clearSlot,
     clearCharacter,

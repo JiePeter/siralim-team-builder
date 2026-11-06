@@ -265,6 +265,19 @@ onMounted(() => {
   padding: var(--gutter);
 }
 
+@media (min-width: 768px) {
+  .search-panel {
+    border-right: 1px solid var(--line);
+  }
+  .results {
+    gap: 0;
+    background: var(--cell);
+    border-top: 1px solid var(--line);
+  }
+  .result:not(.selected) {
+    border-bottom-color: var(--line);
+  }
+}
 @media (max-width: 767px) {
   .explore {
     display: block;

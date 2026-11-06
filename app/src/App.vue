@@ -247,6 +247,7 @@ header {
   padding: 0 var(--space-8) 0 0;
   background: none;
   font-weight: 700;
+  --key-line: transparent;
 }
 .header-title {
   position: absolute;
@@ -326,6 +327,7 @@ nav .active::after {
   height: var(--placing-bar);
   background: var(--accent);
   color: var(--on-accent);
+  --key-line: transparent;
 }
 .tray-open {
   align-self: center;
@@ -402,6 +404,7 @@ footer {
   color: var(--text);
   font-size: var(--fs-12);
   text-decoration: underline;
+  --key-line: transparent;
   text-underline-offset: 3px;
 }
 .about {
@@ -467,6 +470,14 @@ footer {
 @media (min-width: 1100px) {
   .frame {
     grid-template-columns: minmax(0, 1fr) var(--tray-width);
+  }
+  .tray-side {
+    border-left: 1px solid var(--line);
+  }
+}
+@media (min-width: 768px) {
+  header {
+    border-bottom: 1px solid var(--line);
   }
 }
 @media (max-width: 767px) {

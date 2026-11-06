@@ -432,6 +432,7 @@ watch(flashed, async (uid) => {
   background: var(--danger-mark);
   color: var(--ground);
   font-weight: 700;
+  --key-line: var(--danger-mark);
 }
 .tray-next {
   position: sticky;
@@ -460,7 +461,16 @@ watch(flashed, async (uid) => {
 .tray-eye {
   display: none;
 }
-/* The narrow sidebar has no room beside the name, so its actions take their own row. */
+/* Tray rows share the tray's ground, so only a rule can separate them. */
+@media (min-width: 768px) {
+  .tray-head {
+    border-bottom: 1px solid var(--line);
+  }
+  .tray-item:not(.selected, .flash) {
+    border-bottom-color: var(--line);
+  }
+}
+/* The narrow sidebar has no room beside the name, so its actions take their own row in the text column. */
 @media (min-width: 1100px) {
   .tray-look {
     display: none;
@@ -468,12 +478,18 @@ watch(flashed, async (uid) => {
   .tray-eye {
     display: inline-flex;
   }
+  .parts-tray .tray-item :deep(> .cell-mark) {
+    grid-row: 1 / span 3;
+  }
   .tray-item :deep(> .cell-aside) {
     grid-column: 2;
     grid-row: auto;
   }
   .parts-tray .tray-item.object-cell-row:has(> .cell-aside) {
     grid-template-columns: 68px minmax(0, 1fr);
+  }
+  .tray-actions {
+    justify-content: flex-start;
   }
 }
 @media (max-width: 1099px) {

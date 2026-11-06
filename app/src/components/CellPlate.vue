@@ -243,10 +243,11 @@ const badges = computed(() => {
   border: 1px solid var(--placed);
   color: var(--placed);
 }
+/* Half the icon's 24px grid: each 2px cell lands on one whole pixel. */
 .added-check .icon {
-  width: 8px;
-  height: 8px;
-  -webkit-mask-size: 8px 8px;
-  mask-size: 8px 8px;
+  width: 12px;
+  height: 12px;
+  -webkit-mask-size: 12px 12px;
+  mask-size: 12px 12px;
 }
 </style>

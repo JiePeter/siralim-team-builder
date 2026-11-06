@@ -9,6 +9,7 @@ import type { Catalog, Discovery } from "@/data/types";
 import { OTHER } from "@/domain/attributes";
 import { discoveryIndex, query } from "@/domain/discovery";
 import { filterState } from "@/components/filters";
+import { traitSwap } from "@/domain/placement";
 import { TeamError, type TeamRules } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
 
@@ -35,6 +36,44 @@ describe("team store changes pass through team validation", () => {
   it("rejects an invalid change and keeps the team", async () => {
     const store = useTeamStore();
     await expect(store.addToTray("creature:missing")).rejects.toBeInstanceOf(TeamError);
+    expect(store.team.inventory).toEqual([]);
+  });
+
+  it("trades Traits between fields, keeping gear in its slot and the Artifact configured", async () => {
+    const store = useTeamStore();
+    await store.rules();
+    const both = [...store.index!.carriers.values()].filter(
+      (c) => c.creature && c.materials.length,
+    );
+    const [first, second] = [both[0]!, both[1]!];
+    const artifact = {
+      uid: "a",
+      id: second.materials[0]!,
+      properties: [],
+      artifact: { type: "Staff" },
+    };
+    const primary = { slot: 0, field: "base" } as const;
+    store.team.slots[0] = {
+      base: first.creature!,
+      fusion: both[2]!.creature!,
+      artifact,
+      spells: [acidBomb],
+    };
+
+    const to = (field: "fusion" | "artifact") =>
+      traitSwap(store.index!, store.team, primary, { slot: 0, field })!;
+    await store.swapTraits(to("fusion"));
+    expect(store.team.slots[0]).toMatchObject({
+      base: both[2]!.creature,
+      fusion: first.creature,
+      spells: [acidBomb],
+    });
+
+    await store.swapTraits(to("artifact"));
+    expect(store.team.slots[0]).toMatchObject({
+      base: second.creature,
+      artifact: { uid: "a", id: both[2]!.materials[0], artifact: { type: "Staff" } },
+    });
     expect(store.team.inventory).toEqual([]);
   });
 

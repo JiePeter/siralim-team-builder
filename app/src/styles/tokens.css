@@ -38,6 +38,8 @@
   --accent: #ffd25e;
   --accent-hover: #ffdc80;
   --on-accent: #0a0c16;
+  --key-line: var(--strong);
+  --rest-line: var(--line);
 
   /* Component kinds: plate frames, tray group headings and slot field labels. */
   --kind-creature: #e8836b;
@@ -155,6 +157,8 @@
     --control: 44px;
     --control-compact: 44px;
     --gutter: 16px;
+    --key-line: transparent;
+    --rest-line: transparent;
   }
 }
 @media (min-width: 1100px) {

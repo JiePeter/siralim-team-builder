@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, toRef } from "vue";
+import { computed, ref, toRef, useId } from "vue";
 import { useRouter } from "vue-router";
-import { onClickOutside, onKeyStroke, useMediaQuery } from "@vueuse/core";
+import { useMediaQuery } from "@vueuse/core";
 import { useTeamStore } from "@/stores/team";
+import FloatingMenu from "./FloatingMenu.vue";
 import { perkBase, selectionLabel, useCatalog, type Candidate } from "./selection";
 import { attempt, toast } from "./toast";
 import { burst, flash, trayOpen, usePlacement } from "./tray";
@@ -32,10 +33,8 @@ const base = computed(() => {
   const { perk, base } = perkBase(catalog.value, intent.value.id);
   return perk?.anointment ? (base ?? null) : null;
 });
-const control = ref<HTMLElement | null>(null);
+const baseMenu = useId();
 const choosing = ref(false);
-onClickOutside(control, () => (choosing.value = false));
-onKeyStroke("Escape", () => (choosing.value = false));
 
 function jump() {
   const placed = where.value.placed[0];
@@ -53,12 +52,10 @@ function jump() {
 }
 
 function press(event: MouseEvent) {
-  if (base.value) choosing.value = !choosing.value;
-  else add(event, intent.value.id, name.value);
+  if (!base.value) add(event, intent.value.id, name.value);
 }
 
 async function add(event: MouseEvent, id: string, added: string) {
-  choosing.value = false;
   if (!full.value) burst(event);
   busy.value = true;
   const undo = await attempt(() => store.addToTray(id));
@@ -70,7 +67,7 @@ async function add(event: MouseEvent, id: string, added: string) {
 </script>
 
 <template>
-  <div ref="control" class="add-control">
+  <div class="add-control">
     <button
       v-if="placedOnly"
       type="button"
@@ -94,25 +91,45 @@ async function add(event: MouseEvent, id: string, added: string) {
         :aria-label="label === 'Add' ? `Add ${name}` : `${label}: ${name}`"
         :aria-haspopup="base ? 'menu' : undefined"
         :aria-expanded="base ? choosing : undefined"
+        :popovertarget="base ? baseMenu : undefined"
         @click="press"
       >
         <i class="icon icon-plus"></i><template v-if="!quick">{{ label }}</template>
       </button>
-      <div v-if="base && choosing" class="menu-panel" role="menu">
-        <button type="button" role="menuitem" @click="add($event, intent.id, name)">
+      <FloatingMenu
+        v-if="base"
+        :id="baseMenu"
+        v-slot="{ close }"
+        v-model:open="choosing"
+        :label="`Add ${name} as`"
+      >
+        <button
+          type="button"
+          role="menuitem"
+          @click="
+            close();
+            add($event, intent.id, name);
+          "
+        >
           Anointment
         </button>
-        <button type="button" role="menuitem" @click="add($event, base.id, base.name)">
+        <button
+          type="button"
+          role="menuitem"
+          @click="
+            close();
+            add($event, base!.id, base!.name);
+          "
+        >
           {{ base.name }} Specialization
         </button>
-      </div>
+      </FloatingMenu>
     </template>
   </div>
 </template>
 
 <style scoped>
 .add-control {
-  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;

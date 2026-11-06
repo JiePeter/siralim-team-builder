@@ -25,6 +25,13 @@ export interface Position {
   index?: number;
 }
 
+export type TraitField = "base" | "fusion" | "artifact";
+
+export interface TraitPosition {
+  slot: number;
+  field: TraitField;
+}
+
 /** The catalog parts character moves read. */
 export interface CharacterDefinitions {
   specializations: { id: string; name: string }[];
@@ -60,13 +67,14 @@ function poolIndex(value: Team, uid: string): number {
 
 /**
  * Why a slot field cannot take gear, or null when it can: gear belongs to a slot's Primary, so a
- * Primary cannot become gear in its own slot. `source` is where placed gear comes from.
+ * Primary cannot leave its slot for an empty field of that slot. `source` is where placed gear
+ * comes from.
  */
 export function gearRefusal(value: Team, target: Position, source?: Position): string | null {
   if (target.field === "base") return null;
   if (!value.slots[target.slot]?.base) return "Equip a Primary first";
   if (source?.field === "base" && source.slot === target.slot)
-    return "A Primary cannot move within its own slot";
+    return "This slot would have no Primary";
   return null;
 }
 
@@ -169,6 +177,35 @@ export function moveEquipment(value: Team, source: Position, target: Position): 
     target.field,
     itemId(item)!,
   );
+}
+
+/**
+ * Exchange two filled Trait fields; the rest of each slot's gear stays. Two creature fields or two
+ * Artifacts trade whole instances. Between an Artifact and a creature field only the Traits change
+ * places, through `carriers`, so the Artifact keeps its configuration.
+ */
+export function swapTraits(
+  value: Team,
+  a: TraitPosition,
+  b: TraitPosition,
+  carriers?: { creature: string; material: string },
+): Team {
+  // Drag feedback passes the live reactive team, which structuredClone rejects.
+  const next = { ...value, slots: value.slots.map((slot) => ({ ...slot })) };
+  const first = next.slots[a.slot]?.[a.field];
+  const second = next.slots[b.slot]?.[b.field];
+  if (!first || !second) throw new Error("Component has moved");
+  const carrying = (item: EquipmentRef, field: TraitField, other: EquipmentRef) => {
+    if (!carriers) return other;
+    const id = field === "artifact" ? carriers.material : carriers.creature;
+    if (typeof item === "string") return id;
+    const renamed = { ...item, id };
+    delete renamed.shown;
+    return renamed;
+  };
+  next.slots[a.slot]![a.field] = carrying(first, a.field, second);
+  next.slots[b.slot]![b.field] = carrying(second, b.field, first);
+  return next;
 }
 
 /** Use a pool instance as the Specialization or as the Anointment at `position`. */

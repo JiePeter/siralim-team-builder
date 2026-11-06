@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, toRaw, watch } from "vue";
+import { computed, ref, toRaw, useId, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { onClickOutside, useMediaQuery, useSwipe } from "@vueuse/core";
+import { useEventListener, useFileDialog, useMediaQuery, useSwipe } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { object, type Carrier } from "@/data";
 import { useSearchStore } from "@/stores/search";
@@ -18,11 +18,14 @@ import { buildEffects } from "@/domain/effects";
 import {
   avatarCheck,
   gemNotices,
+  NO_CARRIER,
   placementRefusal,
   repeatedTraits,
   slotTraits,
+  traitSwap,
   unstackedTraits,
   replacementNotices,
+  type TraitSwap,
 } from "@/domain/placement";
 import {
   asItem,
@@ -42,8 +45,8 @@ import DropZone from "@/components/DropZone.vue";
 import EquipmentLine from "@/components/EquipmentLine.vue";
 import EquipmentRow from "@/components/EquipmentRow.vue";
 import FieldPicker from "@/components/FieldPicker.vue";
+import FloatingMenu from "@/components/FloatingMenu.vue";
 import GemEditor from "@/components/GemEditor.vue";
-import DialogFooter from "@/components/DialogFooter.vue";
 import ModalDialog from "@/components/ModalDialog.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
 import PreviewDialog from "@/components/PreviewDialog.vue";
@@ -71,15 +74,15 @@ type Dialog =
   | { type: "copy"; at: Position }
   | { type: "artifact"; slot: number }
   | { type: "relic"; slot: number }
-  | { type: "perks" }
-  | { type: "notes" };
+  | { type: "perks" };
 
 const store = useTeamStore();
 const { team, index, trayCount } = storeToRefs(store);
 const shareTray = ref(false);
+const shareMenu = useId();
 const sharing = ref(false);
-const shareMenu = ref<HTMLElement | null>(null);
-onClickOutside(shareMenu, () => (sharing.value = false));
+const teamsMenu = useId();
+const teamsOpen = ref(false);
 const search = useSearchStore();
 const route = useRoute();
 const router = useRouter();
@@ -94,7 +97,11 @@ const page = computed(() => (phone.value ? route.query.page : undefined));
 const FIELDS = ["base", "fusion", "artifact", "relic"] as const;
 const dialog = ref<Dialog | null>(null);
 const preview = ref<Equipment | null>(null);
-const notes = ref("");
+const notesField = ref<HTMLTextAreaElement | null>(null);
+// A phone can discard a hidden page before its field loses focus.
+useEventListener(document, "visibilitychange", () => {
+  if (document.hidden) notesField.value?.blur();
+});
 
 watch(
   () => route.query.slot,
@@ -239,10 +246,20 @@ function allowed(target: Position): boolean {
   const s = placingSelection.value;
   return !!s && !!placing.value && refusal(target, s, placing.value) === null;
 }
+/** The Trait exchange a drop of the placed gear on `target` makes. */
+function swapping(target: Position): TraitSwap | null {
+  const s = placingSelection.value;
+  return s && "slot" in s && index.value ? traitSwap(index.value, team.value, s, target) : null;
+}
 function accepts(field: SlotField): boolean | null {
   if (movingMember.value !== null) return false;
   if (!placing.value) return null;
-  return allowed({ slot: openSlot.value, field }) && fits(field);
+  const target = { slot: openSlot.value, field };
+  return allowed(target) && (fits(field) || !!swapping(target));
+}
+function fieldHint(field: SlotField): string | null {
+  const target = { slot: openSlot.value, field };
+  return swapping(target) && allowed(target) ? "Swap" : null;
 }
 /** The field of a creature's slot that the item being placed goes to when dropped on its tile. */
 function tileField(slot: number): SlotField | null {
@@ -259,6 +276,7 @@ function tileHint(i: number): string | null {
   if (!acceptsMember(i)) return null;
   if (movingMember.value !== null) return "Swap";
   const field = team.value.slots[i]!.base ? tileField(i) : "base";
+  if (field && swapping({ slot: i, field })) return "Swap";
   return field === "fusion" ? "Fuse" : field && fieldLabels[field];
 }
 /**
@@ -325,8 +343,6 @@ const dialogTitle = computed(() => {
       return "Relic";
     case "perks":
       return "Specialization";
-    case "notes":
-      return "Notes";
   }
   return "";
 });
@@ -343,8 +359,9 @@ async function install(uid: string, target: Position, resolvedId: string) {
 }
 
 /**
- * Put the chosen or dragged item into a field, replacing what is there. With nothing chosen an
- * empty field opens its picker; an occupied one is left alone.
+ * Put the chosen or dragged item into a field, replacing what is there; placed gear exchanges
+ * Traits with a filled Trait field instead. With nothing chosen an empty field opens its picker;
+ * an occupied one is left alone.
  */
 async function place(target: Position, selection: Selection | null = selected.value) {
   if (!selection) {
@@ -361,6 +378,12 @@ async function place(target: Position, selection: Selection | null = selected.va
   if (refused) throw new Error(refused);
   if ("slot" in selection) {
     if (selection.slot === target.slot && selection.field === target.field) {
+      selected.value = null;
+      return;
+    }
+    const swap = traitSwap(index.value!, team.value, selection, target);
+    if (swap) {
+      await store.swapTraits(swap);
       selected.value = null;
       return;
     }
@@ -388,8 +411,7 @@ async function place(target: Position, selection: Selection | null = selected.va
         ? "creature"
         : null;
   const options = (await object(item.id)).options.filter((o) => o.kind === kind);
-  if (!options.length)
-    throw new Error("This Trait has no compatible creature or material for this slot");
+  if (!options.length) throw new Error(NO_CARRIER);
   if (options.length === 1) return install(item.uid, target, options[0]!.id);
   dialog.value = { type: "carrier", target, uid: item.uid, kind: kind!, options };
 }
@@ -551,10 +573,6 @@ async function copyGear(at: Position, slot: number, refused: string | null) {
   toast(`Copied to Slot ${slotIndex(slot)}`, { label: "Undo", run: () => attempt(undo) });
 }
 
-async function apply(change: () => Promise<unknown>) {
-  if ((await attempt(change)) !== undefined) dialog.value = null;
-}
-
 function applyGem(properties: string[], variants: Record<string, number>) {
   const d = dialog.value;
   if (d?.type === "gem") attempt(() => store.setGem(d.at, properties, variants));
@@ -571,7 +589,6 @@ function applyRelic(id: string, rank: number) {
 }
 
 async function share() {
-  sharing.value = false;
   const url = await store.shareUrl(shareTray.value && trayCount.value > 0);
   if (navigator.share) {
     await navigator.share({ title: team.value.name, url }).catch(() => {});
@@ -596,11 +613,6 @@ function removeTeam() {
   if (confirm(`Delete “${team.value.name}” and its tray?`)) store.deleteTeam();
 }
 
-function editNotes() {
-  notes.value = team.value.notes;
-  dialog.value = { type: "notes" };
-}
-
 function exportTeam() {
   const link = document.createElement("a");
   const url = URL.createObjectURL(
@@ -612,16 +624,22 @@ function exportTeam() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-async function importTeam(event: Event) {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
+const {
+  open: chooseImport,
+  onChange: onImportChosen,
+  reset: resetImport,
+} = useFileDialog({ accept: "application/json,.json", multiple: false });
+onImportChosen(async (files) => {
+  const file = files?.[0];
   if (!file) return;
   await attempt(async () => {
     if (file.size > 100000) throw new Error("File exceeds 100KB");
-    await store.replace(JSON.parse(await file.text()));
+    const imported: unknown = JSON.parse(await file.text());
+    if (confirm(`Replace everything in “${team.value.name}” with “${file.name}”?`))
+      await store.replace(imported);
   });
-  input.value = "";
-}
+  resetImport();
+});
 
 const gemAt = (d: Dialog) => (d.type === "gem" ? asItem(equipmentAt(d.at)!) : null);
 const relicOf = (s: number) => {
@@ -654,49 +672,84 @@ const gemPosition = (position: number): Position => ({
         :value="team.name"
         @change="attempt(() => store.rename(($event.target as HTMLInputElement).value))"
       />
-      <div ref="shareMenu" class="share-menu">
+      <button
+        type="button"
+        class="teams-key"
+        aria-haspopup="menu"
+        :aria-expanded="teamsOpen"
+        :popovertarget="teamsMenu"
+      >
+        Teams<i class="icon icon-down"></i>
+      </button>
+      <FloatingMenu :id="teamsMenu" v-slot="{ close }" v-model:open="teamsOpen" label="Teams">
+        <button
+          v-for="(name, i) in store.teams"
+          :key="i"
+          type="button"
+          role="menuitemradio"
+          :aria-checked="i === store.activeTeam"
+          @click="
+            close();
+            store.openTeam(i);
+          "
+        >
+          <span>{{ name }}</span
+          ><i v-if="i === store.activeTeam" class="icon icon-check menu-mark"></i>
+        </button>
+        <hr />
         <button
           type="button"
-          class="icon-button share-key"
-          aria-label="Share link"
-          title="Share link"
-          :aria-expanded="trayCount ? sharing : undefined"
-          @click="trayCount ? (sharing = !sharing) : attempt(share)"
+          role="menuitem"
+          @click="
+            close();
+            store.createTeam();
+          "
         >
-          <i class="icon icon-share"></i>
+          <i class="icon icon-plus"></i>New team
         </button>
-        <div v-if="sharing && trayCount">
-          <label><input v-model="shareTray" type="checkbox" />Include tray</label>
-          <button type="button" class="primary" @click="attempt(share)">Share</button>
-        </div>
-      </div>
-      <details class="team-actions">
-        <summary class="icon-button" aria-label="Team actions">
-          <i class="icon icon-more"></i>
-        </summary>
-        <div>
-          <button
-            v-for="(name, i) in store.teams"
-            :key="i"
-            type="button"
-            class="team-choice"
-            :aria-current="i === store.activeTeam || undefined"
-            @click="store.openTeam(i)"
-          >
-            <span>{{ name }}</span
-            ><i v-if="i === store.activeTeam" class="icon icon-check"></i>
-          </button>
-          <button type="button" class="team-menu-break" @click="store.createTeam()">
-            <i class="icon icon-plus"></i>New team
-          </button>
-          <button type="button" @click="removeTeam">Delete team</button>
-          <button type="button" class="team-menu-break" @click="editNotes">Notes</button>
-          <button type="button" @click="exportTeam">Export</button>
-          <label class="file-button"
-            >Import<input type="file" accept="application/json,.json" hidden @change="importTeam"
-          /></label>
-        </div>
-      </details>
+        <button
+          type="button"
+          role="menuitem"
+          @click="
+            close();
+            removeTeam();
+          "
+        >
+          <i class="icon icon-trash"></i>Delete team
+        </button>
+      </FloatingMenu>
+      <button
+        type="button"
+        class="icon-button share-key"
+        aria-label="Share link"
+        title="Share link"
+        :aria-haspopup="trayCount ? 'dialog' : undefined"
+        :aria-expanded="trayCount ? sharing : undefined"
+        :popovertarget="trayCount ? shareMenu : undefined"
+        @click="trayCount || attempt(share)"
+      >
+        <i class="icon icon-share"></i>
+      </button>
+      <FloatingMenu
+        v-if="trayCount"
+        :id="shareMenu"
+        v-slot="{ close }"
+        v-model:open="sharing"
+        role="dialog"
+        label="Share link"
+      >
+        <label><input v-model="shareTray" type="checkbox" />Include tray</label>
+        <button
+          type="button"
+          class="primary"
+          @click="
+            close();
+            attempt(share);
+          "
+        >
+          Share
+        </button>
+      </FloatingMenu>
     </div>
     <div v-if="notices.length" class="build-notices">
       <ul>
@@ -815,6 +868,7 @@ const gemPosition = (position: number): Position => ({
               :at="{ slot: openSlot, field }"
               :value="slot[field]"
               :accepts="accepts(field)"
+              :hint="fieldHint(field)"
               :next="field === 'base' && !slot.base"
               :copyable="copySlots.length > 0"
               :warning="
@@ -911,6 +965,23 @@ const gemPosition = (position: number): Position => ({
           </button>
         </template>
       </CharacterPanel>
+      <section v-if="!page" class="slot notes-panel" aria-label="Notes">
+        <h2>
+          Notes
+          <span class="notes-actions">
+            <button type="button" aria-label="Export team" @click="exportTeam">Export</button>
+            <button type="button" aria-label="Import team" @click="chooseImport()">Import</button>
+          </span>
+        </h2>
+        <textarea
+          ref="notesField"
+          aria-label="Team notes"
+          maxlength="10000"
+          rows="6"
+          :value="team.notes"
+          @change="attempt(() => store.setNotes(($event.target as HTMLTextAreaElement).value))"
+        ></textarea>
+      </section>
     </div>
 
     <ModalDialog
@@ -1000,14 +1071,6 @@ const gemPosition = (position: number): Position => ({
         :perks="index.perks"
         @apply="(character) => attempt(() => store.setCharacter(character))"
       />
-      <div v-else-if="dialog?.type === 'notes'" class="choices">
-        <textarea v-model="notes" aria-label="Notes" rows="8"></textarea>
-        <DialogFooter>
-          <button type="button" class="primary" @click="apply(() => store.setNotes(notes))">
-            Save
-          </button>
-        </DialogFooter>
-      </div>
     </ModalDialog>
     <PreviewDialog v-model:item="preview" />
   </section>
@@ -1025,15 +1088,13 @@ const gemPosition = (position: number): Position => ({
   display: flex;
   align-items: center;
   gap: 8px;
-}
-.share-key {
-  width: var(--field);
-  min-width: var(--field);
-  height: var(--field);
+  min-width: 0;
 }
 .team-title {
-  flex: 1;
-  min-width: 0;
+  flex: 0 1 auto;
+  width: auto;
+  min-width: 4ch;
+  field-sizing: content;
   min-height: var(--row);
   padding: 0;
   background: transparent;
@@ -1046,94 +1107,36 @@ const gemPosition = (position: number): Position => ({
 .team-title:hover {
   border-color: var(--line);
 }
-.share-menu {
-  position: relative;
+.teams-key {
   flex: none;
+  gap: var(--space-4);
+  min-height: var(--field);
+  padding: 0 var(--space-8) 0 var(--space-12);
 }
-.share-menu > div {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  z-index: 6;
-  display: grid;
-  gap: 8px;
-  min-width: 176px;
-  padding: 8px;
-  background: var(--raised);
-  border: 1px solid var(--strong);
-  box-shadow: var(--elevation);
-}
-.share-menu label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  color: var(--text);
-  font-size: var(--fs-15);
-}
-.team-actions {
-  position: relative;
-  margin-left: auto;
-}
-.team-actions > summary {
+.share-key {
   width: var(--field);
   min-width: var(--field);
   height: var(--field);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--raised);
-  color: var(--text);
+  margin-left: auto;
 }
-.team-actions > summary::before {
-  content: none;
+.notes-panel {
+  align-self: start;
 }
-.team-actions > summary:hover,
-.team-actions[open] > summary {
-  border-color: var(--strong);
-  background: var(--raised-hover);
+.notes-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
 }
-.team-actions > div {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  z-index: 6;
-  display: grid;
-  min-width: 176px;
-  padding: 4px;
-  background: var(--raised);
-  border: 1px solid var(--strong);
-  box-shadow: var(--elevation);
+.notes-actions > button {
+  min-height: var(--control-compact);
+  padding: 0 10px;
+  font-size: var(--fs-13);
 }
-.team-actions button,
-.team-actions .file-button {
-  justify-content: flex-start;
-  width: 100%;
-  min-height: var(--control);
-  margin: 0;
-  background: none;
-  border: 0;
-  color: var(--text);
-  font-size: var(--fs-15);
-}
-.team-actions button:hover,
-.team-actions .file-button:hover {
-  background: var(--raised-hover);
-}
-.team-actions .team-choice {
-  justify-content: space-between;
-  max-width: 280px;
-}
-.team-choice > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.team-choice[aria-current] {
-  font-weight: 700;
-}
-.team-actions .team-menu-break {
-  border-top: 1px solid var(--line);
+.notes-panel > textarea {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 12px;
+  resize: vertical;
 }
 .build-notices {
   background: var(--danger-ground);
@@ -1186,6 +1189,7 @@ const gemPosition = (position: number): Position => ({
 }
 .creature-slots {
   display: grid;
+  align-content: start;
   gap: 8px;
   min-width: 0;
 }
@@ -1345,15 +1349,20 @@ const gemPosition = (position: number): Position => ({
 @media (min-width: 1100px) {
   .slots {
     grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-rows: auto 1fr;
   }
   .creature-slots {
     grid-column: 1;
-    grid-row: 1;
+    grid-row: 1 / span 2;
   }
   .slots > :deep(.character-slot) {
     grid-column: 2;
     grid-row: 1;
     align-self: start;
+  }
+  .notes-panel {
+    grid-column: 2;
+    grid-row: 2;
   }
   .slot-sheet {
     grid-template-columns: repeat(6, minmax(0, 1fr));

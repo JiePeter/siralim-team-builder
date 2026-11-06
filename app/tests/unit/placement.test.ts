@@ -1,10 +1,12 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { reactive } from "vue";
 import { replaceInstance } from "@/domain/assembly";
 import {
   avatarCheck,
   gemNotices,
+  NO_CARRIER,
   placementRefusal,
   REPEATED_TRAIT,
   repeatedTraits,
@@ -92,6 +94,42 @@ describe("repeated traits on one creature", () => {
     const artifact = { slot: 0, field: "artifact" } as const;
     expect(placementRefusal(index, team, artifact, carriers.materials[0]!)).toBe(REPEATED_TRAIT);
     expect(placementRefusal(index, team, artifact, trait)).toBe(REPEATED_TRAIT);
+  });
+});
+
+describe("dropping placed gear on a filled Trait field", () => {
+  const both = [...index.carriers].filter(([, c]) => c.creature && c.materials.length);
+  const [, first] = both[0]!;
+  const [, second] = both[1]!;
+  const primary = { slot: 0, field: "base" } as const;
+  const fusion = { slot: 0, field: "fusion" } as const;
+  const artifact = { slot: 0, field: "artifact" } as const;
+
+  it("lets a Primary trade with its own Fusion or Artifact but not leave for an empty field", () => {
+    const team = party(first.creature!);
+    expect(placementRefusal(index, team, fusion, first.creature!, primary)).toBe(
+      "This slot would have no Primary",
+    );
+    team.slots[0]!.fusion = second.creature!;
+    expect(placementRefusal(index, team, fusion, first.creature!, primary)).toBeNull();
+    expect(placementRefusal(index, reactive(team), fusion, first.creature!, primary)).toBeNull();
+    delete team.slots[0]!.fusion;
+    team.slots[0]!.artifact = second.materials[0]!;
+    expect(placementRefusal(index, team, artifact, first.creature!, primary)).toBeNull();
+  });
+
+  it("refuses a Trait with no carrier for the other field", () => {
+    const [, noCreature] = [...index.carriers].find(([, c]) => !c.creature && c.materials.length)!;
+    const team = party(first.creature!);
+    team.slots[0]!.artifact = noCreature.materials[0]!;
+    expect(placementRefusal(index, team, artifact, first.creature!, primary)).toBe(NO_CARRIER);
+  });
+
+  it("refuses a trade that gives a creature a Trait it already has", () => {
+    const team = party(first.creature!, second.creature!);
+    team.slots[1]!.fusion = first.creature!;
+    const other = { slot: 1, field: "base" } as const;
+    expect(placementRefusal(index, team, other, first.creature!, primary)).toBe(REPEATED_TRAIT);
   });
 });
 

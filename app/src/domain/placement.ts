@@ -1,6 +1,15 @@
-import { gearRefusal, type CharacterField, type Position, type SlotField } from "./assembly";
+import {
+  gearRefusal,
+  swapTraits,
+  type CharacterField,
+  type Position,
+  type SlotField,
+  type TraitField,
+  type TraitPosition,
+} from "./assembly";
 import {
   asItem,
+  carriersOf,
   itemId,
   characterEffects,
   entityOf,
@@ -122,8 +131,6 @@ export function avatarCheck(
   return { limit, slots, notice };
 }
 
-export type TraitField = "base" | "fusion" | "artifact";
-
 /**
  * The traits a creature carries, in field order: its innate trait, its Fusion parent's trait, and
  * the trait its Artifact's Trait Slot adds.
@@ -153,6 +160,63 @@ export function repeatedTraits(
 }
 
 export const REPEATED_TRAIT = "This creature already has this Trait";
+export const NO_CARRIER = "This Trait has no compatible creature or material for this slot";
+
+export interface TraitSwap {
+  a: TraitPosition;
+  b: TraitPosition;
+  /** The carriers of the two Traits when an Artifact and a creature field exchange them. */
+  carriers: { creature?: string; material?: string } | null;
+}
+
+const isTraitPosition = (at: Position): at is TraitPosition =>
+  at.field === "base" || at.field === "fusion" || at.field === "artifact";
+
+/** The exchange a drop of `source` on `target` makes, or null when they do not exchange Traits. */
+export function traitSwap(
+  index: TeamIndex,
+  team: Team,
+  source: Position,
+  target: Position,
+): TraitSwap | null {
+  if (!isTraitPosition(source) || !isTraitPosition(target)) return null;
+  if (source.slot === target.slot && source.field === target.field) return null;
+  const a = { slot: source.slot, field: source.field };
+  const b = { slot: target.slot, field: target.field };
+  const held = (at: TraitPosition) => itemId(team.slots[at.slot]?.[at.field]);
+  if (!held(a) || !held(b)) return null;
+  if ((a.field === "artifact") === (b.field === "artifact")) return { a, b, carriers: null };
+  const [artifact, creature] = a.field === "artifact" ? [a, b] : [b, a];
+  const artifactTrait = index.traitOf.get(held(artifact)!);
+  if (!artifactTrait) return null;
+  return {
+    a,
+    b,
+    carriers: {
+      creature: index.carriers.get(artifactTrait)?.creature,
+      material: carriersOf(index, held(creature)!).materials[0],
+    },
+  };
+}
+
+/** The exchange with both carriers resolved, or null when one of the Traits has none. */
+function resolvedSwap(swap: TraitSwap): Parameters<typeof swapTraits>[3] | null {
+  const { creature, material } = swap.carriers!;
+  return creature && material ? { creature, material } : null;
+}
+
+/** Make the exchange `traitSwap` found on `team`; a Trait without a carrier is refused first. */
+export function applySwap(team: Team, swap: TraitSwap): Team {
+  if (!swap.carriers) return swapTraits(team, swap.a, swap.b);
+  const carriers = resolvedSwap(swap);
+  if (!carriers) throw new Error(NO_CARRIER);
+  return swapTraits(team, swap.a, swap.b, carriers);
+}
+
+function swapRefusal(index: TeamIndex, team: Team, swap: TraitSwap): string | null {
+  if (swap.carriers && !resolvedSwap(swap)) return NO_CARRIER;
+  return newRepeat(index, team, applySwap(team, swap)) ? REPEATED_TRAIT : null;
+}
 
 /** A trait that `after` repeats on the creature and `before` did not. */
 function slotRepeat(index: TeamIndex, before: Slot, after: Slot): string | null {
@@ -181,6 +245,8 @@ export function placementRefusal(
   id: string,
   source?: Position,
 ): string | null {
+  const swap = source && traitSwap(index, team, source, target);
+  if (swap) return swapRefusal(index, team, swap);
   const refusal = gearRefusal(team, target, source);
   if (refusal) return refusal;
   const slot = team.slots[target.slot];

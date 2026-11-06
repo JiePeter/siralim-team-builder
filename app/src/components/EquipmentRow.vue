@@ -14,6 +14,8 @@ const props = defineProps<{
   at: Position;
   value: EquipmentRef | undefined;
   accepts?: boolean | null;
+  /** What a drop here does, shown while a drag is held over the field. */
+  hint?: string | null;
   warning?: string | null;
   /** The step this slot needs next. */
   next?: boolean;
@@ -60,6 +62,7 @@ const corner = computed(() =>
     :class="['equipment', `field-${at.field}`, { 'over-limit': warning }]"
     :title="warning ?? undefined"
     :accepts="accepts"
+    :hint="hint"
     @drop="emit('drop')"
   >
     <small>{{ label }}</small>
