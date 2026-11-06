@@ -55,7 +55,7 @@ def listened(token):
 
 def restricts(token):
     """Whether a fact narrows when a link happens, and so lowers its rank."""
-    # An outcome condition branches on this effect's own result rather than on its partner.
+    # An outcome condition branches on this effect's own result.
     return token[0] == "req" and token[1] != "outcome"
 
 

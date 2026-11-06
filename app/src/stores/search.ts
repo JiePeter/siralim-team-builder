@@ -61,7 +61,7 @@ export const useSearchStore = defineStore("search", () => {
     attributes: [],
   });
   const ready = ref(false);
-  /** The shown results came from search text, a type or a mechanic filter, not the bare catalog. */
+  /** Search text, a type or a mechanic filter produced the shown results. */
   const narrowed = ref(false);
   /** The search field takes focus the next time the search page opens. */
   const wantsFocus = ref(false);

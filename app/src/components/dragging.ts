@@ -6,7 +6,7 @@ import type { CharacterField, Position } from "@/domain/assembly";
 export type Selection =
   { uid: string } | Position | { character: CharacterField; position: number } | { member: number };
 
-/** Drop zones accept only drags that carry this type, not files or text from elsewhere. */
+/** Drop zones accept only drags that carry this type. */
 export const DRAG_TYPE = "application/x-siralim-component";
 
 /** The selection being dragged, as JSON. */

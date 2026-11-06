@@ -2,7 +2,7 @@
 status and minion names they use.
 
 Seeded from Kleptichron's Structured Compendium (MIT, see data/annotations/LICENSE) and maintained
-here. Corrections belong in these files, not in the code that reads them.
+here. Corrections belong in these files.
 """
 
 import hashlib
@@ -88,7 +88,7 @@ def trigger_label(value):
 
 
 def reacts(trigger):
-    """Whether a trigger fires off something that happened, rather than a battle or turn phase."""
+    """Whether a trigger fires off an event, or after a phase's effects."""
     return "event" in trigger and (trigger["event"] not in PHASES or trigger["timing"] == "after")
 
 

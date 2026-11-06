@@ -377,7 +377,7 @@ def load(db):
                 "heart": "project_material",
             }.get(kind, "item")
             item = req.get("inscription", key)
-            # Stable identity depends on shop, output and delivery, not source row or price.
+            # Stable identity is shop, output and delivery.
             offer = eid("shop_offer", place + "|" + item + "|" + delivery)
             cost = {k: req[k] for k in ("cost", "currency") if k in req}
             conditions = {k: v for k, v in req.items() if k not in cost}

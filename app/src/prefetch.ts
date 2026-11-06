@@ -26,7 +26,7 @@ export function whenIdle(run: () => void): () => void {
   return () => clearTimeout(handle);
 }
 
-// A pointer resting this long on a link is taken as intent; passing over a list is not.
+// A pointer resting this long on a link is taken as intent.
 const HOVER_DELAY = 65;
 
 /** Load a link's route chunk and object page when the visitor points at, presses or focuses it. */

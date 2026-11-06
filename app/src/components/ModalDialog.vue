@@ -9,7 +9,7 @@ const props = withDefaults(
     title: string;
     drawer?: boolean;
     closeLabel?: string;
-    /** A short list: a bottom sheet on phones instead of a full page. */
+    /** A short list: a bottom sheet on phones. */
     sheet?: boolean;
     /** The owner opens and closes the dialog with the route. */
     routed?: boolean;

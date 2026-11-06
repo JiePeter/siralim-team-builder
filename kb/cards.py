@@ -1,12 +1,12 @@
-"""Finite, reusable object summaries. No recursive page expansion or inferred synergy."""
+"""Object summaries shared across pages."""
 
 import json
 from collections import defaultdict
 from .current import records
 
 # Each of these serves exactly one component: an inscription its Spell Gem, a Godspawn Heart its
-# creature, a gemstone its Spell Gem property. They are a step in that component's routes, not
-# objects of their own.
+# creature, a gemstone its Spell Gem property. They appear only as a step in that component's
+# routes.
 CHAIN_KINDS = ("inscription", "heart", "enchantment_material")
 
 

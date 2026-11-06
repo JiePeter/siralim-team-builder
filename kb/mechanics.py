@@ -894,7 +894,7 @@ class Engine:
             )
 
     def overlap_links(self, rule, event, b):
-        """Shared-event overlap and additional actions are suggestions, not directed chains."""
+        """Shared-event overlap and additional actions, offered as suggestions."""
         if b.event != event:
             return
         a, other = rule.typed["trigger"], b.typed["trigger"]
@@ -1152,8 +1152,7 @@ class Engine:
                         "direction": "incoming",
                     }
                 )
-        # Fixed calls remain available to internal traversal, but are references
-        # in their effect text rather than selectable synergy suggestions.
+        # Fixed calls stay available to internal traversal; their effect text references them.
         items = [item for item in items if item["relation"] != "Named spell"]
         order = {
             "Event chain": 0,

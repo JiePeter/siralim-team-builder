@@ -67,7 +67,7 @@ const effects = computed<SummaryEffect[]>(() => {
     ];
   return list;
 });
-/** A shortened relic lists its ranks behind a toggle instead of showing the first few. */
+/** A shortened relic lists its ranks behind a toggle. */
 const shown = computed(() =>
   props.data.kind === "relic" && props.limit !== Infinity ? 0 : props.limit,
 );

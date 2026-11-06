@@ -1,4 +1,4 @@
-"""Focused reference-content checks against the checked-in derived snapshot."""
+"""Reference content against the checked-in derived snapshot."""
 
 import unittest
 from kb.knowledge import Knowledge

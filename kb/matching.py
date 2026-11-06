@@ -1,4 +1,4 @@
-"""Requirements checked against an actual action, rather than shared words."""
+"""Requirements checked against an actual action."""
 
 import re
 
@@ -75,7 +75,7 @@ def qualifier_text(key, value):
         "condition": "Condition",
     }
     label = labels.get(key, re.sub(r"(?<!^)(?=[A-Z])", " ", key).capitalize())
-    # Turn number, cadence and zero amounts identify the event rather than scale it.
+    # Turn number, cadence and zero amounts identify the event.
     return label + ": " + (text if key in ("onTurn", "cadence", "amount") else qualitative(text))
 
 
@@ -185,7 +185,7 @@ def event_requirements(event, action, producer, record, listener, status_kinds, 
     elif by in ("holder", "allies", "your own creatures", "your creatures"):
         if actor in ("enemy", "enemies", "random_enemy"):
             return None
-        # A Perk belongs to the player, not a creature, so it never acts as the holder.
+        # A Perk belongs to the player, so it never acts as the holder.
         if not actor and by == "holder" and record.get("type") == "perks":
             return None
         if not actor:
@@ -257,7 +257,7 @@ def event_requirements(event, action, producer, record, listener, status_kinds, 
         named = spell_facts.get(normal(ap.get("spell")))
         spell_class = ap.get("spellClass") or (named.get("class") if named else None)
         # A cast of an unnamed spell pairs only with listeners every spell satisfies; whether it
-        # meets a class or type depends on the Spell Gem, not on the effect that casts it.
+        # meets a class or type depends on the Spell Gem.
         if p.get("spellClass"):
             if not spell_class or normal(spell_class) != normal(p["spellClass"]):
                 return None

@@ -52,7 +52,7 @@ export interface Intent {
   id: string;
   /** One per team, so Add is offered only while it is nowhere in the team. */
   unique: boolean;
-  /** For a Perk, its base when that base is set or in the tray: it comes with the base, not by anointing. */
+  /** For a Perk, its base when that base is set or in the tray: it comes with the base. */
   ownBase: string | null;
   /** Whether any Specialization is set or in the tray. */
   baseChosen: boolean;

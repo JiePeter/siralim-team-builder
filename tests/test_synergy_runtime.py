@@ -1,4 +1,4 @@
-"""Focused runtime and canonical-Spell regression checks; no snapshot rebuild."""
+"""Runtime and canonical-Spell regression checks."""
 
 import unittest
 from kb.knowledge import Knowledge

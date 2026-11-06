@@ -5,8 +5,7 @@ from .importer import eid
 
 
 def project(db):
-    # Availability is evidenced by a route, the game's own lists or an existing material
-    # mapping, never inferred from a trait's name or missing material.
+    # Availability needs a route, the game's own lists or an existing material mapping.
     db.execute("""INSERT INTO component SELECT id,kind,NULL,NULL,'player_directory' FROM entity e
                   WHERE kind IN ('spell','relic') OR kind='creature' AND EXISTS(SELECT 1 FROM route r WHERE r.entity_id=e.id
                   OR r.entity_id IN (SELECT src FROM edge WHERE dst=e.id AND rel='unlocks_creature'))""")
@@ -45,7 +44,7 @@ def project(db):
             "Inscription": "craft_unlock",
             "Heart": "project_material",
         }.get(req.get("item_type"), "item")
-        # Stable identity depends on shop, output and delivery, not source row or price.
+        # Stable identity is shop, output and delivery.
         key = eid("shop_offer", shop + "|" + item + "|" + delivery)
         cost = {
             k: req[k] for k in ("cost", "currency", "reported_cost", "price_evidence") if k in req

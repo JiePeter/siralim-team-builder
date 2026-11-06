@@ -1,4 +1,4 @@
-"""Concrete reference positions and conservative resolution, not a smoke suite."""
+"""Concrete reference positions and conservative resolution."""
 
 import unittest
 from kb.knowledge import Knowledge

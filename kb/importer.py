@@ -84,7 +84,7 @@ def read_xlsx(path):
 
 
 NO_MATERIAL = ("no material exists", "none", "n/a", "unobtainable")
-# Kinds the game data defines. A community row names one of these rather than creating it.
+# Kinds the game data defines. A community row can only name one of these.
 GAME_KINDS = {
     "class",
     "condition",
