@@ -1,0 +1,546 @@
+{
+ "version": "0.3.0",
+ "game_version": "2.0.38",
+ "cases": [
+  {
+   "name": "empty team",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": ""
+   },
+   "expected": {
+    "effects": [],
+    "anointment_capacity": 5,
+    "specialization": null,
+    "active_effects": [],
+    "notices": []
+   }
+  },
+  {
+   "name": "full team",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "base": "creature:1101",
+      "fusion": "creature:1106",
+      "artifact": {
+       "uid": "art1",
+       "id": "material:1841",
+       "artifact": {
+        "type": "Sword",
+        "stats": [
+         "artifact_property:48",
+         "artifact_property:47"
+        ],
+        "tricks": [
+         "artifact_property:0"
+        ],
+        "spell": "spell:310"
+       }
+      },
+      "spells": [
+       {
+        "uid": "g1",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:0",
+         "enchantment:11"
+        ]
+       }
+      ],
+      "relic": {
+       "uid": "r1",
+       "id": "relic:28",
+       "rank": 30
+      }
+     },
+     {
+      "base": "creature:435",
+      "relic": "relic:2"
+     },
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [
+     {
+      "uid": "i1",
+      "id": "spell:310",
+      "properties": [
+       "enchantment:1"
+      ]
+     }
+    ],
+    "character": {
+     "specialization": "spec:2",
+     "perks": {
+      "perk:92": 10,
+      "perk:94": 40
+     },
+     "anointments": [
+      "perk:140",
+      "perk:142"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "expected": {
+    "effects": [
+     {
+      "id": "perk:92",
+      "name": "Apotheosis",
+      "specialization": "Cleric",
+      "ranks": 25,
+      "anointment": true,
+      "ascension": false,
+      "short_name": "Apotheosis",
+      "image": "/assets/siralim/images/perk/Apotheosis.png",
+      "description": "After your creatures are healed, they have a 2% per rank chance to gain a random buff.",
+      "rank": 10,
+      "mode": "Specialization",
+      "active": true,
+      "inactive_reason": ""
+     },
+     {
+      "id": "perk:142",
+      "name": "Brood",
+      "specialization": "Druid",
+      "ranks": 20,
+      "anointment": true,
+      "ascension": false,
+      "short_name": "Brood",
+      "image": "/assets/siralim/images/perk/Brood.png",
+      "description": "Your creatures start battles with 1% per rank more Maximum health for each creature missing from your group.",
+      "rank": 20,
+      "mode": "Anointment",
+      "active": true,
+      "inactive_reason": ""
+     },
+     {
+      "id": "perk:140",
+      "name": "Cornered",
+      "specialization": "Druid",
+      "ranks": 20,
+      "anointment": true,
+      "ascension": false,
+      "short_name": "Cornered",
+      "image": "/assets/siralim/images/perk/Cornered.png",
+      "description": "Your creatures deal 1% per rank more damage for each creature missing from your group.",
+      "rank": 20,
+      "mode": "Anointment",
+      "active": true,
+      "inactive_reason": ""
+     },
+     {
+      "id": "perk:94",
+      "name": "Inner Light",
+      "specialization": "Cleric",
+      "ranks": 40,
+      "anointment": true,
+      "ascension": false,
+      "short_name": "Inner Light",
+      "image": "/assets/siralim/images/perk/InnerLight.png",
+      "description": "Your creatures take 1% per rank less damage from all sources.",
+      "rank": 40,
+      "mode": "Specialization",
+      "active": true,
+      "inactive_reason": ""
+     }
+    ],
+    "anointment_capacity": 5,
+    "specialization": "Cleric",
+    "active_effects": [
+     {
+      "id": "perk:92",
+      "name": "Apotheosis",
+      "description": "After your creatures are healed, they have a 2% per rank chance to gain a random buff.",
+      "context": "Character · Specialization",
+      "rank": 10
+     },
+     {
+      "id": "perk:142",
+      "name": "Brood",
+      "description": "Your creatures start battles with 1% per rank more Maximum health for each creature missing from your group.",
+      "context": "Character · Anointment",
+      "rank": 20
+     },
+     {
+      "id": "perk:140",
+      "name": "Cornered",
+      "description": "Your creatures deal 1% per rank more damage for each creature missing from your group.",
+      "context": "Character · Anointment",
+      "rank": 20
+     },
+     {
+      "id": "perk:94",
+      "name": "Inner Light",
+      "description": "Your creatures take 1% per rank less damage from all sources.",
+      "context": "Character · Specialization",
+      "rank": 40
+     },
+     {
+      "id": "trait:1983",
+      "name": "Robotic Armor",
+      "description": "Your creatures are resistant to debuffs. After your creatures are afflicted with a debuff, they have a 50% chance to gain Immunity. This trait does not stack.",
+      "context": "Slot 1 · Primary"
+     },
+     {
+      "id": "trait:1794",
+      "name": "Something From Nothing",
+      "description": "Your creatures deal 5% more damage with attacks and spells, and take 1% less damage for each time this creature has taken damage in the current battle. This trait does not stack.",
+      "context": "Slot 1 · Fusion"
+     },
+     {
+      "id": "trait:2006",
+      "name": "Insane Polarity",
+      "description": "At the start of battle, your creatures' Ethereal Spell Gems gain the first enchantment of their owner's first permanent Spell Gem.",
+      "context": "Slot 1 · Artifact"
+     },
+     {
+      "id": "spell:310",
+      "name": "Abundance",
+      "description": "Your creatures recover a small amount of Health and gain a small amount of Attack, Intelligence, Defense, and Speed.",
+      "context": "Slot 1 · Artifact Spell Slot"
+     },
+     {
+      "id": "artifact_property:48",
+      "name": "Attack",
+      "description": "Creature has additional Attack.",
+      "context": "Slot 1 · Artifact 59%"
+     },
+     {
+      "id": "artifact_property:47",
+      "name": "Speed",
+      "description": "Creature has additional Speed.",
+      "context": "Slot 1 · Artifact 59%"
+     },
+     {
+      "id": "artifact_property:0",
+      "name": "Attack Damage",
+      "description": "Creature deals more damage with attacks.",
+      "context": "Slot 1 · Artifact 83%"
+     },
+     {
+      "id": "relic:28",
+      "name": "5740-NG, Impenetrable Plate of 4080",
+      "description": "At the end of each enemy's turn, this relic Attacks a random enemy if the bearer didn't take any damage.",
+      "context": "Slot 1 · Relic Rank 10"
+     },
+     {
+      "id": "relic:28",
+      "name": "5740-NG, Impenetrable Plate of 4080",
+      "description": "After this relic Attacks, the bearer gains 10% Defense.",
+      "context": "Slot 1 · Relic Rank 20"
+     },
+     {
+      "id": "relic:28",
+      "name": "5740-NG, Impenetrable Plate of 4080",
+      "description": "The bearer gains 15% more Defense and Maximum Health from stat-boosting effects and can't lose these stats.",
+      "context": "Slot 1 · Relic Rank 30"
+     },
+     {
+      "id": "spell:310",
+      "name": "Abundance",
+      "description": "Your creatures recover a small amount of Health and gain a small amount of Attack, Intelligence, Defense, and Speed.",
+      "context": "Slot 1 · Spell Gem"
+     },
+     {
+      "id": "trait:291",
+      "name": "Urh Harbinger",
+      "description": "Your creatures have 15% more attack, intelligence, defense, and speed for each turn they've taken in the current battle. This trait does not stack.",
+      "context": "Slot 2 · Primary"
+     }
+    ],
+    "notices": []
+   }
+  },
+  {
+   "name": "Pariah: Druid anointment inactive and four creatures",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "base": "creature:1101"
+     },
+     {
+      "base": "creature:1106"
+     },
+     {
+      "base": "creature:435"
+     },
+     {
+      "base": "creature:1252"
+     },
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:37",
+     "perks": {},
+     "anointments": [
+      "perk:140",
+      "perk:144"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "expected": {
+    "effects": [
+     {
+      "id": "perk:140",
+      "name": "Cornered",
+      "specialization": "Druid",
+      "ranks": 20,
+      "anointment": true,
+      "ascension": false,
+      "short_name": "Cornered",
+      "image": "/assets/siralim/images/perk/Cornered.png",
+      "description": "Your creatures deal 1% per rank more damage for each creature missing from your group.",
+      "rank": 20,
+      "mode": "Anointment",
+      "active": false,
+      "inactive_reason": "Pariah: Druid Anointments are inactive"
+     },
+     {
+      "id": "perk:580",
+      "name": "Introversion",
+      "specialization": "Pariah",
+      "ranks": 1,
+      "anointment": true,
+      "ascension": false,
+      "short_name": "Introversion",
+      "image": "/assets/siralim/images/perk/Introversion.png",
+      "always_active": true,
+      "description": "You can only use 3 creatures at a time. Your Druid anointments are ignored. This perk is always active while your specialization is Pariah, even if you haven't allocated any Perk Points to it.",
+      "rank": 1,
+      "mode": "Specialization",
+      "active": true,
+      "inactive_reason": ""
+     },
+     {
+      "id": "perk:144",
+      "name": "Sovereignty",
+      "specialization": "Druid",
+      "ranks": 1,
+      "anointment": true,
+      "ascension": false,
+      "short_name": "Sovereignty",
+      "image": "/assets/siralim/images/perk/Sovereignty.png",
+      "description": "Your creatures have 1 additional Spell Gem slot for each creature missing from your group.",
+      "rank": 1,
+      "mode": "Anointment",
+      "active": false,
+      "inactive_reason": "Pariah: Druid Anointments are inactive"
+     }
+    ],
+    "anointment_capacity": 5,
+    "specialization": "Pariah",
+    "active_effects": [
+     {
+      "id": "perk:580",
+      "name": "Introversion",
+      "description": "You can only use 3 creatures at a time. Your Druid anointments are ignored. This perk is always active while your specialization is Pariah, even if you haven't allocated any Perk Points to it.",
+      "context": "Character · Specialization",
+      "rank": 1
+     },
+     {
+      "id": "trait:1983",
+      "name": "Robotic Armor",
+      "description": "Your creatures are resistant to debuffs. After your creatures are afflicted with a debuff, they have a 50% chance to gain Immunity. This trait does not stack.",
+      "context": "Slot 1 · Primary"
+     },
+     {
+      "id": "trait:1794",
+      "name": "Something From Nothing",
+      "description": "Your creatures deal 5% more damage with attacks and spells, and take 1% less damage for each time this creature has taken damage in the current battle. This trait does not stack.",
+      "context": "Slot 2 · Primary"
+     },
+     {
+      "id": "trait:291",
+      "name": "Urh Harbinger",
+      "description": "Your creatures have 15% more attack, intelligence, defense, and speed for each turn they've taken in the current battle. This trait does not stack.",
+      "context": "Slot 3 · Primary"
+     },
+     {
+      "id": "trait:1750",
+      "name": "Numerical Nightmare",
+      "description": "This creature has 75% more attack and speed while its level is odd, and 75% more intelligence and defense while its level is even.",
+      "context": "Slot 4 · Primary"
+     }
+    ],
+    "notices": [
+     "Pariah: Druid Anointments are inactive",
+     "Pariah: at most three creatures"
+    ]
+   }
+  },
+  {
+   "name": "Royal ascended with Master of All",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:27",
+     "perks": {
+      "perk:449": 1
+     },
+     "anointments": [],
+     "ascended": true,
+     "all_ascended": true
+    }
+   },
+   "expected": {
+    "effects": [
+     {
+      "id": "perk:464",
+      "name": "Highborn",
+      "specialization": "Royal",
+      "ranks": 1,
+      "anointment": false,
+      "ascension": true,
+      "short_name": "Highborn",
+      "image": "/assets/siralim/images/perk/Highborn.png",
+      "description": "You can equip 3 additional Anointments, or 5 if you've ascended all other specializations (excluding Challenge Specializations).",
+      "rank": 1,
+      "mode": "Specialization",
+      "active": true,
+      "inactive_reason": ""
+     },
+     {
+      "id": "perk:449",
+      "name": "Master of All",
+      "specialization": "Royal",
+      "ranks": 1,
+      "anointment": true,
+      "ascension": false,
+      "short_name": "Master of All",
+      "image": "/assets/siralim/images/perk/MasterofAll.png",
+      "description": "You can equip 10 additional Anointments.",
+      "rank": 1,
+      "mode": "Specialization",
+      "active": true,
+      "inactive_reason": ""
+     }
+    ],
+    "anointment_capacity": 20,
+    "specialization": "Royal",
+    "active_effects": [
+     {
+      "id": "perk:464",
+      "name": "Highborn",
+      "description": "You can equip 3 additional Anointments, or 5 if you've ascended all other specializations (excluding Challenge Specializations).",
+      "context": "Character · Specialization",
+      "rank": 1
+     },
+     {
+      "id": "perk:449",
+      "name": "Master of All",
+      "description": "You can equip 10 additional Anointments.",
+      "context": "Character · Specialization",
+      "rank": 1
+     }
+    ],
+    "notices": []
+   }
+  },
+  {
+   "name": "Royal ascended without Master of All",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:27",
+     "perks": {},
+     "anointments": [],
+     "ascended": true,
+     "all_ascended": false
+    }
+   },
+   "expected": {
+    "effects": [
+     {
+      "id": "perk:464",
+      "name": "Highborn",
+      "specialization": "Royal",
+      "ranks": 1,
+      "anointment": false,
+      "ascension": true,
+      "short_name": "Highborn",
+      "image": "/assets/siralim/images/perk/Highborn.png",
+      "description": "You can equip 3 additional Anointments, or 5 if you've ascended all other specializations (excluding Challenge Specializations).",
+      "rank": 1,
+      "mode": "Specialization",
+      "active": true,
+      "inactive_reason": ""
+     }
+    ],
+    "anointment_capacity": 8,
+    "specialization": "Royal",
+    "active_effects": [
+     {
+      "id": "perk:464",
+      "name": "Highborn",
+      "description": "You can equip 3 additional Anointments, or 5 if you've ascended all other specializations (excluding Challenge Specializations).",
+      "context": "Character · Specialization",
+      "rank": 1
+     }
+    ],
+    "notices": []
+   }
+  },
+  {
+   "name": "relic as plain id counts as rank 1",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "relic": "relic:28"
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": ""
+   },
+   "expected": {
+    "effects": [],
+    "anointment_capacity": 5,
+    "specialization": null,
+    "active_effects": [],
+    "notices": []
+   }
+  }
+ ]
+}

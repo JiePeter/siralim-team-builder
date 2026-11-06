@@ -1,0 +1,189 @@
+/* Slot and character panels share one row grammar: label column, value column, 1px rules.
+   The rows are drawn by several components, so the grammar stays global. */
+.slot {
+  min-width: 0;
+  background: var(--cell);
+}
+.slot > h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 12px;
+}
+.equipment,
+.gem-area,
+.character-slot-heading {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
+  padding: 8px 12px;
+}
+.equipment > small,
+.gem-area > small,
+.character-slot-heading > small:first-child {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  min-height: var(--field);
+  color: var(--muted);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.field-base > small,
+.field-fusion > small {
+  color: var(--kind-creature);
+}
+.field-artifact > small {
+  color: var(--kind-material);
+}
+.field-relic > small {
+  color: var(--kind-relic);
+}
+.character-slot .equipment > small,
+.character-slot-heading > small:first-child {
+  color: var(--kind-character);
+}
+.equipment > :not(small),
+.gem-area > :not(small),
+.anointment-slot > * {
+  grid-column: 2;
+  min-width: 0;
+}
+.character-slot-heading {
+  align-items: center;
+  padding-bottom: 0;
+}
+.locked-hint {
+  margin: 0;
+  padding: 4px 12px 16px;
+  color: var(--muted);
+  font-size: var(--fs-13);
+}
+/* On a phone a slot or the character is its own page; the bottom navigation stays in reach. */
+.phone-page {
+  position: fixed;
+  inset: 0 0 var(--tabbar-height);
+  z-index: 15;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-bottom: var(--space-24);
+}
+.phone-page > h2 {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  min-height: var(--header-height);
+  padding: 0 var(--space-8);
+  background: var(--cell);
+}
+.page-back {
+  width: var(--control);
+  min-width: var(--control);
+  height: var(--control);
+  padding: 0;
+  background-color: transparent;
+}
+.character-slot-heading > small:last-child {
+  grid-column: 2;
+  color: var(--muted);
+  font: 400 16px / 1 var(--pixel-font);
+  font-variant-numeric: tabular-nums;
+}
+/* Anointments are one list: no rule between them, one 8px step from the heading and each other. */
+.anointment-slot {
+  padding-top: 0;
+  padding-bottom: var(--space-8);
+}
+.character-slot-heading {
+  padding-bottom: var(--space-8);
+}
+.slot > .anointment-slot:last-child {
+  padding-bottom: var(--space-12);
+}
+.equipment-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 4px;
+  margin: 0;
+}
+.equipment-actions button {
+  min-height: var(--control-compact);
+  padding: 0 10px;
+  font-size: var(--fs-13);
+}
+.equipment-actions .icon-button {
+  width: var(--control-compact);
+  min-width: var(--control-compact);
+  height: var(--control-compact);
+  padding: 0;
+}
+.equipment-effect p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+/* Equipped gear drags to another field or back to the tray; the grip shows it can. */
+@media (pointer: fine) {
+  [draggable="true"] {
+    cursor: grab;
+  }
+  [draggable="true"]:active {
+    cursor: grabbing;
+  }
+}
+/* The draggable area keeps one inset on every side, so its hover fill never meets the content. */
+.equipped[draggable="true"] {
+  position: relative;
+  margin: calc(-1 * var(--space-8));
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-16);
+}
+.equipped[draggable="true"]::before {
+  content: "";
+  position: absolute;
+  top: calc(50% - 8px);
+  left: 0;
+  width: 12px;
+  height: 16px;
+  background-color: var(--drop-line);
+  -webkit-mask: var(--icon-grip) center / 16px 16px no-repeat;
+  mask: var(--icon-grip) center / 16px 16px no-repeat;
+}
+.equipped[draggable="true"]:hover {
+  background: var(--raised);
+}
+.equipped[draggable="true"]:hover::before {
+  background-color: var(--text);
+}
+.equipment.over-limit {
+  box-shadow: inset 2px 0 var(--danger-mark);
+}
+.drag-source {
+  opacity: 0.45;
+}
+
+@media (min-width: 1100px) {
+  .character-slot {
+    align-self: start;
+  }
+}
+@media (max-width: 767px) {
+  .equipment,
+  .gem-area {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .equipment > small,
+  .gem-area > small {
+    min-height: 28px;
+  }
+  .equipment > :not(small),
+  .gem-area > :not(small),
+  .anointment-slot > * {
+    grid-column: 1;
+  }
+}

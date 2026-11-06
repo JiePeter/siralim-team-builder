@@ -1,0 +1,1156 @@
+{
+ "version": "0.3.0",
+ "game_version": "2.0.38",
+ "cases": [
+  {
+   "name": "full team passes",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "base": "creature:1101",
+      "fusion": "creature:1106",
+      "artifact": {
+       "uid": "art1",
+       "id": "material:1841",
+       "artifact": {
+        "type": "Sword",
+        "stats": [
+         "artifact_property:48",
+         "artifact_property:47"
+        ],
+        "tricks": [
+         "artifact_property:0"
+        ],
+        "spell": "spell:310"
+       }
+      },
+      "spells": [
+       {
+        "uid": "g1",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:0",
+         "enchantment:11"
+        ]
+       }
+      ],
+      "relic": {
+       "uid": "r1",
+       "id": "relic:28",
+       "rank": 30
+      }
+     },
+     {
+      "base": "creature:435",
+      "relic": "relic:2"
+     },
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [
+     {
+      "uid": "i1",
+      "id": "spell:310",
+      "properties": [
+       "enchantment:1"
+      ]
+     }
+    ],
+    "character": {
+     "specialization": "spec:2",
+     "perks": {
+      "perk:92": 10,
+      "perk:94": 40
+     },
+     "anointments": [
+      "perk:140",
+      "perk:142"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "expected": {
+    "character": {
+     "specialization": "spec:2",
+     "perks": {
+      "perk:92": 10,
+      "perk:94": 40
+     },
+     "anointments": [
+      "perk:140",
+      "perk:142"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "name": "Golden",
+    "notes": "",
+    "slots": [
+     {
+      "base": "creature:1101",
+      "fusion": "creature:1106",
+      "artifact": {
+       "uid": "art1",
+       "id": "material:1841",
+       "artifact": {
+        "type": "Sword",
+        "stats": [
+         "artifact_property:48",
+         "artifact_property:47"
+        ],
+        "tricks": [
+         "artifact_property:0"
+        ],
+        "spell": "spell:310"
+       }
+      },
+      "spells": [
+       {
+        "uid": "g1",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:0",
+         "enchantment:11"
+        ]
+       }
+      ],
+      "relic": {
+       "uid": "r1",
+       "id": "relic:28",
+       "rank": 30
+      }
+     },
+     {
+      "base": "creature:435",
+      "relic": "relic:2"
+     },
+     {},
+     {},
+     {},
+     {}
+    ],
+    "inventory": [
+     {
+      "uid": "i1",
+      "id": "spell:310",
+      "properties": [
+       "enchantment:1"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "five slots",
+   "plan": {
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "A team must contain six slots"
+  },
+  {
+   "name": "unknown slot field",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "weapon": "creature:1101"
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Invalid slot"
+  },
+  {
+   "name": "spell in creature slot",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "base": "spell:310"
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Component type is incompatible with this slot"
+  },
+  {
+   "name": "duplicate instance uid",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "x",
+        "id": "spell:310",
+        "properties": []
+       },
+       {
+        "uid": "x",
+        "id": "spell:310",
+        "properties": []
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Invalid or duplicate equipment instance"
+  },
+  {
+   "name": "stat property in trick slot",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "artifact": {
+       "uid": "a",
+       "id": "material:1841",
+       "artifact": {
+        "type": "Sword",
+        "tricks": [
+         "artifact_property:48"
+        ]
+       }
+      }
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Property type does not match"
+  },
+  {
+   "name": "same relic twice",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "relic": "relic:28"
+     },
+     {
+      "relic": {
+       "uid": "r",
+       "id": "relic:28"
+      }
+     },
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "The same Relic cannot be equipped twice"
+  },
+  {
+   "name": "relic rank 0",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "relic": {
+       "uid": "r",
+       "id": "relic:28",
+       "rank": 0
+      }
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Invalid Relic rank"
+  },
+  {
+   "name": "rank on a non-relic",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "base": {
+       "uid": "b",
+       "id": "creature:1101",
+       "rank": 2
+      }
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Invalid Relic rank"
+  },
+  {
+   "name": "four properties without legacy",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "g4",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:14",
+         "enchantment:0",
+         "enchantment:11",
+         "enchantment:1"
+        ]
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "A Spell Gem can have at most 3 properties"
+  },
+  {
+   "name": "four properties kept from the previous team",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "g4",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:14",
+         "enchantment:0",
+         "enchantment:11",
+         "enchantment:1"
+        ]
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [
+     {
+      "uid": "g4",
+      "id": "spell:310",
+      "properties": [
+       "enchantment:14",
+       "enchantment:0",
+       "enchantment:11",
+       "enchantment:1"
+      ]
+     }
+    ],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "expected": {
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "name": "Golden",
+    "notes": "",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "g4",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:14",
+         "enchantment:0",
+         "enchantment:11",
+         "enchantment:1"
+        ]
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "inventory": []
+   }
+  },
+  {
+   "name": "property on a creature",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "base": {
+       "uid": "b",
+       "id": "creature:1101",
+       "properties": [
+        "enchantment:11"
+       ]
+      }
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Properties require a Spell Gem"
+  },
+  {
+   "name": "variant required",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "v",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:7"
+        ]
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Choose the specific property variant"
+  },
+  {
+   "name": "variant chosen",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "v",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:7"
+        ],
+        "property_variants": {
+         "enchantment:7": 25
+        }
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "expected": {
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "name": "Golden",
+    "notes": "",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "v",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:7"
+        ],
+        "property_variants": {
+         "enchantment:7": 25
+        }
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "inventory": []
+   }
+  },
+  {
+   "name": "variant outside choices",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "v",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:7"
+        ],
+        "property_variants": {
+         "enchantment:7": 3
+        }
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Choose the specific property variant"
+  },
+  {
+   "name": "property incompatible with spell",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "p",
+        "id": "spell:399",
+        "properties": [
+         "enchantment:20"
+        ]
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Property is incompatible with this Spell"
+  },
+  {
+   "name": "two alternative potency stats",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "spells": [
+       {
+        "uid": "p",
+        "id": "spell:310",
+        "properties": [
+         "enchantment:20",
+         "enchantment:16"
+        ]
+       }
+      ]
+     },
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "inventory": [],
+    "character": {
+     "specialization": null,
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    }
+   },
+   "previous": null,
+   "error": "Choose only one alternative potency stat"
+  },
+  {
+   "name": "unknown specialization",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:nobody",
+     "perks": {},
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "error": "Specialization not found"
+  },
+  {
+   "name": "perk from another specialization",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:2",
+     "perks": {
+      "perk:140": 1
+     },
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "error": "Perk rank or specialization does not match"
+  },
+  {
+   "name": "perk rank above maximum",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:2",
+     "perks": {
+      "perk:92": 26
+     },
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "error": "Perk rank or specialization does not match"
+  },
+  {
+   "name": "ascension perk given a rank",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:27",
+     "perks": {
+      "perk:464": 1
+     },
+     "anointments": [],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "error": "Perk rank or specialization does not match"
+  },
+  {
+   "name": "six anointments over capacity 5",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:2",
+     "perks": {},
+     "anointments": [
+      "perk:140",
+      "perk:141",
+      "perk:142",
+      "perk:143",
+      "perk:144",
+      "perk:145"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "error": "Anointment Count exceeds character capacity"
+  },
+  {
+   "name": "Master of All raises capacity",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:27",
+     "perks": {
+      "perk:449": 1
+     },
+     "anointments": [
+      "perk:140",
+      "perk:141",
+      "perk:142",
+      "perk:143",
+      "perk:144",
+      "perk:145"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "expected": {
+    "character": {
+     "specialization": "spec:27",
+     "perks": {
+      "perk:449": 1
+     },
+     "anointments": [
+      "perk:140",
+      "perk:141",
+      "perk:142",
+      "perk:143",
+      "perk:144",
+      "perk:145"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "name": "Golden",
+    "notes": "",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "inventory": []
+   }
+  },
+  {
+   "name": "Royal ascension raises capacity",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:27",
+     "perks": {},
+     "anointments": [
+      "perk:140",
+      "perk:141",
+      "perk:142",
+      "perk:143",
+      "perk:144",
+      "perk:145"
+     ],
+     "ascended": true,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "expected": {
+    "character": {
+     "specialization": "spec:27",
+     "perks": {},
+     "anointments": [
+      "perk:140",
+      "perk:141",
+      "perk:142",
+      "perk:143",
+      "perk:144",
+      "perk:145"
+     ],
+     "ascended": true,
+     "all_ascended": false
+    },
+    "name": "Golden",
+    "notes": "",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "inventory": []
+   }
+  },
+  {
+   "name": "duplicate anointment",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:2",
+     "perks": {},
+     "anointments": [
+      "perk:142",
+      "perk:142"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "error": "Anointment duplicate or invalid"
+  },
+  {
+   "name": "non-anointment perk anointed",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {},
+     {},
+     {},
+     {},
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:2",
+     "perks": {},
+     "anointments": [
+      "perk:464"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "error": "This Perk cannot be used as an Anointment"
+  },
+  {
+   "name": "Pariah with Druid anointment passes",
+   "plan": {
+    "name": "Golden",
+    "slots": [
+     {
+      "base": "creature:1101"
+     },
+     {
+      "base": "creature:1106"
+     },
+     {
+      "base": "creature:435"
+     },
+     {
+      "base": "creature:1252"
+     },
+     {},
+     {}
+    ],
+    "notes": "",
+    "character": {
+     "specialization": "spec:37",
+     "perks": {},
+     "anointments": [
+      "perk:140"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "inventory": []
+   },
+   "previous": null,
+   "expected": {
+    "character": {
+     "specialization": "spec:37",
+     "perks": {},
+     "anointments": [
+      "perk:140"
+     ],
+     "ascended": false,
+     "all_ascended": false
+    },
+    "name": "Golden",
+    "notes": "",
+    "slots": [
+     {
+      "base": "creature:1101"
+     },
+     {
+      "base": "creature:1106"
+     },
+     {
+      "base": "creature:435"
+     },
+     {
+      "base": "creature:1252"
+     },
+     {},
+     {}
+    ],
+    "inventory": []
+   }
+  }
+ ]
+}

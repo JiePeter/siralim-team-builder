@@ -1,0 +1,1 @@
+Frozen contract fixtures recorded from the retired Python implementation of team validation, build effects and discovery; they are no longer regenerated, so a new data release needs new expected outputs reviewed by hand.

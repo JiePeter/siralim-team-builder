@@ -1,0 +1,351 @@
+{
+ "properties": {
+  "Attack": {
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Defense": {
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Health": {
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Intelligence": {
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Speed": {
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Attack / Defense": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Attack / Intelligence": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Attack / Speed": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Defense / Speed": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Health / Attack": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Health / Defense": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Health / Intelligence": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Health / Speed": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Intelligence / Defense": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Intelligence / Speed": {
+   "base": 7,
+   "mult": 0.6,
+   "unit": "%"
+  },
+  "Attack Damage": {
+   "base": 10,
+   "mult": 1.5,
+   "unit": "%"
+  },
+  "Spell Potency": {
+   "base": 10,
+   "mult": 1.5,
+   "unit": "%"
+  },
+  "Critical Chance": {
+   "base": 5,
+   "mult": 0.5,
+   "unit": "%"
+  },
+  "Damage Reduction": {
+   "base": 5,
+   "mult": 0.5,
+   "unit": "%"
+  },
+  "Dodge Chance": {
+   "base": 5,
+   "mult": 0.5,
+   "unit": "%"
+  },
+  "Spell Gem Slots": {
+   "base": 1,
+   "div": 25,
+   "unit": "flat"
+  },
+  "Chaos Strength": {
+   "base": 15,
+   "mult": 1,
+   "cap": 80,
+   "unit": "%"
+  },
+  "Death Strength": {
+   "base": 15,
+   "mult": 1,
+   "cap": 80,
+   "unit": "%"
+  },
+  "Life Strength": {
+   "base": 15,
+   "mult": 1,
+   "cap": 80,
+   "unit": "%"
+  },
+  "Nature Strength": {
+   "base": 15,
+   "mult": 1,
+   "cap": 80,
+   "unit": "%"
+  },
+  "Sorcery Strength": {
+   "base": 15,
+   "mult": 1,
+   "cap": 80,
+   "unit": "%"
+  },
+  "Agile On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Arcane On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Barrier On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Berserk On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Bleeding On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Blighted On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Blind On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Bomb On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Burning On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Confused On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Cursed On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Defensive On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Disarmed On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Feared On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Frozen On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Immune On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Invisible On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Leeching On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Mending On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Poisoned On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Proficient On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Protected On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Rebirth On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Repelling On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Savage On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Scorned On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Shelled On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Silenced On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Sleep On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Snared On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Splashing On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Stone On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Taunting On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Vulnerable On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Warded On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  },
+  "Weak On Damage": {
+   "base": 2.5,
+   "mult": 0.35,
+   "unit": "%"
+  }
+ },
+ "primary": {
+  "Helmet": {
+   "stat": "Health",
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Sword": {
+   "stat": "Attack",
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Staff": {
+   "stat": "Intelligence",
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Shield": {
+   "stat": "Defense",
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  },
+  "Boots": {
+   "stat": "Speed",
+   "base": 10,
+   "mult": 1,
+   "unit": "%"
+  }
+ }
+}

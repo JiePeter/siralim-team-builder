@@ -1,0 +1,164 @@
+/* Design tokens. Breakpoints: phone ≤767px, mid 768–1099px,
+   wide ≥1100px; custom properties cannot be used in media queries, so each responsive token is
+   redefined in the media blocks at the end. */
+
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Silkscreen";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/silkscreen-400.woff2") format("woff2");
+}
+
+:root {
+  color-scheme: dark;
+
+  --ground: #0a0c16;
+  --cell: #181c31;
+  --raised: #272d4b;
+  --raised-hover: #323a5e;
+  --line: #2f3658;
+  --strong: #4a5480;
+  --text: #e4eaf7;
+  --muted: #9aa4c4;
+  --accent: #ffd25e;
+  --accent-hover: #ffdc80;
+  --on-accent: #0a0c16;
+
+  /* Component kinds: plate frames, tray group headings and slot field labels. */
+  --kind-creature: #e8836b;
+  --kind-trait: #b79cff;
+  --kind-material: #76c893;
+  --kind-relic: #f08fc0;
+  --kind-character: #6eb4ff;
+
+  --danger-ground: #2a1418;
+  --danger-line: #a8363a;
+  --danger-rule: #57232a;
+  --danger-hover: #3a1a1f;
+  --danger-mark: #e5534b;
+  --danger-text: #f2958b;
+
+  /* Class colours mark a component's class on its plate frame. */
+  --class-nature: #5fbf6f;
+  --class-sorcery: #b33ecd;
+  --class-death: #616186;
+  --class-chaos: #e5534b;
+  --class-life: #e2c24a;
+  --selection: #2f63b8;
+  /* Drag affordances: grips, open drop targets and live drop outlines. */
+  --drop-line: #6f86d9;
+
+  /* Placed: a component already in the tray or equipped. */
+  --placed: #5ce1e6;
+  --placed-ground: #10282f;
+  --placed-line: #2c7f86;
+
+  --text-font: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --pixel-font: "Silkscreen", var(--text-font);
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-15: 15px;
+  --fs-18: 18px;
+  --fs-24: 24px;
+  --fs-32: 32px;
+
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  --header-height: 56px;
+  --tabbar-height: 0px;
+  /* Control heights: one per kind of control. */
+  --control: 36px; /* default and icon keys, chips, menu rows */
+  --control-compact: 32px; /* row actions beside a name */
+  --field: 44px; /* inputs, selects, drop targets, primary keys, checkbox rows */
+  --row: 48px; /* choice rows, panel heads, the pinned dialog action */
+  --plate: 64px;
+  --tray-width: 300px;
+  --placing-bar: 48px;
+  --gutter: 24px;
+
+  --elevation: 0 12px 32px rgb(5 7 14 / 0.55);
+
+  /* Control atoms: notched corners. */
+  --notch: polygon(
+    1px 0,
+    calc(100% - 1px) 0,
+    calc(100% - 1px) 1px,
+    100% 1px,
+    100% calc(100% - 1px),
+    calc(100% - 1px) calc(100% - 1px),
+    calc(100% - 1px) 100%,
+    1px 100%,
+    1px calc(100% - 1px),
+    0 calc(100% - 1px),
+    0 1px,
+    1px 1px
+  );
+  --backdrop: rgb(6 8 16 / 0.72);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --icon-trash: url("pixelarticons/svg/trash.svg");
+  --icon-copy: url("pixelarticons/svg/copy.svg");
+  --icon-replace: url("pixelarticons/svg/repeat.svg");
+  --icon-filter: url("pixelarticons/svg/sliders-horizontal.svg");
+  --icon-share: url("pixelarticons/svg/share.svg");
+  --icon-undo: url("pixelarticons/svg/undo.svg");
+  --icon-team: url("pixelarticons/svg/users.svg");
+  --icon-tray: url("pixelarticons/svg/backpack.svg");
+  --icon-close: url("pixelarticons/svg/close.svg");
+  --icon-left: url("pixelarticons/svg/chevron-left.svg");
+  --icon-right: url("pixelarticons/svg/chevron-right.svg");
+  --icon-down: url("pixelarticons/svg/chevron-down.svg");
+  --icon-plus: url("pixelarticons/svg/plus.svg");
+  --icon-minus: url("pixelarticons/svg/minus.svg");
+  --icon-search: url("pixelarticons/svg/search.svg");
+  --icon-more: url("pixelarticons/svg/more-horizontal.svg");
+  --icon-external: url("pixelarticons/svg/external-link.svg");
+  --icon-check: url("pixelarticons/svg/check.svg");
+  --icon-grip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-.5 -.5 8 8' shape-rendering='crispEdges'%3E%3Cpath d='M2 1h1v1h-1zM4 1h1v1h-1zM2 3h1v1h-1zM4 3h1v1h-1zM2 5h1v1h-1zM4 5h1v1h-1z'/%3E%3C/svg%3E");
+  --icon-up: url("pixelarticons/svg/chevron-up.svg");
+  --icon-eye: url("pixelarticons/svg/eye.svg");
+  --check-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-.5 -.5 8 8' shape-rendering='crispEdges'%3E%3Cpath fill='%230f1220' d='M6 1h1v1h-1zM5 2h1v1h-1zM4 3h1v1h-1zM0 3h1v1h-1zM1 4h1v1h-1zM3 4h1v1h-1zM2 5h1v1h-1z'/%3E%3C/svg%3E");
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-.5 -.5 8 8' shape-rendering='crispEdges'%3E%3Cpath fill='%238f99ba' d='M1 2h1v1h-1zM5 2h1v1h-1zM2 3h1v1h-1zM4 3h1v1h-1zM3 4h1v1h-1z'/%3E%3C/svg%3E");
+}
+
+@media (pointer: coarse) {
+  :root {
+    --control: 44px;
+    --control-compact: 44px;
+  }
+}
+@media (max-width: 767px) {
+  :root {
+    --header-height: 48px;
+    --tabbar-height: calc(56px + env(safe-area-inset-bottom));
+    --control: 44px;
+    --control-compact: 44px;
+    --gutter: 16px;
+  }
+}
+@media (min-width: 1100px) {
+  :root {
+    --gutter: 32px;
+  }
+}

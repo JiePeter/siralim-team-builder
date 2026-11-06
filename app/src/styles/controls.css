@@ -1,0 +1,675 @@
+/* Icons are pixelarticons glyphs drawn as masks at 24px; their colour follows the text. */
+.icon {
+  display: inline-block;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  vertical-align: -7px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / 24px 24px no-repeat;
+  mask: var(--icon) center / 24px 24px no-repeat;
+}
+.icon-close {
+  --icon: var(--icon-close);
+}
+.icon-left {
+  --icon: var(--icon-left);
+}
+.icon-right {
+  --icon: var(--icon-right);
+}
+.icon-plus {
+  --icon: var(--icon-plus);
+}
+.icon-minus {
+  --icon: var(--icon-minus);
+}
+.icon-search {
+  --icon: var(--icon-search);
+}
+.icon-more {
+  --icon: var(--icon-more);
+}
+.icon-external {
+  --icon: var(--icon-external);
+}
+.icon-check {
+  --icon: var(--icon-check);
+}
+.icon-up {
+  --icon: var(--icon-up);
+}
+.icon-down {
+  --icon: var(--icon-down);
+}
+.icon-eye {
+  --icon: var(--icon-eye);
+}
+.icon-trash {
+  --icon: var(--icon-trash);
+}
+.icon-copy {
+  --icon: var(--icon-copy);
+}
+.icon-replace {
+  --icon: var(--icon-replace);
+}
+.icon-filter {
+  --icon: var(--icon-filter);
+}
+.icon-share {
+  --icon: var(--icon-share);
+}
+.icon-undo {
+  --icon: var(--icon-undo);
+}
+.icon-team {
+  --icon: var(--icon-team);
+}
+.icon-tray {
+  --icon: var(--icon-tray);
+}
+
+/* Placed: where a component already sits in the tray or the team. */
+.added-mark {
+  clip-path: var(--notch);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
+  padding: 1px 7px 1px 5px;
+  background: var(--placed-ground);
+  border: 1px solid var(--placed-line);
+  color: var(--placed);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+  white-space: nowrap;
+}
+button.added-mark,
+a.added-mark {
+  min-height: var(--control);
+  padding: 0 12px 0 10px;
+  font-size: var(--fs-13);
+  cursor: pointer;
+}
+button.added-mark {
+  background-color: var(--placed-ground);
+  border-color: var(--placed-line);
+  color: var(--placed);
+  --focus-ink: var(--placed);
+}
+button.added-mark:hover,
+a.added-mark:hover {
+  background-color: var(--placed-ground);
+  border-color: var(--placed);
+  color: var(--placed);
+}
+
+/* Control atoms are flat pixel keys: 1px notched corners and a 1px outline, state shown by fill and
+   line. Focus draws pixel corner brackets inside.
+   The brackets follow each element's --focus-ink, so they are declared where they are used, and
+   component styles set the background shorthand, so focus applies them as important. */
+button,
+.file-button,
+summary.icon-button,
+input,
+select,
+textarea {
+  --bracket: linear-gradient(var(--focus-ink), var(--focus-ink));
+  --brackets:
+    var(--bracket), var(--bracket), var(--bracket), var(--bracket), var(--bracket), var(--bracket),
+    var(--bracket), var(--bracket);
+  --brackets-at:
+    left 2px top 2px, left 2px top 2px, right 2px top 2px, right 2px top 2px, left 2px bottom 2px,
+    left 2px bottom 2px, right 2px bottom 2px, right 2px bottom 2px;
+  --brackets-size: 6px 2px, 2px 6px, 6px 2px, 2px 6px, 6px 2px, 2px 6px, 6px 2px, 2px 6px;
+}
+button,
+.file-button,
+summary.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--control);
+  margin: 0;
+  padding: 0 14px;
+  background-color: var(--raised);
+  color: var(--text);
+  border: 1px solid transparent;
+  border-radius: 0;
+  font: inherit;
+  font-size: var(--fs-15);
+  line-height: 1.2;
+  cursor: pointer;
+  clip-path: var(--notch);
+  --focus-ink: var(--text);
+}
+/* A touch screen keeps :hover on whatever was tapped last. */
+@media (hover: hover) {
+  button:hover,
+  .file-button:hover,
+  summary.icon-button:hover {
+    background-color: var(--raised-hover);
+    border-color: var(--strong);
+  }
+}
+button:active:not(:disabled),
+summary.icon-button:active {
+  background-color: var(--ground);
+  border-color: var(--text);
+}
+button:focus-visible,
+.file-button:focus-within,
+summary.icon-button:focus-visible {
+  outline: none;
+  border-color: var(--focus-ink);
+  background-image: var(--brackets) !important;
+  background-position: var(--brackets-at) !important;
+  background-size: var(--brackets-size) !important;
+  background-repeat: no-repeat !important;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+button:disabled:hover {
+  background-color: var(--raised);
+  border-color: transparent;
+}
+button[aria-busy="true"] {
+  cursor: progress;
+}
+button[aria-busy="true"]::after {
+  content: "";
+  width: 24px;
+  height: 24px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-more) left center / 24px 24px no-repeat;
+  mask: var(--icon-more) left center / 24px 24px no-repeat;
+  animation: busy 0.6s steps(3, jump-none) infinite;
+}
+@keyframes busy {
+  from {
+    -webkit-mask-size: 8px 24px;
+    mask-size: 8px 24px;
+  }
+  to {
+    -webkit-mask-size: 24px 24px;
+    mask-size: 24px 24px;
+  }
+}
+/* A short list of actions dropped below the control that opened it; its parent is positioned. */
+.menu-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 6;
+  display: grid;
+  min-width: 176px;
+  padding: 4px;
+  background: var(--raised);
+  border: 1px solid var(--strong);
+  box-shadow: var(--elevation);
+}
+.menu-panel > button {
+  justify-content: flex-start;
+  text-align: left;
+  width: 100%;
+  min-height: var(--control);
+  margin: 0;
+  background: none;
+  border: 0;
+  color: var(--text);
+  font-size: var(--fs-15);
+}
+.menu-panel > button:hover {
+  background: var(--raised-hover);
+}
+/* Empties a whole area after a confirmation; sits at the end of the area's heading. */
+button.clear {
+  width: var(--control);
+  min-width: var(--control);
+  height: var(--control);
+  margin-left: auto;
+  padding: 0;
+  background-color: transparent;
+  color: var(--muted);
+}
+button.clear:hover {
+  color: var(--text);
+}
+button.primary {
+  min-height: var(--field);
+  background-color: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+  font-weight: 700;
+  --focus-ink: var(--on-accent);
+}
+button.primary:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+button.primary:active:not(:disabled) {
+  background-color: var(--accent);
+  border-color: var(--on-accent);
+}
+button.primary:focus-visible {
+  border-color: var(--accent);
+}
+button.primary:disabled:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+/* Pressed toggles (chips, segmented choices) stay down: ground fill, accent line. */
+button[aria-pressed="true"]:not(.object-cell) {
+  background-color: var(--ground);
+  border-color: var(--accent);
+  color: var(--text);
+}
+.icon-button {
+  width: var(--control);
+  min-width: var(--control);
+  height: var(--control);
+  padding: 0;
+  flex: none;
+}
+/* A stepper is one key split by 1px rules. */
+.stepper {
+  display: inline-flex;
+}
+.stepper > button + button {
+  margin-left: -1px;
+}
+
+/* Text-like buttons, cells, list rows and bar segments are not keys. */
+.link,
+button.object-cell,
+.choice,
+.drop-target {
+  clip-path: none;
+}
+.link:active {
+  background-color: transparent;
+}
+button.object-cell:active {
+  background-color: var(--raised);
+  border-color: var(--strong);
+}
+.choice:active,
+.drop-target:active {
+  background-color: var(--raised);
+}
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--text);
+  text-align: left;
+  font-weight: 700;
+  text-decoration: none;
+}
+.link:hover {
+  background: none;
+  text-decoration: underline;
+  text-decoration-color: var(--strong);
+  text-underline-offset: 3px;
+}
+
+details {
+  padding: 0;
+}
+summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: var(--fs-13);
+  cursor: pointer;
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+summary::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-right) center / 24px 24px no-repeat;
+  mask: var(--icon-right) center / 24px 24px no-repeat;
+}
+details[open] > summary::before {
+  -webkit-mask-image: var(--icon-down);
+  mask-image: var(--icon-down);
+}
+summary:hover {
+  color: var(--text);
+}
+
+.pill {
+  clip-path: var(--notch);
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  margin: 0 6px 4px 0;
+  padding: 1px 7px;
+  background: var(--raised);
+  color: var(--muted);
+  font-size: var(--fs-12);
+  line-height: 1.4;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+label {
+  display: block;
+  margin: 16px 0 6px;
+  color: var(--muted);
+  font-size: var(--fs-13);
+}
+/* Fields are ground wells: notched like keys, outlined with the rule line. */
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: var(--field);
+  padding: 0 12px;
+  background-color: var(--ground);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  font: inherit;
+  font-size: var(--fs-15);
+  caret-color: var(--text);
+  caret-shape: block;
+  clip-path: var(--notch);
+  --focus-ink: var(--text);
+}
+textarea {
+  display: block;
+  padding: 12px;
+  resize: vertical;
+  line-height: 1.5;
+}
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--strong);
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--focus-ink);
+  background-image: var(--brackets) !important;
+  background-position: var(--brackets-at) !important;
+  background-size: var(--brackets-size) !important;
+  background-repeat: no-repeat !important;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: var(--danger-line);
+  --focus-ink: var(--danger-text);
+}
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+select {
+  appearance: none;
+  padding-right: 36px;
+  background-image: var(--select-chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+select:focus-visible {
+  background-image: var(--select-chevron), var(--brackets) !important;
+  background-position:
+    right 10px center,
+    var(--brackets-at) !important;
+  background-size:
+    16px 16px,
+    var(--brackets-size) !important;
+}
+option,
+optgroup {
+  background: var(--cell);
+  color: var(--text);
+}
+/* Where the browser lets the open list be styled, it becomes a pixel popover like the menus. */
+@supports (appearance: base-select) {
+  select,
+  ::picker(select) {
+    appearance: base-select;
+  }
+  select {
+    display: flex;
+    align-items: center;
+  }
+  select::picker-icon {
+    display: none;
+  }
+  ::picker(select) {
+    margin-top: 4px;
+    padding: 4px;
+    background: var(--raised);
+    border: 1px solid var(--strong);
+    color: var(--text);
+    box-shadow: var(--elevation);
+  }
+  option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: var(--control);
+    padding: 6px 10px;
+    background: none;
+    font-size: var(--fs-15);
+  }
+  option:hover,
+  option:focus-visible {
+    background: var(--raised-hover);
+    outline: none;
+  }
+  option:checked {
+    font-weight: 700;
+  }
+  option::checkmark {
+    content: "";
+    order: 1;
+    width: 24px;
+    height: 24px;
+    margin-left: auto;
+    background-color: currentColor;
+    -webkit-mask: var(--icon-check) center / 24px 24px no-repeat;
+    mask: var(--icon-check) center / 24px 24px no-repeat;
+  }
+  optgroup {
+    background: none;
+  }
+  optgroup legend {
+    padding: 10px 10px 4px;
+    color: var(--muted);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+input[type="checkbox"] {
+  appearance: none;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  flex: none;
+  border-color: var(--strong);
+  cursor: pointer;
+}
+input[type="checkbox"]:checked {
+  background-color: var(--text);
+  border-color: var(--text);
+  background-image: var(--check-ink);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px 16px;
+}
+input[type="checkbox"]:focus-visible {
+  border-color: var(--text);
+  background-image: var(--brackets) !important;
+  background-position: var(--brackets-at) !important;
+  background-size: var(--brackets-size) !important;
+  background-repeat: no-repeat !important;
+}
+input[type="checkbox"]:checked:focus-visible {
+  --focus-ink: var(--ground);
+  background-image: var(--check-ink), var(--brackets) !important;
+  background-position: center, var(--brackets-at) !important;
+  background-size:
+    16px 16px,
+    var(--brackets-size) !important;
+}
+input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--danger-ground);
+  border: 1px solid var(--danger-line);
+  color: var(--danger-text);
+  font-size: var(--fs-13);
+}
+.warning::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: var(--danger-mark);
+}
+
+.cell-index,
+.number {
+  font: 400 16px / 1 var(--pixel-font);
+  font-variant-numeric: tabular-nums;
+}
+.cell-index {
+  color: var(--muted);
+}
+
+/* An empty field is a sunk well; the outline appears only while something can be placed in it. */
+.drop-target {
+  justify-content: flex-start;
+  width: 100%;
+  min-height: var(--field);
+  padding: 0 12px;
+  background: var(--ground);
+  color: var(--muted);
+  font-size: var(--fs-15);
+}
+.drop-target:hover {
+  background: var(--raised);
+  color: var(--text);
+}
+.drop-target .icon {
+  color: var(--accent);
+}
+.drop-target.next .icon {
+  color: inherit;
+}
+.drop-target.next {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+  --focus-ink: var(--on-accent);
+}
+.drop-target.next:hover {
+  background: var(--accent-hover);
+}
+.choice {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--row);
+  padding: 8px 12px;
+  background: var(--cell);
+  text-align: left;
+}
+.choice + .choice {
+  margin-top: -1px;
+}
+.choice:hover {
+  position: relative;
+  background: var(--raised);
+}
+.choice-action {
+  background: transparent;
+  color: var(--muted);
+  border-style: dashed;
+}
+.choice-action:hover {
+  color: var(--text);
+}
+:not(.choice-action) + .choice-action,
+.empty + .choice-action {
+  margin-top: 12px;
+}
+.choice-action + .choice-action {
+  margin-top: 8px;
+}
+
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button[aria-busy="true"]::after {
+    animation: none;
+  }
+}
+
+/* Dialog bodies: choice lists and editors, with the dialog's one primary action pinned below. */
+.choices {
+  padding: 16px;
+}
+.choices > label:first-child {
+  margin-top: 0;
+}
+@media (max-width: 767px) {
+  .choices {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+}

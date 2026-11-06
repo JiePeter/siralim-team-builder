@@ -1,0 +1,6274 @@
+{
+ "version": "0.3.0",
+ "game_version": "2.0.38",
+ "cases": [
+  {
+   "name": "no input",
+   "expected": {
+    "items": [
+     {
+      "id": "relic:28",
+      "kind": "relic",
+      "name": "5740-NG, Impenetrable Plate of 4080",
+      "description": "",
+      "image": "/assets/siralim/images/relic/5740NG/relic.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1182",
+      "kind": "trait",
+      "name": "A Gift For You",
+      "description": "This creature's attacks deal 75% more damage and afflict the target with Bomb.",
+      "image": "/assets/siralim/images/creature/ToxdwellerSlasher/battle.png",
+      "matched_names": [
+       "Toxdweller Slasher",
+       "Slasher Poison"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:308",
+      "kind": "trait",
+      "name": "Abaddon's Boon",
+      "description": "This creature can't cast spells manually. After this creature defends, it casts one of its spells that can target all your creatures.",
+      "image": "/assets/siralim/images/creature/CerberusGatewatcher/battle.png",
+      "matched_names": [
+       "Cerberus Gatewatcher",
+       "Gatewatcher Chain"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:656",
+      "kind": "perk",
+      "name": "Abandoned Altar · Antiquarian",
+      "description": "Your creatures' Relics gain 100% more benefit from Reliquary Upgrades.",
+      "image": "/assets/siralim/images/perk/AbandonedAltar.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1128",
+      "kind": "trait",
+      "name": "Abation",
+      "description": "After this creature attacks, it steals 20% of the target's attack and intelligence and gives it to your creatures.",
+      "image": "/assets/siralim/images/creature/LunarHemomancer/battle.png",
+      "matched_names": [
+       "Lunar Hemomancer",
+       "Lunar Blood Vial"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:17",
+      "kind": "trait",
+      "name": "Abnegation",
+      "description": "After your creatures are healed, a random enemy takes damage equal to 50% of the amount of health recovered. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ClairvoyantSpirit/battle.png",
+      "matched_names": [
+       "Clairvoyant Spirit",
+       "Clairvoyant Fluff"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:373",
+      "kind": "trait",
+      "name": "Abomination",
+      "description": "After this creature gains stats, your other creatures that don't have this trait gain 25% of those stats as well.",
+      "image": "/assets/siralim/images/creature/GlutinousSlime/battle.png",
+      "matched_names": [
+       "Glutinous Slime",
+       "Glutinous Ooze"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:901",
+      "kind": "trait",
+      "name": "Absence of Light",
+      "description": "After an enemy is healed, this creature decreases their lowest stat by 25%.",
+      "image": "/assets/siralim/images/creature/FogSpirit/battle.png",
+      "matched_names": [
+       "Fog Spirit",
+       "Fog Fluff"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:399",
+      "kind": "spell",
+      "name": "Absolute Corruption",
+      "description": "Target's buffs are converted to random debuffs.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:635",
+      "kind": "spell",
+      "name": "Absolute Focus",
+      "description": "Target's next attack deals 100% more damage. This effect does not stack.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1202",
+      "kind": "trait",
+      "name": "Absolute Power",
+      "description": "This creature's attacks deal 5% more damage for each spell that has been cast by all creatures in the current battle.",
+      "image": "/assets/siralim/images/creature/TopazCarbuncle/battle.png",
+      "matched_names": [
+       "Topaz Carbuncle",
+       "Topaz Trinket"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:469",
+      "kind": "trait",
+      "name": "Absolution",
+      "description": "After an enemy is afflicted with a debuff, they lose 15% attack and intelligence. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/DryadVindicator/battle.png",
+      "matched_names": [
+       "Dryad Vindicator",
+       "Vindicator Dew"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:422",
+      "kind": "trait",
+      "name": "Absorption",
+      "description": "After an enemy is healed, this creature gains Maximum health equal to 30% of the amount healed.",
+      "image": "/assets/siralim/images/creature/StoneGiant/battle.png",
+      "matched_names": [
+       "Stone Giant",
+       "Stone Boulder"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:310",
+      "kind": "spell",
+      "name": "Abundance",
+      "description": "Your creatures recover a small amount of Health and gain a small amount of Attack, Intelligence, Defense, and Speed.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1789",
+      "kind": "trait",
+      "name": "Abyss Orbs",
+      "description": "If an enemy has taken at least 2 turns, they are afflicted with a random debuff at the start and end of their turn. This trait does not stack.",
+      "image": "/assets/siralim/images/item/material/DarkStick.png",
+      "matched_names": [
+       "Dark Stick"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1959",
+      "kind": "trait",
+      "name": "Abyssal Waters",
+      "description": "As long as your creatures haven't gained or lost stats, they have 75% more stats (other than health). This trait does not stack.",
+      "image": "/assets/siralim/images/creature/AbyssalKraken/battle.png",
+      "matched_names": [
+       "Abyssal Kraken",
+       "Ghastly Sucker"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1821",
+      "kind": "trait",
+      "name": "Accelerated Harvest",
+      "description": "After your creatures attack, they have a 20% chance to afflict the target with a random debuff. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/NihilistSealer/battle.png",
+      "matched_names": [
+       "Nihilist Sealer",
+       "Ink of Eternity"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:590",
+      "kind": "perk",
+      "name": "Acclimated Armaments · Gladiator",
+      "description": "Your creatures' Arsenal Spells are 5% more potent for each time they've cast an Arsenal Spell in the current battle.",
+      "image": "/assets/siralim/images/perk/AcclimatedArmaments.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:333",
+      "kind": "perk",
+      "name": "Acclimatization · Grovetender",
+      "description": "After one of your creatures is afflicted with a debuff, your Herbling casts Nutrition on it. This perk can activate once per turn.\n\nNutrition: Removes one of the target's debuffs. If a debuff was successfully removed, heal the target for a large amount of health.",
+      "image": "/assets/siralim/images/perk/Acclimatization.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:435",
+      "kind": "perk",
+      "name": "Accumulation · Windrunner",
+      "description": "At the start of your creatures' turns, they gain 1% per rank speed, plus additional speed equal to 5% of the amount of speed they've gained in the current battle.",
+      "image": "/assets/siralim/images/perk/Accumulation.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1170",
+      "kind": "trait",
+      "name": "Acid Body",
+      "description": "After this creature is attacked, it afflicts the enemy with Disarmed and Seals one of their Spell Gems.",
+      "image": "/assets/siralim/images/creature/Blobbarian/battle.png",
+      "matched_names": [
+       "Blobbarian",
+       "Blobbarian Gel"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:395",
+      "kind": "spell",
+      "name": "Acid Bomb",
+      "description": "Target takes a small amount of damage, and its Bomb detonates.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:512",
+      "kind": "spell",
+      "name": "Acid Breath",
+      "description": "Target is afflicted with Poisoned and Burning.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:424",
+      "kind": "spell",
+      "name": "Acid Rain",
+      "description": "Enemies take a moderate amount of damage and lose a large amount of Defense.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:154",
+      "kind": "perk",
+      "name": "Adaptation · Druid",
+      "description": "At the start of battle, your creatures gain a random buff for each creature missing from your group.",
+      "image": "/assets/siralim/images/perk/Adaptation.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1686",
+      "kind": "trait",
+      "name": "Adaptive Tactics",
+      "description": "Your creatures' attacks ignore 5% of the enemies' Defense (up to 50%) for each time a creature died in the current battle. This trait does not stack.",
+      "image": "/assets/siralim/images/item/material/WeaponKit.png",
+      "matched_names": [
+       "Weapon Kit"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2167",
+      "kind": "trait",
+      "name": "Add to the Mix",
+      "description": "After an ally casts a spell of a different class from the last spell cast in the current battle, this creature casts one of its spells.",
+      "image": "/assets/siralim/images/creature/SpelljugglerTrapezist/battle.png",
+      "matched_names": [
+       "Spelljuggler Trapezist",
+       "Patched Ball"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:492",
+      "kind": "perk",
+      "name": "Addictive Effect · Toxicologist",
+      "description": "Your creatures deal additional damage with attacks and spells equal to 4% per rank of the potency of their Poisoned debuff.",
+      "image": "/assets/siralim/images/perk/AddictiveEffect.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2016",
+      "kind": "trait",
+      "name": "Adept Wizarding",
+      "description": "Your creatures can equip 1 additional Spell Gem and their spells are 30% more potent. This trait does not stack.",
+      "image": "/assets/siralim/images/item/material/AdeptsToolBag.png",
+      "matched_names": [
+       "Adept's Tool Bag"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:425",
+      "kind": "trait",
+      "name": "Admire the Gods",
+      "description": "When this creature takes damage, and the damage exceeds 25% of its Maximum health, reduce the damage to 25% of its Maximum health. The amount of damage prevented cannot exceed 200% of this creature's Maximum health.",
+      "image": "/assets/siralim/images/creature/CosmicGiant/battle.png",
+      "matched_names": [
+       "Cosmic Giant",
+       "Cosmic Boulder"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:87",
+      "kind": "perk",
+      "name": "Admonish · Inquisitor",
+      "description": "At the start of battle, enemy Sorcery creatures are afflicted with Silenced and lose 30% intelligence.\n\nCreatures with Silenced cannot cast spells. Overwrites Scorned.",
+      "image": "/assets/siralim/images/perk/Admonish.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2188",
+      "kind": "trait",
+      "name": "Adoration",
+      "description": "At the end of each enemy's turn, they cast a healing Spell Gem equipped by this creature in your favor. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/MarionetteEvangelist/battle.png",
+      "matched_names": [
+       "Marionette Evangelist",
+       "Vestment Lace"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2177",
+      "kind": "trait",
+      "name": "Adoring Fans",
+      "description": "After an enemy with Mania heals your creatures, your creatures gain their highest stat (other than health) equal to 10% of the amount healed. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/OperaticDenizen/battle.png",
+      "matched_names": [
+       "Operatic Denizen",
+       "Opera Glasses"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:410",
+      "kind": "spell",
+      "name": "Adrenaline Rush",
+      "description": "Caster Attacks random enemies 3 times. Each attack deals 15% normal damage.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:286",
+      "kind": "perk",
+      "name": "Aegis · Rune Knight",
+      "description": "Your creatures take 1% per rank less damage for each time your creatures cast Rune of Lua in the current battle.",
+      "image": "/assets/siralim/images/perk/Aegis.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:445",
+      "kind": "perk",
+      "name": "Aeroforged · Windrunner",
+      "description": "Your creatures gain 3% per rank more benefit from their Artifacts' Stat Slots (other than health).",
+      "image": "/assets/siralim/images/perk/Aeroforged.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1112",
+      "kind": "trait",
+      "name": "Aether Eyes",
+      "description": "Your creatures' Repelling buffs now have a 35% chance to ignore damage from attacks. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/DemonicVoidlord/battle.png",
+      "matched_names": [
+       "Demonic Voidlord",
+       "Devil Heart"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:1",
+      "kind": "spell",
+      "name": "Affliction",
+      "description": "Enemies are afflicted with a random debuff.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:398",
+      "kind": "trait",
+      "name": "Affluence",
+      "description": "This creature deals 50% more damage for each permanent Sorcery Spell Gem it has greater than its target. Maximum of 300% bonus damage.",
+      "image": "/assets/siralim/images/creature/GladeWatcher/battle.png",
+      "matched_names": [
+       "Glade Watcher",
+       "Glade Tears"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:189",
+      "kind": "trait",
+      "name": "Afterlife",
+      "description": "After this creature dies for the first time in battle, it resurrects with 50% health, and gains 50% attack, intelligence, defense, and speed.",
+      "image": "/assets/siralim/images/creature/RoofstalkerWight/battle.png",
+      "matched_names": [
+       "Roofstalker Wight",
+       "Roofstalker Rattle"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:2",
+      "kind": "spell",
+      "name": "Aftermath",
+      "description": "Caster Attacks random enemies once for each turn the caster has taken in the current battle. Maximum of 10 attacks.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "spell:523",
+      "kind": "spell",
+      "name": "Aggravate",
+      "description": "Enemies with Cursed Attack the caster for 25% normal damage.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1090",
+      "kind": "trait",
+      "name": "Aggravated Illness",
+      "description": "Enemies take 50% more damage from Blighted. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/LugubriousShambler/battle.png",
+      "matched_names": [
+       "Lugubrious Shambler",
+       "Lugubrious Hook"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:283",
+      "kind": "perk",
+      "name": "Aggression · Rune Knight",
+      "description": "Your creatures deal 1% per rank more damage with attacks for each time your creatures cast Rune of Cor in the current battle.",
+      "image": "/assets/siralim/images/perk/Aggression.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:369",
+      "kind": "trait",
+      "name": "Agility Aura",
+      "description": "Your creatures have a 40% greater chance to dodge attacks. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/PhaseMarauder/battle.png",
+      "matched_names": [
+       "Phase Marauder",
+       "Marauder Prism"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:221",
+      "kind": "trait",
+      "name": "Agitation",
+      "description": "This creature deals 80% more damage with attacks for each of its debuffs.",
+      "image": "/assets/siralim/images/creature/FerociousFiend/battle.png",
+      "matched_names": [
+       "Ferocious Fiend",
+       "Ferocious Tooth"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2045",
+      "kind": "trait",
+      "name": "Agonizing Entrapment",
+      "description": "After this creature takes damage, the enemy is afflicted with Snared and Bleeding. Enemies with Snared take 50% more damage from Bleeding. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/IronMaiden/battle.png",
+      "matched_names": [
+       "Iron Maiden",
+       "Bloody Spike"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:135",
+      "kind": "trait",
+      "name": "Aimed Shot",
+      "description": "This creature's attacks deal 200% more damage to targets that are at 100% health.",
+      "image": "/assets/siralim/images/creature/SkeletonMarksman/battle.png",
+      "matched_names": [
+       "Skeleton Marksman",
+       "Marksman Bone"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1769",
+      "kind": "trait",
+      "name": "Alchemist's Buffer",
+      "description": "This creature takes 50% less damage from spells and 50% more damage from attacks. This creature has 50% more Intelligence and 50% less Attack.",
+      "image": "/assets/siralim/images/item/material/Corruptium.png",
+      "matched_names": [
+       "Corruptium"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1847",
+      "kind": "trait",
+      "name": "Alchemist's Fury",
+      "description": "After this creature attacks, it afflicts the target with Blind and Confused.",
+      "image": "/assets/siralim/images/creature/ObsceneBlight/battle.png",
+      "matched_names": [
+       "Obscene Blight",
+       "Corrupted Geode"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:990",
+      "kind": "trait",
+      "name": "Alcoholism",
+      "description": "After an enemy is afflicted with a debuff, they have a 10% chance to be sent to the bottom of the Timeline. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/Ryetrap/battle.png",
+      "matched_names": [
+       "Ryetrap",
+       "Bottle of Ryetrap"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:87",
+      "kind": "trait",
+      "name": "All As One",
+      "description": "After your Griffons receive a buff, they share a copy of that buff with all the Griffons fighting on your side. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/GriffonDreamfinder/battle.png",
+      "matched_names": [
+       "Griffon Dreamfinder",
+       "Dreamfinder Beak"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:419",
+      "kind": "trait",
+      "name": "All For One",
+      "description": "Your creatures cast spells 0.5 additional times (rounded down) for each Familiar fighting on your side. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ArcaneFamiliar/battle.png",
+      "matched_names": [
+       "Arcane Familiar",
+       "Arcane Pinion"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1109",
+      "kind": "trait",
+      "name": "All Hope Is Lost",
+      "description": "Enemies with Feared cannot gain buffs.",
+      "image": "/assets/siralim/images/creature/ShadowCobra/battle.png",
+      "matched_names": [
+       "Shadow Cobra",
+       "Cobra Black Hole"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:892",
+      "kind": "trait",
+      "name": "All In",
+      "description": "This creature's first attack each battle deals 300% more damage.",
+      "image": "/assets/siralim/images/creature/SkeletonBuccaneer/battle.png",
+      "matched_names": [
+       "Skeleton Buccaneer",
+       "Buccaneer Bone"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:355",
+      "kind": "trait",
+      "name": "Alleviation",
+      "description": "This creature deals 10% more damage with spells for each charge the Spell Gem is missing.",
+      "image": "/assets/siralim/images/creature/DjinnIllusionist/battle.png",
+      "matched_names": [
+       "Djinn Illusionist",
+       "Illusionist Lamp"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:54",
+      "kind": "trait",
+      "name": "Almost Easy",
+      "description": "If this creature has attacked at least one time this battle, its attacks deal 200% more damage.",
+      "image": "/assets/siralim/images/creature/VanelinSeraph/battle.png",
+      "matched_names": [
+       "Vanelin Seraph",
+       "Vanelin Symbol"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:374",
+      "kind": "perk",
+      "name": "Alpha · Warden",
+      "description": "After your creatures provoke, they gain Taunting and Protected.\n\nCreatures with Taunting automatically provoke at the end of their turn.\n\nCreatures with Protected take 50% less damage.",
+      "image": "/assets/siralim/images/perk/Alpha.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:366",
+      "kind": "trait",
+      "name": "Alteration",
+      "description": "Your creatures' spells deal 50% of their damage using speed instead of intelligence. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/RavenLord/battle.png",
+      "matched_names": [
+       "Raven Lord",
+       "Lord Claw"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:874",
+      "kind": "trait",
+      "name": "Alternate Reality",
+      "description": "Your other creatures take 60% less damage while this creature is alive. Your other creatures take 40% more damage while this creature is dead. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/TranscendedPhoenix/battle.png",
+      "matched_names": [
+       "Transcended Phoenix",
+       "Transcended Plume"
+      ],
+      "matched_rules": []
+     }
+    ],
+    "total": 3232,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 1781
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 1363
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 1740
+      },
+      {
+       "value": "spell",
+       "label": "Spell Gem",
+       "count": 716
+      },
+      {
+       "value": "relic",
+       "label": "Relic",
+       "count": 31
+      },
+      {
+       "value": "specialization",
+       "label": "Specialization",
+       "count": 43
+      },
+      {
+       "value": "perk",
+       "label": "Character Perk",
+       "count": 661
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 1016
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 772
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 1830
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 3188
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 97
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 313
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 3181
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 114
+        }
+       ],
+       "relations": [],
+       "values": []
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "text prefix",
+   "q": "flesh ro",
+   "expected": {
+    "items": [
+     {
+      "id": "trait:803",
+      "kind": "trait",
+      "name": "Flesh Rot",
+      "description": "After an enemy is afflicted with either Weak or Vulnerable, this creature afflicts them with whichever of these debuffs the target doesn't already have.",
+      "image": "/assets/siralim/images/creature/AbominationBrute/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     }
+    ],
+    "total": 1,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 1
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 1
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 1
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 1
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 1
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 1
+        }
+       ],
+       "relations": [],
+       "values": []
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "typographic apostrophe",
+   "q": "Abaddon’s Boon",
+   "expected": {
+    "items": [
+     {
+      "id": "trait:308",
+      "kind": "trait",
+      "name": "Abaddon's Boon",
+      "description": "This creature can't cast spells manually. After this creature defends, it casts one of its spells that can target all your creatures.",
+      "image": "/assets/siralim/images/creature/CerberusGatewatcher/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     }
+    ],
+    "total": 1,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 1
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 1
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 1
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 1
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 1
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 1
+        }
+       ],
+       "relations": [],
+       "values": []
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "reference objects for text",
+   "q": "amalgam",
+   "expected": {
+    "items": [
+     {
+      "id": "realm:30",
+      "kind": "realm",
+      "name": "Amalgam Gardens",
+      "description": "",
+      "image": "/assets/siralim/images/item/emblem/TmereMrgo.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "relic:30",
+      "kind": "relic",
+      "name": "Amalgam, Warped Mirror of T'mere M'rgo",
+      "description": "",
+      "image": "/assets/siralim/images/relic/Amalgam/relic.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "perk:459",
+      "kind": "perk",
+      "name": "Amalgamation · Necromancer",
+      "description": "Your creatures start battles with Amalgamation.\n\nAfter the Amalgamation's master deals damage with an attack or spell, this minion deals damage to a random enemy equal to 5% of its master's highest stat multiplied by the number of minions it has.",
+      "image": "/assets/siralim/images/perk/Amalgamation.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:90",
+      "kind": "trait",
+      "name": "Amalgamy",
+      "description": "After this creature attacks, it gains 30% defense.",
+      "image": "/assets/siralim/images/creature/DuskCrusader/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1821",
+      "kind": "trait",
+      "name": "Accelerated Harvest",
+      "description": "After your creatures attack, they have a 20% chance to afflict the target with a random debuff. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/NihilistSealer/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2167",
+      "kind": "trait",
+      "name": "Add to the Mix",
+      "description": "After an ally casts a spell of a different class from the last spell cast in the current battle, this creature casts one of its spells.",
+      "image": "/assets/siralim/images/creature/SpelljugglerTrapezist/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:302",
+      "kind": "trait",
+      "name": "Beast Within",
+      "description": "After your creatures gain a stat other than attack, they gain 50% of that stat as attack as well. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ManticoreDecimator/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1084",
+      "kind": "trait",
+      "name": "Blending In",
+      "description": "At the start of battle, the classes of the last 3 creatures in your party are changed to that of the first creature in your party.",
+      "image": "/assets/siralim/images/creature/ColdCockatrice/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:533",
+      "kind": "trait",
+      "name": "Bottom Feeder",
+      "description": "Your creatures' Scourge spells also afflict the target with a debuff that is based on the type of Scourge spell that is cast. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ViridianWolpertinger/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1819",
+      "kind": "trait",
+      "name": "Careful Planning",
+      "description": "After this creature is killed, your creatures gain 75% of its attack. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/NihilistParalyzer/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1071",
+      "kind": "trait",
+      "name": "Careful What You Wish For",
+      "description": "After your creatures gain a buff, they gain an additional random buff, but their buffs only last for 1 turn. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/AmphisbaenaProspector/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1085",
+      "kind": "trait",
+      "name": "Cock-a-doodle-doo",
+      "description": "At the start of battle, your Cockatrice creatures gain a random Cockatrice trait. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ContagiousCockatrice/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:531",
+      "kind": "trait",
+      "name": "Colorblind",
+      "description": "After this creature attacks, it casts a Scourge spell that matches the target's class.",
+      "image": "/assets/siralim/images/creature/ViciousWolpertinger/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2040",
+      "kind": "trait",
+      "name": "Commanding Presence",
+      "description": "Your Uralos creatures' innate traits are 50% more powerful. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/UralosWarchief/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:863",
+      "kind": "trait",
+      "name": "Covert",
+      "description": "Your creatures' Timeline placement at the start of battle is determined by their attack rather than their speed.",
+      "image": "/assets/siralim/images/creature/ProwlingManticore/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1922",
+      "kind": "trait",
+      "name": "Cull the Weak",
+      "description": "After an enemy is killed, your Uralos creatures gain 15% stats. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/UralosTrickster/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:913",
+      "kind": "trait",
+      "name": "Ditto",
+      "description": "After one of your creatures manually casts a Scourge spell, this creature casts the same Scourge spell.",
+      "image": "/assets/siralim/images/creature/DocileWolpertinger/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1094",
+      "kind": "creature",
+      "name": "Toyland Amalgamation",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ToylandAmalgamation/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2166",
+      "kind": "trait",
+      "name": "Enochian",
+      "description": "After this creature casts a spell of a different class from the last spell cast in the current battle, enemies take damage equal to 35% of its intelligence.",
+      "image": "/assets/siralim/images/creature/SpelljugglerOpportunist/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1918",
+      "kind": "trait",
+      "name": "Escalation",
+      "description": "After your Uralos creatures manually cast a spell, your Uralos creatures gain 35% intelligence. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/UralosSpellslinger/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1919",
+      "kind": "trait",
+      "name": "Formation",
+      "description": "After your Uralos creatures take damage from an attack or spell, your Uralos creatures gain 5% defense. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/UralosKnight/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:535",
+      "kind": "trait",
+      "name": "Fraud",
+      "description": "Your creatures' Scourge spells no longer consume charges and cannot be Sealed.",
+      "image": "/assets/siralim/images/creature/VileWolpertinger/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1072",
+      "kind": "trait",
+      "name": "Grim Ailment",
+      "description": "After your creatures apply a debuff, they apply an additional random debuff, but their debuffs only last for 1 turn. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/AmphisbaenaVaccinator/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1923",
+      "kind": "trait",
+      "name": "Healing Aura",
+      "description": "At the start of your Uralos creatures' turns, they recover health equal to 25% of their highest stat. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/UralosHealer/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1921",
+      "kind": "trait",
+      "name": "Hunger for Blood",
+      "description": "After your Uralos creatures attack, your Uralos creatures gain 10% attack. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/UralosSavage/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1823",
+      "kind": "trait",
+      "name": "Intuition",
+      "description": "Your creatures take 5% less damage from attacks and spells for each time they've attacked in the current battle. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/NihilistSummoner/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1822",
+      "kind": "trait",
+      "name": "Knowledge Is Power",
+      "description": "Your creatures deal 10% more damage with spells for each time they've attacked in the current battle. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/NihilistSeeker/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2165",
+      "kind": "trait",
+      "name": "Lucid Renewal",
+      "description": "If your creatures have collectively cast a spell from each class in the current battle, their Spell Gems no longer consume charges and have 50% more potency. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/SpelljugglerConservator/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:303",
+      "kind": "trait",
+      "name": "Mouth For War",
+      "description": "After this creature casts a single-target spell on an enemy, it also attacks that enemy 2 times.",
+      "image": "/assets/siralim/images/creature/Martyaxwar/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1068",
+      "kind": "trait",
+      "name": "Multicast",
+      "description": "Your creatures cast spells 1 additional time, but their spells are 30% less potent. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/AmphisbaenaChef/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1067",
+      "kind": "trait",
+      "name": "Multistrike",
+      "description": "Your creatures attack 1 additional time, but all their attacks deal 30% less damage. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/AmphisbaenaArbitrator/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1818",
+      "kind": "trait",
+      "name": "Nihilism",
+      "description": "After this creature attacks, it deals 50% of this damage to all other enemies. This creature deals 12% less damage with attacks for each living enemy.",
+      "image": "/assets/siralim/images/creature/NihilistEnder/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1080",
+      "kind": "trait",
+      "name": "Odd One",
+      "description": "Your creatures' traits, spells, and other effects that are affected by the number of creatures that belong to a certain race act as if they have 2 more of those creatures fighting on your side. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ClamorousCockatrice/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1083",
+      "kind": "trait",
+      "name": "Outcast No Longer",
+      "description": "At the start of battle, the races of the last 3 creatures in your party are changed to that of the first creature in your party.",
+      "image": "/assets/siralim/images/creature/ClawingCockatrice/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:298",
+      "kind": "trait",
+      "name": "Parry",
+      "description": "At the start of this creature's turn, it gains defense equal to 50% of its attack.",
+      "image": "/assets/siralim/images/creature/FlailingManticore/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:534",
+      "kind": "trait",
+      "name": "Prey",
+      "description": "At the start of battle, your creatures gain a Scourge spell that matches their class. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/VolatileWolpertinger/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2162",
+      "kind": "trait",
+      "name": "Prismatic Amplifier",
+      "description": "Your creatures' spells have 100% more potency if the spell's class is different from the last spell cast in the current battle. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/SpelljugglerConnoisseur/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:299",
+      "kind": "trait",
+      "name": "Razor Hide",
+      "description": "After this creature is attacked, it deals damage equal to 75% of its attack to the enemy.",
+      "image": "/assets/siralim/images/creature/SawbackManticore/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1820",
+      "kind": "trait",
+      "name": "Riverside",
+      "description": "After your creatures attack, the target's speed is decreased by 20%. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/NihilistProtector/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2163",
+      "kind": "trait",
+      "name": "Shifting Brilliance",
+      "description": "After this creature casts a spell of a different class from the last spell cast in the current battle, your creatures gain 40% intelligence. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/SpelljugglerInstructor/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:536",
+      "kind": "trait",
+      "name": "Soul Sucker",
+      "description": "After your creatures cast a damaging spell, they recover health equal to 30% of the damage dealt. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/VampiricWolpertinger/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:2164",
+      "kind": "trait",
+      "name": "Spectrometry",
+      "description": "Your Spelljuggler creatures can equip Spell Gems from any class.",
+      "image": "/assets/siralim/images/creature/SpelljugglerBedazzler/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1081",
+      "kind": "trait",
+      "name": "Strength In Numbers",
+      "description": "Your creatures' traits, spells, and other effects that are affected by the number of creatures that belong to a certain class act as if they have 2 more of those creatures fighting on your side. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/CarrionCockatrice/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:300",
+      "kind": "trait",
+      "name": "The Crimson",
+      "description": "Enemies attack as if they have 40% less attack. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/CrimsonManticore/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1070",
+      "kind": "trait",
+      "name": "Unbidden Miracle",
+      "description": "After your creatures are healed, they are healed an additional time, but they receive 50% less healing from all sources. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/AmphisbaenaInspector/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1069",
+      "kind": "trait",
+      "name": "Unrealized Potential",
+      "description": "After your creatures gain stats, they gain these stats an additional time, but they gain 50% fewer stats. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/AmphisbaenaGardener/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1920",
+      "kind": "trait",
+      "name": "War Dance",
+      "description": "After your creatures defend or provoke, your Uralos creatures gain 20% speed. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/UralosSpearmaster/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:1082",
+      "kind": "trait",
+      "name": "Weird Dance",
+      "description": "At the start of battle, this creature gains 2 random traits that belong to the same race as the first creature in your party.",
+      "image": "/assets/siralim/images/creature/CaveCockatrice/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:532",
+      "kind": "trait",
+      "name": "Whimsical",
+      "description": "Your creatures' Scourge spells deal 100% more damage. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/VolcanicWolpertinger/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     },
+     {
+      "id": "trait:301",
+      "kind": "trait",
+      "name": "Whiplash",
+      "description": "After this creature attacks, it also deals damage to 2 other enemies equal to 40% of its attack.",
+      "image": "/assets/siralim/images/creature/ManticoreConqueror/battle.png",
+      "matched_names": [],
+      "matched_rules": []
+     }
+    ],
+    "total": 50,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 47
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 47
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 47
+      },
+      {
+       "value": "relic",
+       "label": "Relic",
+       "count": 1
+      },
+      {
+       "value": "perk",
+       "label": "Character Perk",
+       "count": 1
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 5
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 16
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 35
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 49
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 9
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 49
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 1
+        }
+       ],
+       "relations": [],
+       "values": []
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "kind creature",
+   "kind": "creature",
+   "expected": {
+    "items": [
+     {
+      "id": "creature:922",
+      "kind": "creature",
+      "name": "Toxdweller Slasher",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ToxdwellerSlasher/battle.png",
+      "matched_names": [
+       "A Gift For You",
+       "Slasher Poison"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:455",
+      "kind": "creature",
+      "name": "Cerberus Gatewatcher",
+      "description": "",
+      "image": "/assets/siralim/images/creature/CerberusGatewatcher/battle.png",
+      "matched_names": [
+       "Abaddon's Boon",
+       "Gatewatcher Chain"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:864",
+      "kind": "creature",
+      "name": "Lunar Hemomancer",
+      "description": "",
+      "image": "/assets/siralim/images/creature/LunarHemomancer/battle.png",
+      "matched_names": [
+       "Abation",
+       "Lunar Blood Vial"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:266",
+      "kind": "creature",
+      "name": "Clairvoyant Spirit",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ClairvoyantSpirit/battle.png",
+      "matched_names": [
+       "Abnegation",
+       "Clairvoyant Fluff"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:174",
+      "kind": "creature",
+      "name": "Glutinous Slime",
+      "description": "",
+      "image": "/assets/siralim/images/creature/GlutinousSlime/battle.png",
+      "matched_names": [
+       "Abomination",
+       "Glutinous Ooze"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:629",
+      "kind": "creature",
+      "name": "Fog Spirit",
+      "description": "",
+      "image": "/assets/siralim/images/creature/FogSpirit/battle.png",
+      "matched_names": [
+       "Absence of Light",
+       "Fog Fluff"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:932",
+      "kind": "creature",
+      "name": "Topaz Carbuncle",
+      "description": "",
+      "image": "/assets/siralim/images/creature/TopazCarbuncle/battle.png",
+      "matched_names": [
+       "Absolute Power",
+       "Topaz Trinket"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:89",
+      "kind": "creature",
+      "name": "Dryad Vindicator",
+      "description": "",
+      "image": "/assets/siralim/images/creature/DryadVindicator/battle.png",
+      "matched_names": [
+       "Absolution",
+       "Vindicator Dew"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:350",
+      "kind": "creature",
+      "name": "Stone Giant",
+      "description": "",
+      "image": "/assets/siralim/images/creature/StoneGiant/battle.png",
+      "matched_names": [
+       "Absorption",
+       "Stone Boulder"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1248",
+      "kind": "creature",
+      "name": "Abyssal Kraken",
+      "description": "",
+      "image": "/assets/siralim/images/creature/AbyssalKraken/battle.png",
+      "matched_names": [
+       "Abyssal Waters",
+       "Ghastly Sucker"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1078",
+      "kind": "creature",
+      "name": "Nihilist Sealer",
+      "description": "",
+      "image": "/assets/siralim/images/creature/NihilistSealer/battle.png",
+      "matched_names": [
+       "Accelerated Harvest",
+       "Ink of Eternity"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:910",
+      "kind": "creature",
+      "name": "Blobbarian",
+      "description": "",
+      "image": "/assets/siralim/images/creature/Blobbarian/battle.png",
+      "matched_names": [
+       "Acid Body",
+       "Blobbarian Gel"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1307",
+      "kind": "creature",
+      "name": "Spelljuggler Trapezist",
+      "description": "",
+      "image": "/assets/siralim/images/creature/SpelljugglerTrapezist/battle.png",
+      "matched_names": [
+       "Add to the Mix",
+       "Patched Ball"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:353",
+      "kind": "creature",
+      "name": "Cosmic Giant",
+      "description": "",
+      "image": "/assets/siralim/images/creature/CosmicGiant/battle.png",
+      "matched_names": [
+       "Admire the Gods",
+       "Cosmic Boulder"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1457",
+      "kind": "creature",
+      "name": "Marionette Evangelist",
+      "description": "",
+      "image": "/assets/siralim/images/creature/MarionetteEvangelist/battle.png",
+      "matched_names": [
+       "Adoration",
+       "Vestment Lace"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1464",
+      "kind": "creature",
+      "name": "Operatic Denizen",
+      "description": "",
+      "image": "/assets/siralim/images/creature/OperaticDenizen/battle.png",
+      "matched_names": [
+       "Adoring Fans",
+       "Opera Glasses"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:848",
+      "kind": "creature",
+      "name": "Demonic Voidlord",
+      "description": "",
+      "image": "/assets/siralim/images/creature/DemonicVoidlord/battle.png",
+      "matched_names": [
+       "Aether Eyes",
+       "Devil Heart"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:471",
+      "kind": "creature",
+      "name": "Glade Watcher",
+      "description": "",
+      "image": "/assets/siralim/images/creature/GladeWatcher/battle.png",
+      "matched_names": [
+       "Affluence",
+       "Glade Tears"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:491",
+      "kind": "creature",
+      "name": "Roofstalker Wight",
+      "description": "",
+      "image": "/assets/siralim/images/creature/RoofstalkerWight/battle.png",
+      "matched_names": [
+       "Afterlife",
+       "Roofstalker Rattle"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:825",
+      "kind": "creature",
+      "name": "Lugubrious Shambler",
+      "description": "",
+      "image": "/assets/siralim/images/creature/LugubriousShambler/battle.png",
+      "matched_names": [
+       "Aggravated Illness",
+       "Lugubrious Hook"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:208",
+      "kind": "creature",
+      "name": "Phase Marauder",
+      "description": "",
+      "image": "/assets/siralim/images/creature/PhaseMarauder/battle.png",
+      "matched_names": [
+       "Agility Aura",
+       "Marauder Prism"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:278",
+      "kind": "creature",
+      "name": "Ferocious Fiend",
+      "description": "",
+      "image": "/assets/siralim/images/creature/FerociousFiend/battle.png",
+      "matched_names": [
+       "Agitation",
+       "Ferocious Tooth"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1423",
+      "kind": "creature",
+      "name": "Iron Maiden",
+      "description": "",
+      "image": "/assets/siralim/images/creature/IronMaiden/battle.png",
+      "matched_names": [
+       "Agonizing Entrapment",
+       "Bloody Spike"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:320",
+      "kind": "creature",
+      "name": "Skeleton Marksman",
+      "description": "",
+      "image": "/assets/siralim/images/creature/SkeletonMarksman/battle.png",
+      "matched_names": [
+       "Aimed Shot",
+       "Marksman Bone"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1124",
+      "kind": "creature",
+      "name": "Obscene Blight",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ObsceneBlight/battle.png",
+      "matched_names": [
+       "Alchemist's Fury",
+       "Corrupted Geode"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:745",
+      "kind": "creature",
+      "name": "Ryetrap",
+      "description": "",
+      "image": "/assets/siralim/images/creature/Ryetrap/battle.png",
+      "matched_names": [
+       "Alcoholism",
+       "Bottle of Ryetrap"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:388",
+      "kind": "creature",
+      "name": "Griffon Dreamfinder",
+      "description": "",
+      "image": "/assets/siralim/images/creature/GriffonDreamfinder/battle.png",
+      "matched_names": [
+       "All As One",
+       "Dreamfinder Beak"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:518",
+      "kind": "creature",
+      "name": "Arcane Familiar",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ArcaneFamiliar/battle.png",
+      "matched_names": [
+       "All For One",
+       "Arcane Pinion"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:840",
+      "kind": "creature",
+      "name": "Shadow Cobra",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ShadowCobra/battle.png",
+      "matched_names": [
+       "All Hope Is Lost",
+       "Cobra Black Hole"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:664",
+      "kind": "creature",
+      "name": "Skeleton Buccaneer",
+      "description": "",
+      "image": "/assets/siralim/images/creature/SkeletonBuccaneer/battle.png",
+      "matched_names": [
+       "All In",
+       "Buccaneer Bone"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:68",
+      "kind": "creature",
+      "name": "Djinn Illusionist",
+      "description": "",
+      "image": "/assets/siralim/images/creature/DjinnIllusionist/battle.png",
+      "matched_names": [
+       "Alleviation",
+       "Illusionist Lamp"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:427",
+      "kind": "creature",
+      "name": "Vanelin Seraph",
+      "description": "",
+      "image": "/assets/siralim/images/creature/VanelinSeraph/battle.png",
+      "matched_names": [
+       "Almost Easy",
+       "Vanelin Symbol"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:95",
+      "kind": "creature",
+      "name": "Raven Lord",
+      "description": "",
+      "image": "/assets/siralim/images/creature/RavenLord/battle.png",
+      "matched_names": [
+       "Alteration",
+       "Lord Claw"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:673",
+      "kind": "creature",
+      "name": "Transcended Phoenix",
+      "description": "",
+      "image": "/assets/siralim/images/creature/TranscendedPhoenix/battle.png",
+      "matched_names": [
+       "Alternate Reality",
+       "Transcended Plume"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:382",
+      "kind": "creature",
+      "name": "Dusk Crusader",
+      "description": "",
+      "image": "/assets/siralim/images/creature/DuskCrusader/battle.png",
+      "matched_names": [
+       "Amalgamy",
+       "Dusk Hammer"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:698",
+      "kind": "creature",
+      "name": "Nix Backstabber",
+      "description": "",
+      "image": "/assets/siralim/images/creature/NixBackstabber/battle.png",
+      "matched_names": [
+       "Ambush",
+       "Backstabber Mask"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:604",
+      "kind": "creature",
+      "name": "Amethyst Paragon",
+      "description": "",
+      "image": "/assets/siralim/images/creature/AmethystParagon/battle.png",
+      "matched_names": [
+       "Amethyst Attunement",
+       "Giant Amethyst"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:998",
+      "kind": "creature",
+      "name": "Angel Bat",
+      "description": "",
+      "image": "/assets/siralim/images/creature/AngelBat/battle.png",
+      "matched_names": [
+       "Amongst Gods",
+       "Angel Bat Wings"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1129",
+      "kind": "creature",
+      "name": "Piscacanth",
+      "description": "",
+      "image": "/assets/siralim/images/creature/Piscacanth/battle.png",
+      "matched_names": [
+       "Ancient Buffoonery",
+       "Electric Fossil"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1114",
+      "kind": "creature",
+      "name": "The First Spawn",
+      "description": "",
+      "image": "/assets/siralim/images/creature/TheFirstSpawn/battle.png",
+      "matched_names": [
+       "Ancient DNA",
+       "DNA Splicer"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1458",
+      "kind": "creature",
+      "name": "Draconic Strix",
+      "description": "",
+      "image": "/assets/siralim/images/creature/DraconicStrix/battle.png",
+      "matched_names": [
+       "Ancient Wisdom",
+       "Ancient Feather"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:923",
+      "kind": "creature",
+      "name": "Toxdweller Bloodbather",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ToxdwellerBloodbather/battle.png",
+      "matched_names": [
+       "And You Get A Bomb",
+       "Bloodbather Poison"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:158",
+      "kind": "creature",
+      "name": "Stone Devil",
+      "description": "",
+      "image": "/assets/siralim/images/creature/StoneDevil/battle.png",
+      "matched_names": [
+       "Angel's Horror",
+       "Stone Bracer"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:199",
+      "kind": "creature",
+      "name": "Treasure Golem",
+      "description": "",
+      "image": "/assets/siralim/images/creature/TreasureGolem/battle.png",
+      "matched_names": [
+       "Animated Treasure"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:931",
+      "kind": "creature",
+      "name": "Ruby Carbuncle",
+      "description": "",
+      "image": "/assets/siralim/images/creature/RubyCarbuncle/battle.png",
+      "matched_names": [
+       "Annex",
+       "Ruby Trinket"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:773",
+      "kind": "creature",
+      "name": "Jingle Elf",
+      "description": "",
+      "image": "/assets/siralim/images/creature/JingleElf/battle.png",
+      "matched_names": [
+       "Annoying Bobblehead",
+       "Jingle Gift"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:296",
+      "kind": "creature",
+      "name": "Ceaseless Maker",
+      "description": "",
+      "image": "/assets/siralim/images/creature/CeaselessMaker/battle.png",
+      "matched_names": [
+       "Anomaly",
+       "Ceaseless Crown"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1442",
+      "kind": "creature",
+      "name": "The Heap",
+      "description": "",
+      "image": "/assets/siralim/images/creature/TheHeap/battle.png",
+      "matched_names": [
+       "Another Man's Trash",
+       "Pile of Garbage"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1191",
+      "kind": "creature",
+      "name": "Heart Luckmantria",
+      "description": "",
+      "image": "/assets/siralim/images/creature/HeartLuckmantria/battle.png",
+      "matched_names": [
+       "Ante",
+       "Torn Card (Heart)"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:551",
+      "kind": "creature",
+      "name": "Centaur Raider",
+      "description": "",
+      "image": "/assets/siralim/images/creature/CentaurRaider/battle.png",
+      "matched_names": [
+       "Anticipation",
+       "Raider Tuft"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:646",
+      "kind": "creature",
+      "name": "Forsaken Plaguebearer",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ForsakenPlaguebearer/battle.png",
+      "matched_names": [
+       "Anxiety",
+       "Plaguebearer Pincer"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:798",
+      "kind": "creature",
+      "name": "Kapre",
+      "description": "",
+      "image": "/assets/siralim/images/creature/Kapre/battle.png",
+      "matched_names": [
+       "Any Given Sin",
+       "Particle of Kapre"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:324",
+      "kind": "creature",
+      "name": "Water Priest",
+      "description": "",
+      "image": "/assets/siralim/images/creature/WaterPriest/battle.png",
+      "matched_names": [
+       "Apostle of Water",
+       "Water Rod"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:823",
+      "kind": "creature",
+      "name": "Innocent Shambler",
+      "description": "",
+      "image": "/assets/siralim/images/creature/InnocentShambler/battle.png",
+      "matched_names": [
+       "Appetite For Eschar",
+       "Innocent Hook"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1205",
+      "kind": "creature",
+      "name": "Undying Chimera",
+      "description": "",
+      "image": "/assets/siralim/images/creature/UndyingChimera/battle.png",
+      "matched_names": [
+       "Appreciation For Ancestry",
+       "Forbidden Recipe"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:132",
+      "kind": "creature",
+      "name": "Spider Occultist",
+      "description": "",
+      "image": "/assets/siralim/images/creature/SpiderOccultist/battle.png",
+      "matched_names": [
+       "Apprenticeship",
+       "Spider Orb"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:515",
+      "kind": "creature",
+      "name": "Woolly Arachnalisk",
+      "description": "",
+      "image": "/assets/siralim/images/creature/WoollyArachnalisk/battle.png",
+      "matched_names": [
+       "Arachnophobia",
+       "Woolly Mandible"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:136",
+      "kind": "creature",
+      "name": "Zealot Occultist",
+      "description": "",
+      "image": "/assets/siralim/images/creature/ZealotOccultist/battle.png",
+      "matched_names": [
+       "Arcane Brilliance",
+       "Zealot Orb"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:1286",
+      "kind": "creature",
+      "name": "Lucanian Armiger",
+      "description": "",
+      "image": "/assets/siralim/images/creature/LucanianArmiger/battle.png",
+      "matched_names": [
+       "Armiger Strike",
+       "Armiger's Token"
+      ],
+      "matched_rules": []
+     },
+     {
+      "id": "creature:70",
+      "kind": "creature",
+      "name": "Djinn Arcanomancer",
+      "description": "",
+      "image": "/assets/siralim/images/creature/DjinnArcanomancer/battle.png",
+      "matched_names": [
+       "Ascendancy",
+       "Arcanomancer Lamp"
+      ],
+      "matched_rules": []
+     }
+    ],
+    "total": 1363,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 1781
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 1363
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 1740
+      },
+      {
+       "value": "spell",
+       "label": "Spell Gem",
+       "count": 716
+      },
+      {
+       "value": "relic",
+       "label": "Relic",
+       "count": 31
+      },
+      {
+       "value": "specialization",
+       "label": "Specialization",
+       "count": 43
+      },
+      {
+       "value": "perk",
+       "label": "Character Perk",
+       "count": 661
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 389
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 379
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 852
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 1362
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 40
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 125
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 1362
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 25
+        }
+       ],
+       "relations": [],
+       "values": []
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "kind materials with text",
+   "q": "aaxer",
+   "kind": "material",
+   "expected": {
+    "items": [
+     {
+      "id": "material:375",
+      "kind": "material",
+      "name": "Aaxer Sinew",
+      "description": "Socket an Artifact's Trait Slot with this item to gain this trait:\n\nUrh Harbinger:\nYour creatures have 15% more attack, intelligence, defense, and speed for each turn they've taken in the current battle. This trait does not stack.",
+      "image": "/assets/siralim/images/item/material/AaxerSinew.png",
+      "matched_names": [
+       "Urh Harbinger",
+       "Aaxer Apocalypse"
+      ],
+      "matched_rules": []
+     }
+    ],
+    "total": 1,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 1
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 1
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 1
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 1
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 1
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 1
+        }
+       ],
+       "relations": [],
+       "values": []
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "buff category value",
+   "conditions": [
+    {
+     "category": "status",
+     "relation": "grants",
+     "value": "@buff"
+    }
+   ],
+   "expected": {
+    "items": [
+     {
+      "id": "perk:154",
+      "kind": "perk",
+      "name": "Adaptation · Druid",
+      "description": "At the start of battle, your creatures gain a random buff for each creature missing from your group.",
+      "image": "/assets/siralim/images/perk/Adaptation.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:154",
+        "rank": null,
+        "reference": "perk:druid:adaptation",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:87",
+      "kind": "trait",
+      "name": "All As One",
+      "description": "After your Griffons receive a buff, they share a copy of that buff with all the Griffons fighting on your side. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/GriffonDreamfinder/battle.png",
+      "matched_names": [
+       "Griffon Dreamfinder",
+       "Dreamfinder Beak"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:87",
+        "rank": null,
+        "reference": "trait:all-as-one",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:374",
+      "kind": "perk",
+      "name": "Alpha · Warden",
+      "description": "After your creatures provoke, they gain Taunting and Protected.\n\nCreatures with Taunting automatically provoke at the end of their turn.\n\nCreatures with Protected take 50% less damage.",
+      "image": "/assets/siralim/images/perk/Alpha.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:374",
+        "rank": null,
+        "reference": "perk:warden:alpha",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:248",
+      "kind": "spell",
+      "name": "Ancient Prayer",
+      "description": "Your creatures gain copies of all the target's buffs.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:248",
+        "rank": null,
+        "reference": "spell:ancient-prayer",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:578",
+      "kind": "trait",
+      "name": "Andrick's Royal Decree",
+      "description": "After your creatures gain a minion, they also gain a random buff. This trait does not stack.",
+      "image": "/assets/siralim/images/item/material/AndricksTatteredGarb.png",
+      "matched_names": [
+       "Andrick's Tattered Garb"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:578",
+        "rank": null,
+        "reference": "trait:andrick-s-royal-decree",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:25",
+      "kind": "perk",
+      "name": "Anguish Through Awareness · Animator",
+      "description": "Your Animatus starts battles with 1 per rank random buffs.",
+      "image": "/assets/siralim/images/perk/AnguishThroughAwareness.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:25",
+        "rank": null,
+        "reference": "perk:animator:anguish-through-awareness",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:92",
+      "kind": "perk",
+      "name": "Apotheosis · Cleric",
+      "description": "After your creatures are healed, they have a 2% per rank chance to gain a random buff.",
+      "image": "/assets/siralim/images/perk/Apotheosis.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:92",
+        "rank": null,
+        "reference": "perk:cleric:apotheosis",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "relic:0",
+      "kind": "relic",
+      "name": "Arbiter, Holy Shield of Surathli",
+      "description": "",
+      "image": "/assets/siralim/images/relic/Arbiter/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:0",
+        "rank": 10,
+        "reference": "relic:arbiter:r10",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:0",
+        "rank": 70,
+        "reference": "relic:arbiter:r70",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:0",
+        "rank": 90,
+        "reference": "relic:arbiter:r90",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:0",
+        "rank": 90,
+        "reference": "relic:arbiter:r90",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:646",
+      "kind": "spell",
+      "name": "Arbitration",
+      "description": "Enemies' buffs are removed, and your creatures gain those buffs.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:646",
+        "rank": null,
+        "reference": "spell:arbitration",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "spell:7",
+      "kind": "spell",
+      "name": "Arcane Enchantment",
+      "description": "Target gains Warded and Protected.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:7",
+        "rank": null,
+        "reference": "spell:arcane-enchantment",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:606",
+      "kind": "spell",
+      "name": "Archangel's Blessing",
+      "description": "Your creatures recover 30% Health and gain a random buff.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:606",
+        "rank": null,
+        "reference": "spell:archangel-s-blessing",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:1136",
+      "kind": "trait",
+      "name": "Asceticism",
+      "description": "After your creatures are resurrected by Rebirth, they gain Mending, Repelling, and Shelled.",
+      "image": "/assets/siralim/images/creature/IgneousOssein/battle.png",
+      "matched_names": [
+       "Igneous Ossein",
+       "Igneous Fossil"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1136",
+        "rank": null,
+        "reference": "trait:asceticism",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1707",
+      "kind": "trait",
+      "name": "At Peace",
+      "description": "After your creatures are resurrected, they gain a Barrier equal to 100% of the amount of Health they resurrected with. This trait does not stack.",
+      "image": "/assets/siralim/images/item/material/AngelicTears.png",
+      "matched_names": [
+       "Angelic Tears"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1707",
+        "rank": null,
+        "reference": "trait:at-peace",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:2035",
+      "kind": "trait",
+      "name": "Atmospheric Interference",
+      "description": "After this creature damages an enemy, it gains 50% of that damage as a Barrier.",
+      "image": "/assets/siralim/images/creature/CelestialScarapin/battle.png",
+      "matched_names": [
+       "Celestial Scarapin",
+       "Chitinous Feather"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:2035",
+        "rank": null,
+        "reference": "trait:atmospheric-interference",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:106",
+      "kind": "trait",
+      "name": "Augmentation",
+      "description": "After this creature kills a creature, your creatures gain a random buff for each buff, debuff, and minion the target had before it died.",
+      "image": "/assets/siralim/images/creature/ShadowCarnage/battle.png",
+      "matched_names": [
+       "Shadow Carnage",
+       "Shadow Exoskeleton"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:106",
+        "rank": null,
+        "reference": "trait:augmentation",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:372",
+      "kind": "perk",
+      "name": "Awareness · Warden",
+      "description": "After your creatures defend, they gain Defensive and Rebirth.\n\nCreatures with Defensive automatically defend at the end of their turn.\n\nCreatures with Rebirth are resurrected with 50% health when they die.",
+      "image": "/assets/siralim/images/perk/Awareness.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:372",
+        "rank": null,
+        "reference": "perk:warden:awareness",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:408",
+      "kind": "perk",
+      "name": "Bad Medicine · Witch Doctor",
+      "description": "At the start of battle, your creatures gain Secret Stuff.\n\nSecret Stuff: The enemy with the highest attack attacks one of its allies for 200% normal damage. This spell is a Booze Spell.",
+      "image": "/assets/siralim/images/perk/BadMedicine.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:408",
+        "rank": null,
+        "reference": "perk:witch-doctor:bad-medicine",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:165",
+      "kind": "perk",
+      "name": "Battalion · Tribalist",
+      "description": "At the start of battle, your creatures gain a random buff for each creature that belongs to the same race fighting on your side. Maximum of 6 buffs.",
+      "image": "/assets/siralim/images/perk/Battalion.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:165",
+        "rank": null,
+        "reference": "perk:tribalist:battalion",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:16",
+      "kind": "trait",
+      "name": "Benefic",
+      "description": "After your creatures are healed, they gain a Barrier that absorbs damage equal to 50% of the amount of health recovered. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ExaltedSpirit/battle.png",
+      "matched_names": [
+       "Exalted Spirit",
+       "Exalted Fluff"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:16",
+        "rank": null,
+        "reference": "trait:benefic",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:418",
+      "kind": "perk",
+      "name": "Bewitch · Witch Doctor",
+      "description": "After an enemy attacks one of its allies, your creatures gain a random buff.",
+      "image": "/assets/siralim/images/perk/Bewitch.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:418",
+        "rank": null,
+        "reference": "perk:witch-doctor:bewitch",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:391",
+      "kind": "trait",
+      "name": "Binary Affliction",
+      "description": "After this creature attacks, it gains a random buff and afflicts its target with a random debuff.",
+      "image": "/assets/siralim/images/creature/MasochistWitch/battle.png",
+      "matched_names": [
+       "Masochist Witch",
+       "Witch Stake"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:391",
+        "rank": null,
+        "reference": "trait:binary-affliction",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:289",
+      "kind": "spell",
+      "name": "Black Ice",
+      "description": "Each enemy has a 50% chance to be afflicted with Frozen, and each of your creatures have a 50% chance to gain Invisible.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:289",
+        "rank": null,
+        "reference": "spell:black-ice",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1125",
+      "kind": "trait",
+      "name": "Blood Barrier",
+      "description": "After your creatures are healed by their Leeching buff, they gain a Barrier that absorbs damage equal to 50% of the amount recovered. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/OozingLeech/battle.png",
+      "matched_names": [
+       "Oozing Leech",
+       "Oozing Cyst"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1125",
+        "rank": null,
+        "reference": "trait:blood-barrier",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:233",
+      "kind": "perk",
+      "name": "Blood Clot · Bloodmage",
+      "description": "After your creatures take damage, they gain a Barrier that absorbs damage equal to 2% per rank of the amount of damage taken.",
+      "image": "/assets/siralim/images/perk/BloodClot.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:233",
+        "rank": null,
+        "reference": "perk:bloodmage:blood-clot",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:12",
+      "kind": "spell",
+      "name": "Blood Shield",
+      "description": "Target takes a large amount of damage and gains 200% of the damage taken as a Barrier.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:12",
+        "rank": null,
+        "reference": "spell:blood-shield",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:222",
+      "kind": "trait",
+      "name": "Bloodfury",
+      "description": "After this creature provokes, your creatures gain Berserk and Savage.",
+      "image": "/assets/siralim/images/creature/DestroyerFiend/battle.png",
+      "matched_names": [
+       "Destroyer Fiend",
+       "Destroyer Tooth"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:222",
+        "rank": null,
+        "reference": "trait:bloodfury",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1933",
+      "kind": "trait",
+      "name": "Blue Tether",
+      "description": "When an adjacent creature would take attack or spell damage, or gain a buff or debuff, this creature becomes the new target instead.",
+      "image": "/assets/siralim/images/creature/FeetAnimation/battle.png",
+      "matched_names": [
+       "Feet Animation",
+       "Blue Shackle"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1933",
+        "rank": null,
+        "reference": "trait:blue-tether",
+        "rule": 1,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:403",
+      "kind": "trait",
+      "name": "Book of the Warlock",
+      "description": "Your creatures start battles with Arcane. At the end of your creatures' turns, they have a 30% chance to gain Arcane.",
+      "image": "/assets/siralim/images/creature/RunicGrimoire/battle.png",
+      "matched_names": [
+       "Runic Grimoire",
+       "Runic Parchment"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:403",
+        "rank": null,
+        "reference": "trait:book-of-the-warlock",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "trait:403",
+        "rank": null,
+        "reference": "trait:book-of-the-warlock",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:375",
+      "kind": "perk",
+      "name": "Bristle · Warden",
+      "description": "After your creatures take damage from a spell, they gain Repelling and Shelled.\n\nRepelling creatures have a 50% chance to ignore damage from spells.\n\nShelled negates the next incoming attack or spell.",
+      "image": "/assets/siralim/images/perk/Bristle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:375",
+        "rank": null,
+        "reference": "perk:warden:bristle",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:816",
+      "kind": "trait",
+      "name": "Call of Time",
+      "description": "After this creature dodges an attack, it gains a Barrier that absorbs damage equal to 50% of its speed. In addition, this creature has an independent 50% chance to dodge attacks.",
+      "image": "/assets/siralim/images/creature/AspectofTime/battle.png",
+      "matched_names": [
+       "Aspect of Time",
+       "Time Figment"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:816",
+        "rank": null,
+        "reference": "trait:call-of-time",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1042",
+      "kind": "trait",
+      "name": "Camaraderie",
+      "description": "After this creature defends, it gains a Barrier that absorbs damage equal to 100% of its Maximum health. If this creature already has a Barrier, it gives it to a random ally instead.",
+      "image": "/assets/siralim/images/creature/VernalWolpertinger/battle.png",
+      "matched_names": [
+       "Vernal Wolpertinger",
+       "Gummy Egg"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1042",
+        "rank": null,
+        "reference": "trait:camaraderie",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "trait:1042",
+        "rank": null,
+        "reference": "trait:camaraderie",
+        "rule": 1,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:1071",
+      "kind": "trait",
+      "name": "Careful What You Wish For",
+      "description": "After your creatures gain a buff, they gain an additional random buff, but their buffs only last for 1 turn. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/AmphisbaenaProspector/battle.png",
+      "matched_names": [
+       "Amphisbaena Prospector",
+       "Prospector Cord"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1071",
+        "rank": null,
+        "reference": "trait:careful-what-you-wish-for",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:250",
+      "kind": "perk",
+      "name": "Cauterize · Pyromancer",
+      "description": "After your creatures are damaged or healed by Burning, they gain Shelled. Your creatures' Shelled ignores the Burning debuff.\n\nShelled negates the next incoming attack or spell.",
+      "image": "/assets/siralim/images/perk/Cauterize.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:250",
+        "rank": null,
+        "reference": "perk:pyromancer:cauterize",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:558",
+      "kind": "trait",
+      "name": "Ceaseless Vitality",
+      "description": "At the start of this creature's turn, it recovers 20% Health and gains Shelled.",
+      "image": "/assets/siralim/images/item/material/CeaselessHeart.png",
+      "matched_names": [
+       "Ceaseless Heart"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:558",
+        "rank": null,
+        "reference": "trait:ceaseless-vitality",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "spell:20",
+      "kind": "spell",
+      "name": "Chaos Mastery",
+      "description": "Your creatures gain a moderate amount of Attack and Savage.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:20",
+        "rank": null,
+        "reference": "spell:chaos-mastery",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:527",
+      "kind": "trait",
+      "name": "Chaos Transformation",
+      "description": "When your creatures buff an enemy, they debuff them instead. When your creatures debuff an ally, they buff them instead. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ChaosShapeshifter/battle.png",
+      "matched_names": [
+       "Chaos Shapeshifter",
+       "Chaos Plasma"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:527",
+        "rank": null,
+        "reference": "trait:chaos-transformation",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:723",
+      "kind": "spell",
+      "name": "Charity",
+      "description": "Each of the target's buffs have a 50% chance to spread to its allies.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:723",
+        "rank": null,
+        "reference": "spell:charity",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:5",
+      "kind": "trait",
+      "name": "Chrysaor's Ambition",
+      "description": "After this creature attacks, it gives a random ally 2 random buffs.",
+      "image": "/assets/siralim/images/creature/Pegasus/battle.png",
+      "matched_names": [
+       "Pegasus",
+       "Pegasus Horseshoe"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:5",
+        "rank": null,
+        "reference": "trait:chrysaor-s-ambition",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:439",
+      "kind": "spell",
+      "name": "Colorwave (Life)",
+      "description": "Your creatures gain 5 random buffs, plus 1 random buff for each Life Infusion you have.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:439",
+        "rank": null,
+        "reference": "spell:colorwave-life",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:377",
+      "kind": "trait",
+      "name": "Concoction",
+      "description": "After this creature gains a buff, your other creatures that don't have this trait gain a copy of that buff as well.",
+      "image": "/assets/siralim/images/creature/EctoplasmicSlime/battle.png",
+      "matched_names": [
+       "Ectoplasmic Slime",
+       "Ectoplasmic Ooze"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:377",
+        "rank": null,
+        "reference": "trait:concoction",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:225",
+      "kind": "perk",
+      "name": "Conquest's Triumph · Necromancer",
+      "description": "After your creatures cast a spell, they summon Conquest.\n\nAfter Conquest's master manually casts a spell, it grants all your creatures a random buff.",
+      "image": "/assets/siralim/images/perk/ConquestsTriumph.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:225",
+        "rank": null,
+        "reference": "perk:necromancer:conquest-s-triumph",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:378",
+      "kind": "perk",
+      "name": "Convocation · Warden",
+      "description": "After your creatures cast a spell, they gain Arcane.\n\nWhen an Arcane creature casts a spell, the spell does not consume any charges. Then, this buff is removed.",
+      "image": "/assets/siralim/images/perk/Convocation.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:378",
+        "rank": null,
+        "reference": "perk:warden:convocation",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:235",
+      "kind": "spell",
+      "name": "Corpse Shield",
+      "description": "Your creatures gain a Barrier that absorbs a large amount of damage for each of your dead creatures.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:235",
+        "rank": null,
+        "reference": "spell:corpse-shield",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:400",
+      "kind": "perk",
+      "name": "Counterintuitive · Dreamshade",
+      "description": "When your creatures afflict each other with a debuff, they gain a random buff instead.",
+      "image": "/assets/siralim/images/perk/Counterintuitive.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:400",
+        "rank": null,
+        "reference": "perk:dreamshade:counterintuitive",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:356",
+      "kind": "spell",
+      "name": "Covenant",
+      "description": "Target gains Rebirth.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:356",
+        "rank": null,
+        "reference": "spell:covenant",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:291",
+      "kind": "spell",
+      "name": "Crystal Shield",
+      "description": "Your creatures gain a Barrier that absorbs damage equal to 100% of their Defense.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:291",
+        "rank": null,
+        "reference": "spell:crystal-shield",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:354",
+      "kind": "spell",
+      "name": "Dark Crystal",
+      "description": "Target gains Shelled and Arcane.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:354",
+        "rank": null,
+        "reference": "spell:dark-crystal",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:34",
+      "kind": "spell",
+      "name": "Dark Enchantment",
+      "description": "Target gains Arcane.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:34",
+        "rank": null,
+        "reference": "spell:dark-enchantment",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:35",
+      "kind": "spell",
+      "name": "Dark Ritual",
+      "description": "Target creature is killed, and the caster gains all its buffs and 100% of its Attack and Speed.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:35",
+        "rank": null,
+        "reference": "spell:dark-ritual",
+        "rule": 0,
+        "action": 2
+       }
+      ]
+     },
+     {
+      "id": "spell:36",
+      "kind": "spell",
+      "name": "Dark Whispers",
+      "description": "Your creatures gain Arcane.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:36",
+        "rank": null,
+        "reference": "spell:dark-whispers",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:695",
+      "kind": "spell",
+      "name": "Delirium",
+      "description": "Target is afflicted with Confused and Blind and gains Berserk and Savage.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:695",
+        "rank": null,
+        "reference": "spell:delirium",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "spell:193",
+      "kind": "spell",
+      "name": "Desperation",
+      "description": "Target gains a Barrier that absorbs damage equal to its Defense, and loses 50% Defense.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:193",
+        "rank": null,
+        "reference": "spell:desperation",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:244",
+      "kind": "trait",
+      "name": "Diabolic Heritage",
+      "description": "After your Diabolic Horde receive a buff, they share a copy of that buff with all the Diabolic Horde fighting on your side.",
+      "image": "/assets/siralim/images/creature/DiabolicInsurgent/battle.png",
+      "matched_names": [
+       "Diabolic Insurgent",
+       "Insurgent Flag"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:244",
+        "rank": null,
+        "reference": "trait:diabolic-heritage",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:252",
+      "kind": "spell",
+      "name": "Divine Aegis",
+      "description": "Caster gains a Barrier that absorbs a moderate amount of damage.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:252",
+        "rank": null,
+        "reference": "spell:divine-aegis",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:467",
+      "kind": "trait",
+      "name": "Duplication",
+      "description": "After this creature provokes, your other creatures gain a copy of this creature's buffs.",
+      "image": "/assets/siralim/images/creature/DryadWarden/battle.png",
+      "matched_names": [
+       "Dryad Warden",
+       "Warden Dew"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:467",
+        "rank": null,
+        "reference": "trait:duplication",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:47",
+      "kind": "spell",
+      "name": "Dust Cloak",
+      "description": "Your creatures gain Invisible but are sent to the bottom of the Timeline.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:47",
+        "rank": null,
+        "reference": "spell:dust-cloak",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:48",
+      "kind": "spell",
+      "name": "Earth Enchantment",
+      "description": "Target gains Taunting, and a large amount of Defense.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:48",
+        "rank": null,
+        "reference": "spell:earth-enchantment",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:49",
+      "kind": "spell",
+      "name": "Earthen Embrace",
+      "description": "Target recovers a moderate amount of Health and gains a Barrier that absorbs damage equal to 100% of the amount healed.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:49",
+        "rank": null,
+        "reference": "spell:earthen-embrace",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:1835",
+      "kind": "trait",
+      "name": "Eery Veil",
+      "description": "At the start of battle, this creature and creatures adjacent to it gain Invisible.",
+      "image": "/assets/siralim/images/creature/Bashcloak/battle.png",
+      "matched_names": [
+       "Bashcloak",
+       "Ghostly Ear"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1835",
+        "rank": null,
+        "reference": "trait:eery-veil",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "trait:1835",
+        "rank": null,
+        "reference": "trait:eery-veil",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "spell:51",
+      "kind": "spell",
+      "name": "Elemental Barrier",
+      "description": "Target gains a Barrier that absorbs damage equal to 50% of its Defense.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:51",
+        "rank": null,
+        "reference": "spell:elemental-barrier",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     }
+    ],
+    "total": 239,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 96
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 71
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 92
+      },
+      {
+       "value": "spell",
+       "label": "Spell Gem",
+       "count": 90
+      },
+      {
+       "value": "relic",
+       "label": "Relic",
+       "count": 9
+      },
+      {
+       "value": "perk",
+       "label": "Character Perk",
+       "count": 44
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 1016
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 772
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 1830
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 3188
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 97
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 313
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 3181
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 114
+        }
+       ],
+       "relations": [
+        {
+         "value": "always_has",
+         "label": "Always has",
+         "count": 48,
+         "group": ""
+        },
+        {
+         "value": "grants",
+         "label": "Grants",
+         "count": 239,
+         "group": ""
+        },
+        {
+         "value": "modifies",
+         "label": "Modifies",
+         "count": 41,
+         "group": ""
+        },
+        {
+         "value": "prevents",
+         "label": "Prevents",
+         "count": 8,
+         "group": ""
+        },
+        {
+         "value": "removes",
+         "label": "Removes",
+         "count": 25,
+         "group": ""
+        },
+        {
+         "value": "conditions_on",
+         "label": "Requires",
+         "count": 41,
+         "group": ""
+        },
+        {
+         "value": "steals",
+         "label": "Steals",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "triggers_off",
+         "label": "Triggers on",
+         "count": 37,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "@buff",
+         "label": "Any buff",
+         "count": 239,
+         "group": "Category"
+        },
+        {
+         "value": "Agile",
+         "label": "Agile",
+         "count": 5,
+         "group": "Buff"
+        },
+        {
+         "value": "Arcane",
+         "label": "Arcane",
+         "count": 8,
+         "group": "Buff"
+        },
+        {
+         "value": "Barrier",
+         "label": "Barrier",
+         "count": 40,
+         "group": "Buff"
+        },
+        {
+         "value": "Berserk",
+         "label": "Berserk",
+         "count": 7,
+         "group": "Buff"
+        },
+        {
+         "value": "Defensive",
+         "label": "Defensive",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "Immune",
+         "label": "Immune",
+         "count": 5,
+         "group": "Buff"
+        },
+        {
+         "value": "Invisible",
+         "label": "Invisible",
+         "count": 27,
+         "group": "Buff"
+        },
+        {
+         "value": "Leeching",
+         "label": "Leeching",
+         "count": 8,
+         "group": "Buff"
+        },
+        {
+         "value": "Mending",
+         "label": "Mending",
+         "count": 11,
+         "group": "Buff"
+        },
+        {
+         "value": "Proficient",
+         "label": "Proficient",
+         "count": 3,
+         "group": "Buff"
+        },
+        {
+         "value": "Protected",
+         "label": "Protected",
+         "count": 8,
+         "group": "Buff"
+        },
+        {
+         "value": "Rebirth",
+         "label": "Rebirth",
+         "count": 14,
+         "group": "Buff"
+        },
+        {
+         "value": "Repelling",
+         "label": "Repelling",
+         "count": 6,
+         "group": "Buff"
+        },
+        {
+         "value": "Savage",
+         "label": "Savage",
+         "count": 10,
+         "group": "Buff"
+        },
+        {
+         "value": "Secret Stuff",
+         "label": "Secret Stuff",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "Shelled",
+         "label": "Shelled",
+         "count": 27,
+         "group": "Buff"
+        },
+        {
+         "value": "Splashing",
+         "label": "Splashing",
+         "count": 8,
+         "group": "Buff"
+        },
+        {
+         "value": "Taunting",
+         "label": "Taunting",
+         "count": 4,
+         "group": "Buff"
+        },
+        {
+         "value": "Warded",
+         "label": "Warded",
+         "count": 7,
+         "group": "Buff"
+        },
+        {
+         "value": "*buff",
+         "label": "Random buff",
+         "count": 61,
+         "group": "General"
+        }
+       ]
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "stat alias",
+   "conditions": [
+    {
+     "category": "stat",
+     "relation": "increases",
+     "value": "Health"
+    }
+   ],
+   "expected": {
+    "items": [
+     {
+      "id": "relic:28",
+      "kind": "relic",
+      "name": "5740-NG, Impenetrable Plate of 4080",
+      "description": "",
+      "image": "/assets/siralim/images/relic/5740NG/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:28",
+        "rank": 50,
+        "reference": "relic:5740-ng:r50",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:422",
+      "kind": "trait",
+      "name": "Absorption",
+      "description": "After an enemy is healed, this creature gains Maximum health equal to 30% of the amount healed.",
+      "image": "/assets/siralim/images/creature/StoneGiant/battle.png",
+      "matched_names": [
+       "Stone Giant",
+       "Stone Boulder"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:422",
+        "rank": null,
+        "reference": "trait:absorption",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1904",
+      "kind": "trait",
+      "name": "Autonomous Health",
+      "description": "At the start of this creature's turn, it gains 30% Maximum health plus 20% of the total amount of Maximum health it has received in the current battle.",
+      "image": "/assets/siralim/images/creature/BattleClockwork/battle.png",
+      "matched_names": [
+       "Battle Clockwork",
+       "Neural Health Implant"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1904",
+        "rank": null,
+        "reference": "trait:autonomous-health",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "trait:1904",
+        "rank": null,
+        "reference": "trait:autonomous-health",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "relic:17",
+      "kind": "relic",
+      "name": "Bloodseeker, Hungering Dagger of Mortem",
+      "description": "",
+      "image": "/assets/siralim/images/relic/Bloodseeker/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:17",
+        "rank": 40,
+        "reference": "relic:bloodseeker:r40",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:17",
+        "rank": 50,
+        "reference": "relic:bloodseeker:r50",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "relic:25",
+      "kind": "relic",
+      "name": "Brambleskin, Spiked Carapace of Genaros",
+      "description": "",
+      "image": "/assets/siralim/images/relic/Brambleskin/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:25",
+        "rank": 40,
+        "reference": "relic:brambleskin:r40",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "spell:23",
+      "kind": "spell",
+      "name": "Charm of Life",
+      "description": "Your creatures gain a moderate amount of Attack, Speed, and Curent and Maximum Health.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:23",
+        "rank": null,
+        "reference": "spell:charm-of-life",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:392",
+      "kind": "spell",
+      "name": "Clayman",
+      "description": "Target gains Maximum Health equal to its Current Health.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:392",
+        "rank": null,
+        "reference": "spell:clayman",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:800",
+      "kind": "trait",
+      "name": "Closure",
+      "description": "At the end of this creature's turn, it gains 35% Current and Maximum health and provokes.",
+      "image": "/assets/siralim/images/creature/Walken/battle.png",
+      "matched_names": [
+       "Walken",
+       "Particle of Walken"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:800",
+        "rank": null,
+        "reference": "trait:closure",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1576",
+      "kind": "trait",
+      "name": "Cycle of Life",
+      "description": "After this creature is resurrected, it gains 100% Maximum health.",
+      "image": "/assets/siralim/images/creature/AspenEnt/battle.png",
+      "matched_names": [
+       "Aspen Ent",
+       "Aspen Branch"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1576",
+        "rank": null,
+        "reference": "trait:cycle-of-life",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:37",
+      "kind": "spell",
+      "name": "Death Siphon",
+      "description": "Target creature is killed, and the caster gains 50% of its Attack, Intelligence, Defense, Speed, and Maximum Health.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:37",
+        "rank": null,
+        "reference": "spell:death-siphon",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "spell:41",
+      "kind": "spell",
+      "name": "Determination",
+      "description": "Your creatures gain a large amount of Defense and Maximum Health.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:41",
+        "rank": null,
+        "reference": "spell:determination",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:368",
+      "kind": "spell",
+      "name": "Engorge",
+      "description": "Target gains a massive amount of Maximum Health and loses a massive amount of Defense and Speed.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:368",
+        "rank": null,
+        "reference": "spell:engorge",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:244",
+      "kind": "spell",
+      "name": "Flesh Offering",
+      "description": "Target loses a large amount of Maximum Health, and your creatures gain 20% of that amount.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:244",
+        "rank": null,
+        "reference": "spell:flesh-offering",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:1134",
+      "kind": "trait",
+      "name": "Forbearance",
+      "description": "When your creatures are resurrected, they are resurrected with 100% additional health. If this amount exceeds their Maximum health, their Maximum health increases by an amount equal to the difference. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/DuskOssein/battle.png",
+      "matched_names": [
+       "Dusk Ossein",
+       "Shadow Fossil"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1134",
+        "rank": null,
+        "reference": "trait:forbearance",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "relic:19",
+      "kind": "relic",
+      "name": "Hanti & Jihi, Sister Swords of Perdition",
+      "description": "",
+      "image": "/assets/siralim/images/relic/HantiJihi/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:19",
+        "rank": 30,
+        "reference": "relic:hanti-and-jihi:r30",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:534",
+      "kind": "perk",
+      "name": "Heart That Thrives · Graveborn",
+      "description": "The first 3 times your creatures are resurrected, they gain 25%, 50%, and 100% Maximum health.",
+      "image": "/assets/siralim/images/perk/HeartThatThrives.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:534",
+        "rank": null,
+        "reference": "perk:graveborn:heart-that-thrives",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1156",
+      "kind": "trait",
+      "name": "Heart Versus Mind",
+      "description": "After your creatures' Barrier buffs are damaged and destroyed, they gain 50% of the original strength of the Barrier as Maximum health. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/KolossChampion/battle.png",
+      "matched_names": [
+       "Koloss Champion",
+       "Bastard Blade"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1156",
+        "rank": null,
+        "reference": "trait:heart-versus-mind",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1153",
+      "kind": "trait",
+      "name": "Hearty Appetite",
+      "description": "After your creatures gain attack, intelligence, defense, or speed, they gain 20% of that amount as Maximum health as well. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/BestialKoloss/battle.png",
+      "matched_names": [
+       "Bestial Koloss",
+       "Dull Blade"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1153",
+        "rank": null,
+        "reference": "trait:hearty-appetite",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:511",
+      "kind": "spell",
+      "name": "Hypertrophy",
+      "description": "Target gains Maximum Health equal to 35% of its other stats. Then, those stats are set to their minimum values.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:511",
+        "rank": null,
+        "reference": "spell:hypertrophy",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1716",
+      "kind": "trait",
+      "name": "Lithos Evolution",
+      "description": "At the start of your creatures' turns, they gain 10% Maximum Health. This trait does not stack.",
+      "image": "/assets/siralim/images/item/material/LithosSinew.png",
+      "matched_names": [
+       "Lithos Sinew"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1716",
+        "rank": null,
+        "reference": "trait:lithos-evolution",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:336",
+      "kind": "spell",
+      "name": "Living Helmet",
+      "description": "Caster gains a massive amount of Maximum Health and Protected. This spell is an Arsenal Spell.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:336",
+        "rank": null,
+        "reference": "spell:living-helmet",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:129",
+      "kind": "spell",
+      "name": "Morph: Life",
+      "description": "Your creatures gain a large amount of Maximum Health and their classes become Life until the end of battle.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:129",
+        "rank": null,
+        "reference": "spell:morph-life",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:602",
+      "kind": "spell",
+      "name": "Pure Love",
+      "description": "All creatures gain a massive amount of Maximum Health.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:602",
+        "rank": null,
+        "reference": "spell:pure-love",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1551",
+      "kind": "trait",
+      "name": "Reforged",
+      "description": "After your creatures are resurrected, they gain 50% Maximum health. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/WarGiant/battle.png",
+      "matched_names": [
+       "War Giant",
+       "War Boulder"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1551",
+        "rank": null,
+        "reference": "trait:reforged",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:553",
+      "kind": "spell",
+      "name": "Resplendence",
+      "description": "Enemies take a small amount of damage, your creatures recover a small amount of Health, and your creatures gain a small amount of Maximum Health.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:553",
+        "rank": null,
+        "reference": "spell:resplendence",
+        "rule": 0,
+        "action": 2
+       }
+      ]
+     },
+     {
+      "id": "trait:1155",
+      "kind": "trait",
+      "name": "Rise Above",
+      "description": "After your creatures are healed, they gain 5% of that amount as Maximum health as well. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/KolossDoombringer/battle.png",
+      "matched_names": [
+       "Koloss Doombringer",
+       "Imperfect Blade"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1155",
+        "rank": null,
+        "reference": "trait:rise-above",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "relic:7",
+      "kind": "relic",
+      "name": "Salus, Jade Guardian of Lister",
+      "description": "",
+      "image": "/assets/siralim/images/relic/Salus/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:7",
+        "rank": 50,
+        "reference": "relic:salus:r50",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:189",
+      "kind": "spell",
+      "name": "Stone Skin",
+      "description": "Target gains a massive amount of Current and Maximum Health.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:189",
+        "rank": null,
+        "reference": "spell:stone-skin",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1987",
+      "kind": "trait",
+      "name": "Surge of Vitality",
+      "description": "After your creatures attack or are attacked, they gain 20% Maximum health. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/Genaros/battle.png",
+      "matched_names": [
+       "Genaros"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1987",
+        "rank": null,
+        "reference": "trait:surge-of-vitality",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "trait:1987",
+        "rank": null,
+        "reference": "trait:surge-of-vitality",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:242",
+      "kind": "perk",
+      "name": "Transfusion · Bloodmage",
+      "description": "After one of your creatures takes damage and is not killed, one of your other creatures gains Maximum health equal to 25% of the damage taken.",
+      "image": "/assets/siralim/images/perk/Transfusion.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:242",
+        "rank": null,
+        "reference": "perk:bloodmage:transfusion",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "relic:21",
+      "kind": "relic",
+      "name": "Void Essence, Dark Heart of Caliban",
+      "description": "",
+      "image": "/assets/siralim/images/relic/VoidEssence/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:21",
+        "rank": 40,
+        "reference": "relic:void-essence:r40",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:46",
+      "kind": "spell",
+      "name": "Wild Growth",
+      "description": "Target gains Mending, and a large amount of Maximum Health.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:46",
+        "rank": null,
+        "reference": "spell:wild-growth",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     }
+    ],
+    "total": 32,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 11
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 10
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 10
+      },
+      {
+       "value": "spell",
+       "label": "Spell Gem",
+       "count": 13
+      },
+      {
+       "value": "relic",
+       "label": "Relic",
+       "count": 6
+      },
+      {
+       "value": "perk",
+       "label": "Character Perk",
+       "count": 2
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 1016
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 772
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 1830
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 3188
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 97
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 313
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 3181
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 114
+        }
+       ],
+       "relations": [
+        {
+         "value": "modifies",
+         "label": "Changes rule",
+         "count": 6,
+         "group": ""
+        },
+        {
+         "value": "increases",
+         "label": "Gains",
+         "count": 32,
+         "group": ""
+        },
+        {
+         "value": "has_less",
+         "label": "Has less",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "has_more",
+         "label": "Has more",
+         "count": 22,
+         "group": ""
+        },
+        {
+         "value": "decreases",
+         "label": "Loses",
+         "count": 6,
+         "group": ""
+        },
+        {
+         "value": "gain_modifier",
+         "label": "Modifies gains",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "scales_with",
+         "label": "Scales with",
+         "count": 31,
+         "group": ""
+        },
+        {
+         "value": "steals",
+         "label": "Steals",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "triggers_off",
+         "label": "Triggers on",
+         "count": 3,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "all",
+         "label": "All stats",
+         "count": 27,
+         "group": ""
+        },
+        {
+         "value": "Attack",
+         "label": "Attack",
+         "count": 75,
+         "group": ""
+        },
+        {
+         "value": "Current Health",
+         "label": "Current Health",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "Defense",
+         "label": "Defense",
+         "count": 71,
+         "group": ""
+        },
+        {
+         "value": "highest_stat",
+         "label": "Highest stat",
+         "count": 6,
+         "group": ""
+        },
+        {
+         "value": "Intelligence",
+         "label": "Intelligence",
+         "count": 60,
+         "group": ""
+        },
+        {
+         "value": "lowest_stat",
+         "label": "Lowest stat",
+         "count": 5,
+         "group": ""
+        },
+        {
+         "value": "Maximum Health",
+         "label": "Maximum Health",
+         "count": 32,
+         "group": ""
+        },
+        {
+         "value": "Speed",
+         "label": "Speed",
+         "count": 49,
+         "group": ""
+        }
+       ]
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "two conditions, action scope",
+   "conditions": [
+    {
+     "category": "status",
+     "relation": "grants",
+     "value": "@buff"
+    },
+    {
+     "category": "scope",
+     "relation": "target",
+     "value": "enemies"
+    }
+   ],
+   "scope": "action",
+   "expected": {
+    "items": [
+     {
+      "id": "spell:142",
+      "kind": "spell",
+      "name": "Parasites",
+      "description": "Enemies are afflicted with Blighted and Leeching.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:142",
+        "rank": null,
+        "reference": "spell:parasites",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     }
+    ],
+    "total": 1,
+    "facets": {
+     "kinds": [
+      {
+       "value": "spell",
+       "label": "Spell Gem",
+       "count": 1
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 261
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 107
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 265
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 496
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 10
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 17
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 496
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 5
+        }
+       ],
+       "relations": [
+        {
+         "value": "always_has",
+         "label": "Always has",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "grants",
+         "label": "Grants",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "modifies",
+         "label": "Modifies",
+         "count": 7,
+         "group": ""
+        },
+        {
+         "value": "prevents",
+         "label": "Prevents",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "removes",
+         "label": "Removes",
+         "count": 6,
+         "group": ""
+        },
+        {
+         "value": "conditions_on",
+         "label": "Requires",
+         "count": 2,
+         "group": ""
+        },
+        {
+         "value": "triggers_off",
+         "label": "Triggers on",
+         "count": 2,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "@buff",
+         "label": "Any buff",
+         "count": 1,
+         "group": "Category"
+        },
+        {
+         "value": "Leeching",
+         "label": "Leeching",
+         "count": 1,
+         "group": "Buff"
+        }
+       ]
+      },
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 239
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 18
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 84
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 239
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 3
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 15
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 239
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 1
+        }
+       ],
+       "relations": [
+        {
+         "value": "target",
+         "label": "Effect target",
+         "count": 1,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "adjacent_allies",
+         "label": "Adjacent allies",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "allies",
+         "label": "All allies",
+         "count": 132,
+         "group": ""
+        },
+        {
+         "value": "enemies",
+         "label": "All enemies",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "any",
+         "label": "Any creature",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "caster",
+         "label": "Caster",
+         "count": 15,
+         "group": ""
+        },
+        {
+         "value": "target",
+         "label": "Current target",
+         "count": 33,
+         "group": ""
+        },
+        {
+         "value": "holder",
+         "label": "Holder",
+         "count": 41,
+         "group": ""
+        },
+        {
+         "value": "ally",
+         "label": "One ally",
+         "count": 7,
+         "group": ""
+        },
+        {
+         "value": "enemy",
+         "label": "One enemy",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "random_ally",
+         "label": "Random ally",
+         "count": 4,
+         "group": ""
+        }
+       ]
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "two conditions, rule scope",
+   "conditions": [
+    {
+     "category": "status",
+     "relation": "grants",
+     "value": "@buff"
+    },
+    {
+     "category": "scope",
+     "relation": "target",
+     "value": "enemies"
+    }
+   ],
+   "scope": "rule",
+   "expected": {
+    "items": [
+     {
+      "id": "spell:646",
+      "kind": "spell",
+      "name": "Arbitration",
+      "description": "Enemies' buffs are removed, and your creatures gain those buffs.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:646",
+        "rank": null,
+        "reference": "spell:arbitration",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "spell:646",
+        "rank": null,
+        "reference": "spell:arbitration",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "perk:422",
+      "kind": "perk",
+      "name": "Explosive Armor · Siegemaster",
+      "description": "After your creatures defend, they gain 10% defense and a Barrier that absorbs the same amount of defense. If the creature already has a Barrier, it explodes, dealing damage to enemies equal to 50% of the Barrier strength.\n\nBarrier absorbs a certain amount of damage. After the maximum amount of damage is dealt, the buff is removed. Barrier strength cannot exceed 200% of a creature's highest stat when this buff is applied.",
+      "image": "/assets/siralim/images/perk/ExplosiveArmor.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:422",
+        "rank": null,
+        "reference": "perk:siegemaster:explosive-armor",
+        "rule": 0,
+        "action": 1
+       },
+       {
+        "entity_id": "perk:422",
+        "rank": null,
+        "reference": "perk:siegemaster:explosive-armor",
+        "rule": 0,
+        "action": 3
+       }
+      ]
+     },
+     {
+      "id": "spell:142",
+      "kind": "spell",
+      "name": "Parasites",
+      "description": "Enemies are afflicted with Blighted and Leeching.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:142",
+        "rank": null,
+        "reference": "spell:parasites",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:549",
+      "kind": "spell",
+      "name": "Radiant Sunfire",
+      "description": "Your creatures gain a random buff and enemies are afflicted with a random debuff for each enemy with Burning.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:549",
+        "rank": null,
+        "reference": "spell:radiant-sunfire",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "spell:549",
+        "rank": null,
+        "reference": "spell:radiant-sunfire",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     }
+    ],
+    "total": 4,
+    "facets": {
+     "kinds": [
+      {
+       "value": "spell",
+       "label": "Spell Gem",
+       "count": 3
+      },
+      {
+       "value": "perk",
+       "label": "Character Perk",
+       "count": 1
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 267
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 114
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 266
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 496
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 10
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 17
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 496
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 5
+        }
+       ],
+       "relations": [
+        {
+         "value": "always_has",
+         "label": "Always has",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "grants",
+         "label": "Grants",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "modifies",
+         "label": "Modifies",
+         "count": 7,
+         "group": ""
+        },
+        {
+         "value": "prevents",
+         "label": "Prevents",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "removes",
+         "label": "Removes",
+         "count": 11,
+         "group": ""
+        },
+        {
+         "value": "conditions_on",
+         "label": "Requires",
+         "count": 2,
+         "group": ""
+        },
+        {
+         "value": "steals",
+         "label": "Steals",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "triggers_off",
+         "label": "Triggers on",
+         "count": 2,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "@buff",
+         "label": "Any buff",
+         "count": 4,
+         "group": "Category"
+        },
+        {
+         "value": "Barrier",
+         "label": "Barrier",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "Leeching",
+         "label": "Leeching",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "*buff",
+         "label": "Random buff",
+         "count": 1,
+         "group": "General"
+        }
+       ]
+      },
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 239
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 49
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 102
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 239
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 8
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 15
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 239
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 3
+        }
+       ],
+       "relations": [
+        {
+         "value": "target",
+         "label": "Effect target",
+         "count": 4,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "adjacent_allies",
+         "label": "Adjacent allies",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "allies",
+         "label": "All allies",
+         "count": 132,
+         "group": ""
+        },
+        {
+         "value": "enemies",
+         "label": "All enemies",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "any",
+         "label": "Any creature",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "caster",
+         "label": "Caster",
+         "count": 16,
+         "group": ""
+        },
+        {
+         "value": "target",
+         "label": "Current target",
+         "count": 35,
+         "group": ""
+        },
+        {
+         "value": "holder",
+         "label": "Holder",
+         "count": 42,
+         "group": ""
+        },
+        {
+         "value": "ally",
+         "label": "One ally",
+         "count": 7,
+         "group": ""
+        },
+        {
+         "value": "enemy",
+         "label": "One enemy",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "random_ally",
+         "label": "Random ally",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "random_enemy",
+         "label": "Random enemy",
+         "count": 1,
+         "group": ""
+        }
+       ]
+      }
+     ]
+    },
+    "scope": "rule"
+   }
+  },
+  {
+   "name": "two conditions, component scope",
+   "conditions": [
+    {
+     "category": "status",
+     "relation": "grants",
+     "value": "@buff"
+    },
+    {
+     "category": "scope",
+     "relation": "target",
+     "value": "enemies"
+    }
+   ],
+   "scope": "component",
+   "expected": {
+    "items": [
+     {
+      "id": "spell:646",
+      "kind": "spell",
+      "name": "Arbitration",
+      "description": "Enemies' buffs are removed, and your creatures gain those buffs.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:646",
+        "rank": null,
+        "reference": "spell:arbitration",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "spell:646",
+        "rank": null,
+        "reference": "spell:arbitration",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "spell:289",
+      "kind": "spell",
+      "name": "Black Ice",
+      "description": "Each enemy has a 50% chance to be afflicted with Frozen, and each of your creatures have a 50% chance to gain Invisible.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:289",
+        "rank": null,
+        "reference": "spell:black-ice",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "spell:289",
+        "rank": null,
+        "reference": "spell:black-ice",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:527",
+      "kind": "trait",
+      "name": "Chaos Transformation",
+      "description": "When your creatures buff an enemy, they debuff them instead. When your creatures debuff an ally, they buff them instead. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/ChaosShapeshifter/battle.png",
+      "matched_names": [
+       "Chaos Shapeshifter",
+       "Chaos Plasma"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:527",
+        "rank": null,
+        "reference": "trait:chaos-transformation",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "trait:527",
+        "rank": null,
+        "reference": "trait:chaos-transformation",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "perk:422",
+      "kind": "perk",
+      "name": "Explosive Armor · Siegemaster",
+      "description": "After your creatures defend, they gain 10% defense and a Barrier that absorbs the same amount of defense. If the creature already has a Barrier, it explodes, dealing damage to enemies equal to 50% of the Barrier strength.\n\nBarrier absorbs a certain amount of damage. After the maximum amount of damage is dealt, the buff is removed. Barrier strength cannot exceed 200% of a creature's highest stat when this buff is applied.",
+      "image": "/assets/siralim/images/perk/ExplosiveArmor.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "perk:422",
+        "rank": null,
+        "reference": "perk:siegemaster:explosive-armor",
+        "rule": 0,
+        "action": 1
+       },
+       {
+        "entity_id": "perk:422",
+        "rank": null,
+        "reference": "perk:siegemaster:explosive-armor",
+        "rule": 0,
+        "action": 3
+       }
+      ]
+     },
+     {
+      "id": "relic:6",
+      "kind": "relic",
+      "name": "Ferro, Great Axe of Gonfurian",
+      "description": "",
+      "image": "/assets/siralim/images/relic/Ferro/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:6",
+        "rank": 10,
+        "reference": "relic:ferro:r10",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:6",
+        "rank": 30,
+        "reference": "relic:ferro:r30",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:6",
+        "rank": 50,
+        "reference": "relic:ferro:r50",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:6",
+        "rank": 80,
+        "reference": "relic:ferro:r80",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:2019",
+      "kind": "trait",
+      "name": "Going Mad",
+      "description": "After this creature takes damage from an attack or spell, it gains a random buff. After this creature is healed, it gains a random debuff. After this creature takes damage from an attack or spell while it has at least 15 buffs and debuffs, it deals damage to enemies equal to 50% of its lowest stat (other than health).",
+      "image": "/assets/siralim/images/creature/TormentedBunny/battle.png",
+      "matched_names": [
+       "Tormented Bunny",
+       "Unlucky Rabbit's Foot"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:2019",
+        "rank": null,
+        "reference": "trait:going-mad",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "trait:2019",
+        "rank": null,
+        "reference": "trait:going-mad",
+        "rule": 2,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "relic:5",
+      "kind": "relic",
+      "name": "Lamora, Gilded Scimitar of Friden",
+      "description": "",
+      "image": "/assets/siralim/images/relic/Lamora/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:5",
+        "rank": 30,
+        "reference": "relic:lamora:r30",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:5",
+        "rank": 60,
+        "reference": "relic:lamora:r60",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:5",
+        "rank": 80,
+        "reference": "relic:lamora:r80",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:142",
+      "kind": "spell",
+      "name": "Parasites",
+      "description": "Enemies are afflicted with Blighted and Leeching.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:142",
+        "rank": null,
+        "reference": "spell:parasites",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "relic:8",
+      "kind": "relic",
+      "name": "Petra & Aes, War Drums of Meraxis",
+      "description": "",
+      "image": "/assets/siralim/images/relic/PetraAes/relic.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "relic:8",
+        "rank": 20,
+        "reference": "relic:petra-and-aes:r20",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "relic:8",
+        "rank": 90,
+        "reference": "relic:petra-and-aes:r90",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "spell:549",
+      "kind": "spell",
+      "name": "Radiant Sunfire",
+      "description": "Your creatures gain a random buff and enemies are afflicted with a random debuff for each enemy with Burning.",
+      "image": "/assets/siralim/images/misc/category/spell.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "spell:549",
+        "rank": null,
+        "reference": "spell:radiant-sunfire",
+        "rule": 0,
+        "action": 0
+       },
+       {
+        "entity_id": "spell:549",
+        "rank": null,
+        "reference": "spell:radiant-sunfire",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:1237",
+      "kind": "trait",
+      "name": "Soul Reaver",
+      "description": "After this creature damages an enemy, it steals their buffs and minions and gives them its debuffs. In addition, your creatures' buffs and minions last forever, and enemies' debuffs last forever.",
+      "image": "/assets/siralim/images/creature/Venedon/battle.png",
+      "matched_names": [
+       "Venedon"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1237",
+        "rank": null,
+        "reference": "trait:soul-reaver",
+        "rule": 0,
+        "action": 1
+       },
+       {
+        "entity_id": "trait:1237",
+        "rank": null,
+        "reference": "trait:soul-reaver",
+        "rule": 2,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1242",
+      "kind": "trait",
+      "name": "The Nether",
+      "description": "At the start of your other creatures' turns, this creature performs an action depending on that creature's class. Chaos - Attack a random enemy. Death - Enemies are afflicted with a random debuff. Life - Your creatures gain a random buff. Nature - Your creatures gain 10% stats. Sorcery - Cast one of their Spell Gems. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/Caliban/battle.png",
+      "matched_names": [
+       "Caliban"
+      ],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1242",
+        "rank": null,
+        "reference": "trait:the-nether",
+        "rule": 1,
+        "action": 0
+       },
+       {
+        "entity_id": "trait:1242",
+        "rank": null,
+        "reference": "trait:the-nether",
+        "rule": 2,
+        "action": 0
+       }
+      ]
+     }
+    ],
+    "total": 12,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 4
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 4
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 2
+      },
+      {
+       "value": "spell",
+       "label": "Spell Gem",
+       "count": 4
+      },
+      {
+       "value": "relic",
+       "label": "Relic",
+       "count": 3
+      },
+      {
+       "value": "perk",
+       "label": "Character Perk",
+       "count": 1
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 271
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 124
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 277
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 496
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 12
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 18
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 496
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 7
+        }
+       ],
+       "relations": [
+        {
+         "value": "always_has",
+         "label": "Always has",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "grants",
+         "label": "Grants",
+         "count": 12,
+         "group": ""
+        },
+        {
+         "value": "modifies",
+         "label": "Modifies",
+         "count": 9,
+         "group": ""
+        },
+        {
+         "value": "prevents",
+         "label": "Prevents",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "removes",
+         "label": "Removes",
+         "count": 12,
+         "group": ""
+        },
+        {
+         "value": "conditions_on",
+         "label": "Requires",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "steals",
+         "label": "Steals",
+         "count": 2,
+         "group": ""
+        },
+        {
+         "value": "triggers_off",
+         "label": "Triggers on",
+         "count": 2,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "@buff",
+         "label": "Any buff",
+         "count": 12,
+         "group": "Category"
+        },
+        {
+         "value": "Barrier",
+         "label": "Barrier",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "Invisible",
+         "label": "Invisible",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "Leeching",
+         "label": "Leeching",
+         "count": 2,
+         "group": "Buff"
+        },
+        {
+         "value": "Mending",
+         "label": "Mending",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "Proficient",
+         "label": "Proficient",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "Rebirth",
+         "label": "Rebirth",
+         "count": 1,
+         "group": "Buff"
+        },
+        {
+         "value": "*buff",
+         "label": "Random buff",
+         "count": 4,
+         "group": "General"
+        }
+       ]
+      },
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 239
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 55
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 113
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 239
+        },
+        {
+         "value": "class",
+         "label": "Affects class",
+         "count": 10
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 16
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 239
+        },
+        {
+         "value": "minion",
+         "label": "Minion",
+         "count": 8
+        }
+       ],
+       "relations": [
+        {
+         "value": "target",
+         "label": "Effect target",
+         "count": 12,
+         "group": ""
+        },
+        {
+         "value": "trigger_subject",
+         "label": "Trigger subject",
+         "count": 3,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "adjacent_allies",
+         "label": "Adjacent allies",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "allies",
+         "label": "All allies",
+         "count": 134,
+         "group": ""
+        },
+        {
+         "value": "enemies",
+         "label": "All enemies",
+         "count": 12,
+         "group": ""
+        },
+        {
+         "value": "any",
+         "label": "Any creature",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "attacker",
+         "label": "Attacker",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "caster",
+         "label": "Caster",
+         "count": 16,
+         "group": ""
+        },
+        {
+         "value": "target",
+         "label": "Current target",
+         "count": 40,
+         "group": ""
+        },
+        {
+         "value": "holder",
+         "label": "Holder",
+         "count": 45,
+         "group": ""
+        },
+        {
+         "value": "ally",
+         "label": "One ally",
+         "count": 7,
+         "group": ""
+        },
+        {
+         "value": "enemy",
+         "label": "One enemy",
+         "count": 5,
+         "group": ""
+        },
+        {
+         "value": "random_ally",
+         "label": "Random ally",
+         "count": 4,
+         "group": ""
+        },
+        {
+         "value": "random_enemy",
+         "label": "Random enemy",
+         "count": 7,
+         "group": ""
+        },
+        {
+         "value": "relic",
+         "label": "Relic itself",
+         "count": 1,
+         "group": ""
+        }
+       ]
+      }
+     ]
+    },
+    "scope": "component"
+   }
+  },
+  {
+   "name": "text, kind and condition",
+   "q": "poison",
+   "kind": "trait",
+   "conditions": [
+    {
+     "category": "status",
+     "relation": "inflicts",
+     "value": "Poisoned"
+    }
+   ],
+   "expected": {
+    "items": [
+     {
+      "id": "trait:254",
+      "kind": "trait",
+      "name": "Poison Inoculation",
+      "description": "Your creatures start battle with Poisoned. Your creatures recover health from Poisoned instead of taking damage from it.",
+      "image": "/assets/siralim/images/creature/CancerousSmog/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:254",
+        "rank": null,
+        "reference": "trait:poison-inoculation",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1180",
+      "kind": "trait",
+      "name": "Bad Blood",
+      "description": "After your creatures are killed, this creature afflicts enemies with Poisoned, Burning and Bleeding.",
+      "image": "/assets/siralim/images/creature/ManiacHuntsman/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1180",
+        "rank": null,
+        "reference": "trait:bad-blood",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:2026",
+      "kind": "trait",
+      "name": "Bang-A-Rang",
+      "description": "After an enemy takes damage from Bomb, this creature afflicts it with Burning and Poisoned. If the enemy already has these debuffs, their potency is increased by 30% instead.",
+      "image": "/assets/siralim/images/creature/OlNog/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:2026",
+        "rank": null,
+        "reference": "trait:bang-a-rang",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:279",
+      "kind": "trait",
+      "name": "Contagion",
+      "description": "After an enemy dodges, this creature afflicts it with Poisoned and Silenced.",
+      "image": "/assets/siralim/images/creature/VenomousClutcher/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:279",
+        "rank": null,
+        "reference": "trait:contagion",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:252",
+      "kind": "trait",
+      "name": "Contamination",
+      "description": "This creature's attacks deal 75% more damage and afflict Poisoned.",
+      "image": "/assets/siralim/images/creature/NoxiousSmog/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:252",
+        "rank": null,
+        "reference": "trait:contamination",
+        "rule": 1,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1676",
+      "kind": "trait",
+      "name": "Dead of Winter",
+      "description": "After an enemy afflicts a debuff, it is afflicted with Frozen and Poisoned.",
+      "image": "/assets/siralim/images/item/material/AlchemicalFrost.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1676",
+        "rank": null,
+        "reference": "trait:dead-of-winter",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:514",
+      "kind": "trait",
+      "name": "Gore",
+      "description": "After your Waspids attack, they afflict the target with Poisoned and Bleeding.",
+      "image": "/assets/siralim/images/creature/WaspidSlicer/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:514",
+        "rank": null,
+        "reference": "trait:gore",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:522",
+      "kind": "trait",
+      "name": "Here to Die",
+      "description": "After an enemy is afflicted with either Bleeding or Poisoned, this creature afflicts them with whichever of these debuffs the target doesn't already have.",
+      "image": "/assets/siralim/images/creature/CanopyArachnalisk/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:522",
+        "rank": null,
+        "reference": "trait:here-to-die",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:433",
+      "kind": "trait",
+      "name": "Hunter's Season",
+      "description": "After this creature attacks, it deals damage to a random enemy equal to 35% of the attack's damage and afflicts them with Poisoned. This effect repeats once for each Hunter fighting on your side.",
+      "image": "/assets/siralim/images/creature/ServantHunter/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:433",
+        "rank": null,
+        "reference": "trait:hunter-s-season",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:2114",
+      "kind": "trait",
+      "name": "Scoundrel's Strike",
+      "description": "Toxic Frogmania cast by your creatures always deals massive damage based on the caster's lowest stat and afflicts the target with Poisoned. The potency of the spell is increased by 20% for each unique class among your creatures. This trait does not stack.",
+      "image": "/assets/siralim/images/creature/MirelingDartFrog/battle.png",
+      "aliases": [
+       "Scoundrel Strike"
+      ],
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:2114",
+        "rank": null,
+        "reference": "trait:scoundrel-s-strike",
+        "rule": 0,
+        "action": 1
+       }
+      ]
+     },
+     {
+      "id": "trait:518",
+      "kind": "trait",
+      "name": "Spit Poison",
+      "description": "After this creature is attacked, it afflicts enemies with Poisoned. If enemies already have this debuff, its potency is increased by 30% instead.",
+      "image": "/assets/siralim/images/creature/SpittingArachnalisk/battle.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:518",
+        "rank": null,
+        "reference": "trait:spit-poison",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     },
+     {
+      "id": "trait:1680",
+      "kind": "trait",
+      "name": "Toxic Karma",
+      "description": "After this creature is attacked, the enemy is afflicted with Poisoned and Bomb.",
+      "image": "/assets/siralim/images/item/material/VerdantStone.png",
+      "matched_names": [],
+      "matched_rules": [
+       {
+        "entity_id": "trait:1680",
+        "rank": null,
+        "reference": "trait:toxic-karma",
+        "rule": 0,
+        "action": 0
+       }
+      ]
+     }
+    ],
+    "total": 12,
+    "facets": {
+     "kinds": [
+      {
+       "value": "trait",
+       "label": "Trait",
+       "count": 12
+      },
+      {
+       "value": "creature",
+       "label": "Creature",
+       "count": 10
+      },
+      {
+       "value": "material",
+       "label": "Material",
+       "count": 12
+      },
+      {
+       "value": "spell",
+       "label": "Spell Gem",
+       "count": 10
+      }
+     ],
+     "conditions": [
+      {
+       "categories": [
+        {
+         "value": "status",
+         "label": "Status",
+         "count": 47
+        },
+        {
+         "value": "stat",
+         "label": "Stat",
+         "count": 4
+        },
+        {
+         "value": "action",
+         "label": "Action",
+         "count": 28
+        },
+        {
+         "value": "trigger",
+         "label": "Trigger",
+         "count": 47
+        },
+        {
+         "value": "race",
+         "label": "Affects race",
+         "count": 5
+        },
+        {
+         "value": "scope",
+         "label": "Scope",
+         "count": 47
+        }
+       ],
+       "relations": [
+        {
+         "value": "detonates",
+         "label": "Activates",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "always_has",
+         "label": "Always has",
+         "count": 3,
+         "group": ""
+        },
+        {
+         "value": "inflicts",
+         "label": "Inflicts",
+         "count": 12,
+         "group": ""
+        },
+        {
+         "value": "modifies",
+         "label": "Modifies",
+         "count": 9,
+         "group": ""
+        },
+        {
+         "value": "prevents",
+         "label": "Prevents",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "removes",
+         "label": "Removes",
+         "count": 1,
+         "group": ""
+        },
+        {
+         "value": "conditions_on",
+         "label": "Requires",
+         "count": 8,
+         "group": ""
+        },
+        {
+         "value": "triggers_off",
+         "label": "Triggers on",
+         "count": 10,
+         "group": ""
+        }
+       ],
+       "values": [
+        {
+         "value": "@debuff",
+         "label": "Any debuff",
+         "count": 17,
+         "group": "Category"
+        },
+        {
+         "value": "Bleeding",
+         "label": "Bleeding",
+         "count": 3,
+         "group": "Debuff"
+        },
+        {
+         "value": "Bomb",
+         "label": "Bomb",
+         "count": 3,
+         "group": "Debuff"
+        },
+        {
+         "value": "Burning",
+         "label": "Burning",
+         "count": 2,
+         "group": "Debuff"
+        },
+        {
+         "value": "Frozen",
+         "label": "Frozen",
+         "count": 1,
+         "group": "Debuff"
+        },
+        {
+         "value": "Poisoned",
+         "label": "Poisoned",
+         "count": 12,
+         "group": "Debuff"
+        },
+        {
+         "value": "Silenced",
+         "label": "Silenced",
+         "count": 1,
+         "group": "Debuff"
+        },
+        {
+         "value": "Snared",
+         "label": "Snared",
+         "count": 1,
+         "group": "Debuff"
+        },
+        {
+         "value": "*debuff",
+         "label": "Random debuff",
+         "count": 2,
+         "group": "General"
+        }
+       ]
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "empty result",
+   "q": "zzzqxj",
+   "expected": {
+    "items": [],
+    "total": 0,
+    "facets": {
+     "kinds": [],
+     "conditions": [
+      {
+       "categories": [],
+       "relations": [],
+       "values": []
+      }
+     ]
+    },
+    "scope": "action"
+   }
+  },
+  {
+   "name": "invalid scope",
+   "scope": "team",
+   "error": "Invalid match scope"
+  },
+  {
+   "name": "unknown category",
+   "conditions": [
+    {
+     "category": "colour",
+     "relation": "",
+     "value": ""
+    }
+   ],
+   "error": "Unknown mechanic category"
+  },
+  {
+   "name": "relation from another category",
+   "conditions": [
+    {
+     "category": "stat",
+     "relation": "inflicts",
+     "value": ""
+    }
+   ],
+   "error": "Interaction is incompatible with the mechanic"
+  },
+  {
+   "name": "value without category",
+   "conditions": [
+    {
+     "category": "",
+     "relation": "",
+     "value": "Poisoned"
+    }
+   ],
+   "error": "Choose a mechanic category first"
+  },
+  {
+   "name": "nine conditions",
+   "conditions": [
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    },
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    },
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    },
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    },
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    },
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    },
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    },
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    },
+    {
+     "category": "status",
+     "relation": "",
+     "value": ""
+    }
+   ],
+   "error": "At most eight mechanic filters"
+  }
+ ]
+}
