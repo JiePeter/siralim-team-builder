@@ -9,7 +9,7 @@ import {
 } from "@/domain/attributes";
 import { memberWith, rankGroups, textMatches } from "@/domain/discovery";
 import { memoRequest } from "@/data/memo";
-import { discoveryPack, textIds } from "@/stores/search";
+import { discoveryPack, scatteredIds, textIds } from "@/stores/search";
 import { compareText } from "@/domain/values";
 import { fieldKind, type PickerField } from "./assembly";
 
@@ -74,7 +74,13 @@ export async function candidates(
     discoveryPack(),
     textIds(q),
   ]);
-  const groups = ids ? rankGroups(textMatches(index, q, ids), q) : index.groups;
+  const matching = (found: Set<string>) => rankGroups(textMatches(index, q, found), q);
+  const accepted = new Set(all.map((c) => index.canonical.get(c.id) ?? c.id));
+  let groups = ids ? matching(ids) : index.groups;
+  // The field can accept none of the components holding the phrase.
+  if (ids && !groups.some((g) => accepted.has(g.entity.id))) {
+    groups = matching(await scatteredIds(q));
+  }
   const order = new Map(groups.map((g, i) => [g.entity.id, i]));
   const position = (id: string) => order.get(index.canonical.get(id) ?? id) ?? Infinity;
   const texted = ids

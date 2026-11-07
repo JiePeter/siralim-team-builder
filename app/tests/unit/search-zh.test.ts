@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createPinia, setActivePinia } from "pinia";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { candidates } from "@/components/candidates";
+import { catalog } from "@/data";
 import { searchDocuments, textMatches } from "@/domain/discovery";
 import { matchesText } from "@/domain/values";
 import { discoveryPack, useSearchStore } from "@/stores/search";
@@ -69,5 +71,10 @@ describe("Chinese search", () => {
     expect(matchesText("魔法能力", "法力")).toBe(false);
     expect(matchesText("法力 Fire Ball", "ba 法力 fi")).toBe(true);
     expect(matchesText("Fire Ball", "ba fi")).toBe(true);
+  });
+
+  it("falls back in a picker whose field accepts none of the phrase's components", async () => {
+    const picked = await candidates("spells", "法力", await catalog());
+    expect(picked.items.length).toBeGreaterThan(0);
   });
 });
