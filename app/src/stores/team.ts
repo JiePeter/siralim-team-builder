@@ -28,6 +28,7 @@ import {
 } from "@/domain/placement";
 import { encodeTeam, decodeTeam } from "@/domain/share";
 import {
+  BLANK_ARTIFACT,
   characterEffects,
   itemId,
   newTeam,
@@ -54,7 +55,7 @@ interface Library {
 /** A plain copy: domain code clones with structuredClone, which rejects reactive proxies. */
 const plain = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
-export const BLANK_ARTIFACT = "artifact:0";
+export { BLANK_ARTIFACT };
 
 export const useTeamStore = defineStore("team", () => {
   const team = useStorage<Team>(TEAM_KEY, newTeam(), undefined, {
@@ -112,6 +113,21 @@ export const useTeamStore = defineStore("team", () => {
     return () => {
       if (JSON.stringify(team.value) !== after) throw new Error(t("team.changedSince"));
       team.value = before;
+    };
+  }
+
+  /**
+   * Mark the team before a change made elsewhere. Calling the result after the change gives the
+   * function that restores the marked team while nothing else has changed since.
+   */
+  function restorePoint(): () => () => void {
+    const before = plain(team.value);
+    return () => {
+      const after = JSON.stringify(team.value);
+      return () => {
+        if (JSON.stringify(team.value) !== after) throw new Error(t("team.changedSince"));
+        team.value = before;
+      };
     };
   }
 
@@ -214,14 +230,15 @@ export const useTeamStore = defineStore("team", () => {
     });
   }
 
-  /** Set the character base, or append an Anointment; resolves to the undo. */
-  async function takeCharacterPart(id: string, field: CharacterField) {
+  /** Set the character base, or the Anointment at `position`, by default the next free one. */
+  async function takeCharacterPart(id: string, field: CharacterField, position?: number) {
     const { catalog: definitions } = await rules();
-    return undoable((next) => {
+    return change((next) => {
       const item = instance(id);
       next.inventory.push(item);
-      const position = field === "characterAnointment" ? next.character.anointments.length : 0;
-      return installCharacterPart(next, item.uid, field, definitions, position);
+      const at =
+        position ?? (field === "characterAnointment" ? next.character.anointments.length : 0);
+      return installCharacterPart(next, item.uid, field, definitions, at);
     });
   }
 
@@ -230,12 +247,14 @@ export const useTeamStore = defineStore("team", () => {
     return change((next) => {
       const item = instance(id);
       next.inventory.push(item);
-      return replaceInstance(next, item.uid, target.slot, target.field, id);
+      return replaceInstance(next, item.uid, target.slot, target.field, id, target.index);
     });
   }
 
   function install(uid: string, target: Position, resolvedId: string) {
-    return change((next) => replaceInstance(next, uid, target.slot, target.field, resolvedId));
+    return change((next) =>
+      replaceInstance(next, uid, target.slot, target.field, resolvedId, target.index),
+    );
   }
 
   function move(source: Position, target: Position) {
@@ -398,6 +417,7 @@ export const useTeamStore = defineStore("team", () => {
     index,
     trayCount,
     rules,
+    restorePoint,
     shareUrl,
     importPlannerLink,
     plannerLink,

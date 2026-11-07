@@ -270,6 +270,8 @@ export function placementRefusal(
     else if (!isListField(source.field)) delete after[source.field];
   }
   if (target.field === "nether") {
+    if (target.index !== undefined)
+      after.nether = after.nether?.filter((_, i) => i !== target.index);
     if ((after.nether?.length ?? 0) >= NETHER_TRAITS) return NETHER_FULL;
     after.nether = [...(after.nether ?? []), id];
   } else after[target.field] = id;

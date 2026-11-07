@@ -1,6 +1,7 @@
 // Independent equipment instances: moving consumes a pool item; copying clones its configuration.
 import { t } from "@/i18n";
 import {
+  BLANK_ARTIFACT,
   isCharacterPart,
   itemId,
   type Equipment,
@@ -129,17 +130,50 @@ export function copyEquipment(value: Team, slot: number, field: SlotField, index
   return next;
 }
 
-/** Install a pool instance, sending the field's current occupant back to the pool. */
+/**
+ * Install a pool instance, sending the field's current occupant back to the pool. An unconfigured
+ * Trait carrier over a configured Artifact changes only its Trait, so the configuration stays.
+ * `index` replaces that entry of a list field instead of adding to the list.
+ */
 export function replaceInstance(
   value: Team,
   uid: string,
   slot: number,
   field: SlotField,
   resolvedId: string,
+  index?: number,
 ): Team {
-  const occupied = !isListField(field) && equipmentAt(value, slot, field);
+  if (isListField(field)) {
+    if (index === undefined || !equipmentAt(value, slot, field, index))
+      return installInstance(value, uid, slot, field, resolvedId);
+    const next = installInstance(
+      returnEquipment(value, slot, field, index),
+      uid,
+      slot,
+      field,
+      resolvedId,
+    );
+    const list = next.slots[slot]![field]!;
+    list.splice(index, 0, list.pop()!);
+    return next;
+  }
+  const occupant = equipmentAt(value, slot, field);
+  const incoming = value.inventory.find((i) => i.uid === uid);
+  if (
+    field === "artifact" &&
+    typeof occupant === "object" &&
+    occupant.artifact &&
+    incoming &&
+    !incoming.artifact
+  ) {
+    const next = structuredClone(value);
+    next.inventory.splice(poolIndex(next, uid), 1);
+    if (occupant.id !== BLANK_ARTIFACT) next.inventory.push(newInstance(occupant.id));
+    next.slots[slot]!.artifact = { ...structuredClone(occupant), id: resolvedId };
+    return next;
+  }
   return installInstance(
-    occupied ? returnEquipment(value, slot, field) : value,
+    occupant ? returnEquipment(value, slot, field) : value,
     uid,
     slot,
     field,

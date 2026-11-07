@@ -68,6 +68,40 @@ describe("placing into an occupied field", () => {
     expect(next.slots[0]!.relic).toMatchObject({ uid: "new", id: "relic:new", rank: 1 });
     expect(next.inventory).toEqual([{ uid: "old", id: "relic:old", properties: [], rank: 4 }]);
   });
+
+  const configured = { type: "Staff", stats: ["artifact_property:1"], spell: null };
+
+  it("keeps a configured Artifact when a plain carrier changes its Trait", () => {
+    const team = party("creature:x");
+    team.slots[0]!.artifact = { uid: "a", id: "material:old", artifact: configured };
+    team.inventory = [{ uid: "new", id: "material:new", properties: [] }];
+    const next = replaceInstance(team, "new", 0, "artifact", "material:new");
+    expect(next.slots[0]!.artifact).toEqual({ uid: "a", id: "material:new", artifact: configured });
+    expect(next.inventory).toMatchObject([{ id: "material:old" }]);
+    expect((next.inventory[0] as { artifact?: unknown }).artifact).toBeUndefined();
+  });
+
+  it("returns a replaced Artifact configured when a configured one takes its place", () => {
+    const team = party("creature:x");
+    team.slots[0]!.artifact = { uid: "a", id: "material:old", artifact: configured };
+    const incoming = { type: "Boots" };
+    team.inventory = [{ uid: "new", id: "material:new", artifact: incoming }];
+    const next = replaceInstance(team, "new", 0, "artifact", "material:new");
+    expect(next.slots[0]!.artifact).toMatchObject({ uid: "new", artifact: incoming });
+    expect(next.inventory).toEqual([{ uid: "a", id: "material:old", artifact: configured }]);
+  });
+
+  it("replaces one entry of a list in place", () => {
+    const team = party("creature:x");
+    team.slots[0]!.spells = [
+      { uid: "g0", id: "spell:0" },
+      { uid: "g1", id: "spell:1" },
+    ];
+    team.inventory = [{ uid: "new", id: "spell:new" }];
+    const next = replaceInstance(team, "new", 0, "spells", "spell:new", 0);
+    expect(next.slots[0]!.spells).toMatchObject([{ uid: "new" }, { uid: "g1" }]);
+    expect(next.inventory).toMatchObject([{ uid: "g0" }]);
+  });
 });
 
 describe("repeated traits on one creature", () => {

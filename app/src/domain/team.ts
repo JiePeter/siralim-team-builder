@@ -36,6 +36,9 @@ export interface Equipment {
 
 export type EquipmentRef = string | Equipment;
 
+/** An Artifact configured before it has a Trait. */
+export const BLANK_ARTIFACT = "artifact:0";
+
 export const itemId = (item: EquipmentRef | undefined) =>
   typeof item === "string" ? item : item?.id;
 
