@@ -8,6 +8,9 @@ from .current import SNAPSHOT, norm, records
 
 # Later roles paint over earlier ones: an amount sits inside the effect that states it.
 SPAN_ROLES = ("effect", "condition", "trigger", "note", "amount")
+# Chinese runs words together, so only Latin letters and digits make a name part of a longer word.
+NAME_START = r"(?<![A-Za-z0-9_])"
+NAME_END = r"(?![A-Za-z0-9_])"
 
 
 def locate(text, span):
@@ -104,7 +107,8 @@ class InlineReferences:
         self.spell_pattern = re.compile(
             r"\[icons,\d+\]\s*("
             + "|".join(re.escape(n) for n in sorted(self.names, key=len, reverse=True))
-            + r")(?!\w)",
+            + ")"
+            + NAME_END,
             re.I,
         )
         self.condition_names = {
@@ -257,7 +261,7 @@ class InlineReferences:
             for name in sorted(names, key=len, reverse=True):
                 found = [
                     m
-                    for m in re.finditer(r"(?<!\w)" + re.escape(name) + r"(?!\w)", text, re.I)
+                    for m in re.finditer(NAME_START + re.escape(name) + NAME_END, text, re.I)
                     if not any(m.start() < b and m.end() > a for a, b, _ in matches)
                 ]
                 if found:

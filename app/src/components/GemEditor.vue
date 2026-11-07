@@ -3,7 +3,7 @@ import { computed, reactive, ref } from "vue";
 import { assetUrl, type GemProperty } from "@/data";
 import type { Equipment } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
-import { t } from "@/i18n";
+import { className, t } from "@/i18n";
 import EffectText from "./EffectText.vue";
 import GameSprite from "./GameSprite.vue";
 import IdentityLine from "./IdentityLine.vue";
@@ -34,16 +34,25 @@ const isChosen = (p: GemProperty) => chosen.value.includes(p.id);
 const property = (id: string) => props.properties.find((p) => p.id === id);
 const variantChoices = (p: GemProperty) =>
   p.variants.filter((v) => !props.compatible || props.compatible.includes(v.id));
-/** Each variant by the words that tell it apart from the others. */
+/** Each variant by the words that tell it apart from the others, or its class if it has one. */
 const variantKeys = (p: GemProperty) => {
   const choices = variantChoices(p);
-  const words = choices.map((v) => v.label.split(" "));
-  let shared = 0;
-  while (words.every((w) => shared < w.length - 1 && w[shared] === words[0]![shared])) shared++;
-  return choices.map((v, i) => {
-    const label = words[i]!.slice(shared).join(" ");
-    return { id: v.id, label, icon: classIcons[label] };
-  });
+  const spaced = choices.every((v) => v.label.includes(" "));
+  const parts = choices.map((v) => (spaced ? v.label.split(" ") : [...v.label]));
+  const longest = Math.min(...parts.map((w) => w.length)) - 1;
+  const sharedBy = (at: (w: string[]) => string | undefined) =>
+    parts.every((w) => at(w) === at(parts[0]!));
+  let head = 0;
+  while (head < longest && sharedBy((w) => w[head])) head++;
+  let tail = 0;
+  while (head + tail < longest && sharedBy((w) => w[w.length - 1 - tail])) tail++;
+  return choices.map((v, i) => ({
+    id: v.id,
+    label: v.class
+      ? className(v.class)
+      : parts[i]!.slice(head, parts[i]!.length - tail).join(spaced ? " " : ""),
+    icon: v.class && classIcons[v.class],
+  }));
 };
 const cost = (p: GemProperty) =>
   p.routes
@@ -52,7 +61,8 @@ const cost = (p: GemProperty) =>
     .map((v) => [v.title, ...v.facts].join(" · "))
     .join(" · ");
 /** Only one stat can set a spell's potency. */
-const setsPotency = (p: GemProperty | undefined) => !!p?.name.startsWith("Potency Based On ");
+const setsPotency = (p: GemProperty | undefined) =>
+  !!p?.game_property_ids.some((id) => index.rules.potency_sources.includes(id));
 
 function save() {
   const picked: Record<string, number> = {};

@@ -1,5 +1,899 @@
 {
 "entities": {
+"acquisition_source:01b6ae0ffb23cc09395b": {
+"name": "独角兽大师"
+},
+"acquisition_source:01c0190f997c68c59642": {
+"name": "鹿角翼兔大师"
+},
+"acquisition_source:02119736faedc0c71dbc": {
+"name": "下界首领：薇洛拉（领域深度 305）"
+},
+"acquisition_source:0222e89a841bdb1d4725": {
+"name": "下界首领：克雷纳克斯（领域深度 580）"
+},
+"acquisition_source:0346742cdad1901485d6": {
+"name": "构造体大师"
+},
+"acquisition_source:03b6d72d324779f3122e": {
+"name": "海民大师"
+},
+"acquisition_source:03e264dc6f85faa15fec": {
+"name": "与憎恶毛绒玩具互动"
+},
+"acquisition_source:0485a6b8e2f9d28ab047": {
+"name": "下界首领：斯库拉与卡律布狄斯（领域深度 540）"
+},
+"acquisition_source:050ee3d1eca2088bf1d2": {
+"name": "下界首领：不息角斗士（领域深度 255）"
+},
+"acquisition_source:05157fe5d78c3d0ab56a": {
+"name": "伊姆魔像大师"
+},
+"acquisition_source:0586b50852641b6e237e": {
+"name": "下界首领：诺特（领域深度 570）"
+},
+"acquisition_source:0622ab947be1dd6b67d6": {
+"name": "巫妖大师"
+},
+"acquisition_source:0829cf5ac97ca95f8044": {
+"name": "精灵大师"
+},
+"acquisition_source:0899f5373923cf774ef6": {
+"name": "萨堤尔大师"
+},
+"acquisition_source:08bdad1f16d463fc5497": {
+"name": "下界首领：萨瑞娅（领域深度 135）"
+},
+"acquisition_source:097c91ab47b724f32813": {
+"name": "下界首领：艾塔（领域深度 385）"
+},
+"acquisition_source:099d40dfb0d5b3bc1e1a": {
+"name": "下界首领：薇洛拉（领域深度 480）"
+},
+"acquisition_source:09ed0dc92080fbc01082": {
+"name": "下界首领：弗内斯（领域深度 145）"
+},
+"acquisition_source:0a38d767bd1fec944d1f": {
+"name": "蝾螈大师"
+},
+"acquisition_source:0a81392021a741877f9a": {
+"name": "教程初始生物"
+},
+"acquisition_source:0b262045a8c516c5a0fc": {
+"name": "宝石灵大师"
+},
+"acquisition_source:0b677ca6e64bae790eef": {
+"name": "下界首领：死亡行者（领域深度 355）"
+},
+"acquisition_source:0c923afd766c30ae3fca": {
+"name": "幽鬼大师"
+},
+"acquisition_source:0d58c434988807f44bfa": {
+"name": "流亡者大师"
+},
+"acquisition_source:0d80c88671cb37ddc3a1": {
+"name": "捕噬草大师"
+},
+"acquisition_source:0f3dbd2555fa62ce0659": {
+"name": "下界首领：维克斯特（领域深度 505）"
+},
+"acquisition_source:0f5cb7a0e3ff182ef67e": {
+"name": "发条机械大师"
+},
+"acquisition_source:0f95053f1c557df562dd": {
+"name": "具像大师"
+},
+"acquisition_source:0f989efe09d2d5eb89c8": {
+"name": "下界首领：国王安德里克（领域深度 270）"
+},
+"acquisition_source:1177f1e567701ff18e25": {
+"name": "罪恶大师"
+},
+"acquisition_source:11926e8f36f4bf8938cf": {
+"name": "牛头人大师"
+},
+"acquisition_source:11ebc0763f063167a9ec": {
+"name": "下界首领：维佳（领域深度 545）"
+},
+"acquisition_source:12666f2f92868d9f5d2e": {
+"name": "养老院"
+},
+"acquisition_source:135d33c499cd51b60232": {
+"name": "智天使大师"
+},
+"acquisition_source:14b50f39c949a9958a2d": {
+"name": "灵狐大师"
+},
+"acquisition_source:14c59cd350fb806412ed": {
+"name": "血法师初始生物"
+},
+"acquisition_source:168f61ea309440176727": {
+"name": "相位战士大师"
+},
+"acquisition_source:173df4033929321a8bcf": {
+"name": "下界首领：弗内斯（领域深度 495）"
+},
+"acquisition_source:18ae026342d0f69d71da": {
+"name": "下界首领：国王安德里克（领域深度 95）"
+},
+"acquisition_source:19af5a435092d4cdf516": {
+"name": "下界首领：赛拉（领域深度 410）"
+},
+"acquisition_source:1a741cef7eee4917cabe": {
+"name": "秘咒师大师"
+},
+"acquisition_source:1ac05da9bdffddf69b9d": {
+"name": "下界首领：斯普诺（领域深度 175）"
+},
+"acquisition_source:1b2498e7cfbc952f75c7": {
+"name": "下界首领：内在黑暗（领域深度 240）"
+},
+"acquisition_source:1ba43beeb6b8d48df572": {
+"name": "夺魂者大师"
+},
+"acquisition_source:1d7678b3d74df98528c8": {
+"name": "使魔大师"
+},
+"acquisition_source:1dcb79d033ca1eb83ea3": {
+"name": "宝箱中的稀有遭遇"
+},
+"acquisition_source:1e25b6abe8f3803c7e0d": {
+"name": "放逐者大师"
+},
+"acquisition_source:1ea3bf27561c368e12ca": {
+"name": "下界首领：吉一（领域深度 70）"
+},
+"acquisition_source:1f2076674455fa9784a3": {
+"name": "木乃伊大师"
+},
+"acquisition_source:2340b665051c3b4edc0e": {
+"name": "颤地兽大师"
+},
+"acquisition_source:23f8c763399ef40cef80": {
+"name": "瘟疫医生大师"
+},
+"acquisition_source:263e2494d4eab9ba65c1": {
+"name": "幽灵大师"
+},
+"acquisition_source:286193afc41c811df468": {
+"name": "动物收容所"
+},
+"acquisition_source:28966ab4948d33455243": {
+"name": "魔鬃兽大师"
+},
+"acquisition_source:28d84e86ced4ec2493a6": {
+"name": "尸妖大师"
+},
+"acquisition_source:291a836fa4870d96e6f3": {
+"name": "屠戮者大师"
+},
+"acquisition_source:299dc8b8968bf26647c8": {
+"name": "蛙灵大师"
+},
+"acquisition_source:2ae08bb0ad4d0085ef78": {
+"name": "闪尾大师"
+},
+"acquisition_source:2c04a99c5ebce07653f2": {
+"name": "下界首领：吉一（领域深度 245）"
+},
+"acquisition_source:2ca15119fef2c8d15558": {
+"name": "长生花大师"
+},
+"acquisition_source:2e286aaa55e0fcb136ea": {
+"name": "巨怪大师"
+},
+"acquisition_source:2e90b3668143f3586a41": {
+"name": "下界首领：奈利克斯（领域深度 440）"
+},
+"acquisition_source:2ea34475c79a3d6b6cf3": {
+"name": "秘术师初始生物"
+},
+"acquisition_source:2eb4e3c821bc7a7a776b": {
+"name": "下界首领：福波斯（领域深度 285）"
+},
+"acquisition_source:2ef00d0ca2fd708d2d14": {
+"name": "骨魔大师"
+},
+"acquisition_source:2ff04f9120959c15df44": {
+"name": "幼蝾大师"
+},
+"acquisition_source:307138ef30dad965b81f": {
+"name": "魔像大师"
+},
+"acquisition_source:334897ae3dab54695cd3": {
+"name": "下界首领：诺特（领域深度 220）"
+},
+"acquisition_source:34244223cb2cebf44c97": {
+"name": "恶鬼大师"
+},
+"acquisition_source:344ed33a57780de4fb6f": {
+"name": "双头蛇大师"
+},
+"acquisition_source:3505256737a156115b24": {
+"name": "卢卡尼亚大师"
+},
+"acquisition_source:3561799a082be4a9e8bd": {
+"name": "血蛭大师"
+},
+"acquisition_source:35764f045505cbf8a415": {
+"name": "下界首领：梅拉西斯具像（领域深度 150）"
+},
+"acquisition_source:35b232b8b5b9ed8e960c": {
+"name": "末日守卫大师"
+},
+"acquisition_source:371f0a3e50f05c0aff20": {
+"name": "元素龙大师"
+},
+"acquisition_source:377920e7c7d2383c8140": {
+"name": "食尸鬼大师"
+},
+"acquisition_source:388067f8fa13dc734cb5": {
+"name": "下界首领：洛伊德（领域深度 100）"
+},
+"acquisition_source:39628b544f029c0770c9": {
+"name": "风暴大师"
+},
+"acquisition_source:3ad8a6c32efa0cec8544": {
+"name": "下界首领：福波斯（领域深度 110）"
+},
+"acquisition_source:3c4542b88dc6cc167439": {
+"name": "下界首领：束缚者（领域深度 140）"
+},
+"acquisition_source:3c6232f43b23cb41fa0e": {
+"name": "下界首领：弗鲁布里斯（领域深度 300）"
+},
+"acquisition_source:3d66d3f8b5476efbc380": {
+"name": "巫医初始生物"
+},
+"acquisition_source:3ecf017740fa32c452fd": {
+"name": "魔鬼大师"
+},
+"acquisition_source:412d2cbe683e563a7467": {
+"name": "下界首领：泰勒（领域深度 215）"
+},
+"acquisition_source:415200ce8b549f9917cb": {
+"name": "圣斗士大师"
+},
+"acquisition_source:42798543f759822ea378": {
+"name": "下界首领：艾塔（领域深度 210）"
+},
+"acquisition_source:44759c2a2b27c07479e5": {
+"name": "护林员专精"
+},
+"acquisition_source:4522eb50385c621a54c9": {
+"name": "阿匹斯大师"
+},
+"acquisition_source:4526f67f9bd643c7f86c": {
+"name": "蝙蝠大师"
+},
+"acquisition_source:464051fd955bf5ee636e": {
+"name": "神裔大师"
+},
+"acquisition_source:484f78c38673f2adcf4c": {
+"name": "下界首领：小鬼英普顿（领域深度 550）"
+},
+"acquisition_source:496eeb742de679898b67": {
+"name": "武僧初始生物"
+},
+"acquisition_source:4bd981044d1c0c31088c": {
+"name": "下界首领：禅庞（领域深度 105）"
+},
+"acquisition_source:4c04ff27aff81df72ab3": {
+"name": "守护者初始生物"
+},
+"acquisition_source:4d2865151e33034f7751": {
+"name": "魔法书大师"
+},
+"acquisition_source:4ec7eb5dab32bc4557b5": {
+"name": "获得团子后"
+},
+"acquisition_source:4fd7f39cba5a01b57bcb": {
+"name": "圣灵大师"
+},
+"acquisition_source:51152b6a6959a84f8f6c": {
+"name": "粉碎者大师"
+},
+"acquisition_source:5137a8c3d1487359436f": {
+"name": "虚空领主大师"
+},
+"acquisition_source:53610765863015cd3e67": {
+"name": "下界首领：梅拉西斯具像（领域深度 500）"
+},
+"acquisition_source:5400a73539fdd2fe12df": {
+"name": "猎犬大师"
+},
+"acquisition_source:54467bd84609005132a6": {
+"name": "猎手大师"
+},
+"acquisition_source:54dc9caccf42f85a12e1": {
+"name": "天使大师"
+},
+"acquisition_source:55b1dae19a9715a6f178": {
+"name": "半人马大师"
+},
+"acquisition_source:55b3e76321bd3570627f": {
+"name": "巨人大师"
+},
+"acquisition_source:5625a01210345e2e1b11": {
+"name": "蛛魔大师"
+},
+"acquisition_source:5866c2f94f245b9cf822": {
+"name": "死灵法师初始生物"
+},
+"acquisition_source:58757ec6fc8736e28213": {
+"name": "击败宝藏魔像"
+},
+"acquisition_source:58ab5f6fb85135ff6dda": {
+"name": "漩涡大师"
+},
+"acquisition_source:59ee5ac93d208d879cb7": {
+"name": "下界首领：洛伊德（领域深度 450）"
+},
+"acquisition_source:5b328bfce580d25b4e60": {
+"name": "雪怪大师"
+},
+"acquisition_source:5bc192e4a98f4dcee906": {
+"name": "宝箱怪大师"
+},
+"acquisition_source:5c25d4495c77aee1eb2f": {
+"name": "在众神之门击败卡利班"
+},
+"acquisition_source:5c68e22ad7bbe13d1c34": {
+"name": "下界首领：拉美西斯（领域深度 225）"
+},
+"acquisition_source:5de5ea946f2dfed33766": {
+"name": "仲裁者大师"
+},
+"acquisition_source:5e77d19e0c6c407a56f7": {
+"name": "混合体大师"
+},
+"acquisition_source:5f8490463869723302d9": {
+"name": "毒居者大师"
+},
+"acquisition_source:5ffd5d9543025da2c85a": {
+"name": "雕像大师"
+},
+"acquisition_source:602181588afc40bd4bb2": {
+"name": "复生者大师"
+},
+"acquisition_source:607422104e6f310043c6": {
+"name": "下界首领：梅蒂拉（领域深度 520）"
+},
+"acquisition_source:613d2ae265355dcb09df": {
+"name": "审判官初始生物"
+},
+"acquisition_source:615152886dcc3c9f66db": {
+"name": "术士初始生物"
+},
+"acquisition_source:61ee9b936f07fde9eb9b": {
+"name": "下界首领：艾塔（领域深度 560）"
+},
+"acquisition_source:6267d86be4daa3168fec": {
+"name": "半神大师"
+},
+"acquisition_source:63c83e106261e4fc5a5c": {
+"name": "下界首领：变色灵（领域深度 120）"
+},
+"acquisition_source:63e5fe3b3c8078a9bf05": {
+"name": "史莱姆大师"
+},
+"acquisition_source:64abed3fec596804d375": {
+"name": "下界首领：弗鲁布里斯（领域深度 125）"
+},
+"acquisition_source:653087b3a5ffb433b5e5": {
+"name": "下界首领：斯普诺（领域深度 525）"
+},
+"acquisition_source:65c831331f969e23142e": {
+"name": "下界首领：变色灵（领域深度 295）"
+},
+"acquisition_source:660e183b40d8b3164848": {
+"name": "下界首领：斯库拉与卡律布狄斯（领域深度 190）"
+},
+"acquisition_source:667591037618f80bc464": {
+"name": "雄鹿大师"
+},
+"acquisition_source:68221840ca19ff97188c": {
+"name": "下界首领：铁匠艾安（领域深度 250）"
+},
+"acquisition_source:68c9e68829f073247b46": {
+"name": "下界首领：拉美西斯（领域深度 575）"
+},
+"acquisition_source:68e01d7e575ec3040f11": {
+"name": "下界首领：泰勒（领域深度 390）"
+},
+"acquisition_source:6961ae0e5bd5b37ef7d1": {
+"name": "在宝藏中发现"
+},
+"acquisition_source:6978b3b805786dc5b4af": {
+"name": "鹰身女妖大师"
+},
+"acquisition_source:6bb55d05e82c45a9e83c": {
+"name": "审判官大师"
+},
+"acquisition_source:6d6a1f2406f1efc2bf6a": {
+"name": "塑能师初始生物"
+},
+"acquisition_source:6d82eb84c389dcf86daa": {
+"name": "飞龙大师"
+},
+"acquisition_source:6e00b365346196f1e837": {
+"name": "树妖大师"
+},
+"acquisition_source:6e1933049d0344da8247": {
+"name": "克拉肯大师"
+},
+"acquisition_source:6f21485ca5afd114b4b6": {
+"name": "下界首领：奇拉（领域深度 360）"
+},
+"acquisition_source:6fa3f0db7393103eaf95": {
+"name": "爱心厨房"
+},
+"acquisition_source:6faf9cb520fe2d08b05d": {
+"name": "小鬼大师"
+},
+"acquisition_source:72024e7f379ada5f5c1b": {
+"name": "宝藏魔像2.0首领战斗"
+},
+"acquisition_source:73400b5c192c100a6edf": {
+"name": "烟雾大师"
+},
+"acquisition_source:736aa1fcb36e98eec2d2": {
+"name": "巨像大师"
+},
+"acquisition_source:739d61df8e5b03fd1ce8": {
+"name": "下界首领：赛拉（领域深度 585）"
+},
+"acquisition_source:74c355ccaf206dbb98da": {
+"name": "水妖大师"
+},
+"acquisition_source:760a93bd1e1384a17d5c": {
+"name": "下界首领：卡特琳娜（领域深度 515）"
+},
+"acquisition_source:763b49cdc12ec2594ff8": {
+"name": "憎恶大师"
+},
+"acquisition_source:775446f09f479375bc40": {
+"name": "下界首领：束缚者（领域深度 490）"
+},
+"acquisition_source:7860bcbeb66d19ca66b9": {
+"name": "下界首领：禅庞（领域深度 280）"
+},
+"acquisition_source:786f905caefb1ea88263": {
+"name": "下界首领：变色灵（领域深度 470）"
+},
+"acquisition_source:7907cd725268a3cb3ff3": {
+"name": "切割者大师"
+},
+"acquisition_source:7ae1ae3cbc376154bdf6": {
+"name": "下界首领：薇洛拉（领域深度 130）"
+},
+"acquisition_source:7bbef7b7b63d578de564": {
+"name": "海洋蹒跚者大师"
+},
+"acquisition_source:7c22b8a5778e2ac59164": {
+"name": "深坑幽灵大师"
+},
+"acquisition_source:7c345221056bbc700e75": {
+"name": "赞泰首领战斗"
+},
+"acquisition_source:7e0ad21e0061f686a1ec": {
+"name": "下界首领：克西尔瑞克西滋义斯（领域深度 160）"
+},
+"acquisition_source:8018ba0d5c4c37281610": {
+"name": "下界首领：弗内斯（领域深度 320）"
+},
+"acquisition_source:8042332201cd08184496": {
+"name": "堕落者大师"
+},
+"acquisition_source:81743e0656d3c82c3749": {
+"name": "蛇发女妖大师"
+},
+"acquisition_source:81b1c156a31f191adb5e": {
+"name": "灯灵大师"
+},
+"acquisition_source:825c3d76b5deee07e9a2": {
+"name": "下界首领：小鬼英普顿（领域深度 200）"
+},
+"acquisition_source:83b8a163d0c677f41a5f": {
+"name": "受虐狂大师"
+},
+"acquisition_source:856203570048f5b81e1e": {
+"name": "下界首领：默特尔（领域深度 260）"
+},
+"acquisition_source:85ebf23ac6b0a3cd2c42": {
+"name": "下界首领：国王安德里克（领域深度 445）"
+},
+"acquisition_source:893623df6c7f9c2f8c3f": {
+"name": "法术杂耍者大师"
+},
+"acquisition_source:8ba36e62eecf7ff6d19f": {
+"name": "下界首领：维克斯特（领域深度 330）"
+},
+"acquisition_source:8c74aacf3cc90a41c568": {
+"name": "炽天使大师"
+},
+"acquisition_source:8db91368c9a647dd330c": {
+"name": "鬼火大师"
+},
+"acquisition_source:8e7cec2e3108b4da032a": {
+"name": "下界"
+},
+"acquisition_source:8e9d32dd609fceb3187c": {
+"name": "斯芬克斯大师"
+},
+"acquisition_source:8eaa5f4657682060c249": {
+"name": "下界首领：默特尔（领域深度 435）"
+},
+"acquisition_source:8f156b43e27beb12d9cd": {
+"name": "阿修罗大师"
+},
+"acquisition_source:90019bbebebf1e7488fe": {
+"name": "下界首领：弗鲁布里斯（领域深度 475）"
+},
+"acquisition_source:901b8fdee70fddd240da": {
+"name": "塑灵师专精与初始生物"
+},
+"acquisition_source:906cf11f438db4c71131": {
+"name": "不死鸟大师"
+},
+"acquisition_source:9076954dd8fed3ef7760": {
+"name": "渡鸦大师"
+},
+"acquisition_source:907f31d0f7b70c7cdb83": {
+"name": "狂魔大师"
+},
+"acquisition_source:90959ede7ee14f3758ef": {
+"name": "战猪大师"
+},
+"acquisition_source:9097a8fabd7a2b128897": {
+"name": "女武神大师"
+},
+"acquisition_source:93bcb751fabd766fb3af": {
+"name": "烈焰术士初始生物"
+},
+"acquisition_source:94482f0573a789c610b4": {
+"name": "末日要塞大师"
+},
+"acquisition_source:9495d539afbe27301878": {
+"name": "信标大师"
+},
+"acquisition_source:94c94cdc99af33bf973e": {
+"name": "熊人大师"
+},
+"acquisition_source:95996c00bd72266c06a8": {
+"name": "末日兽大师"
+},
+"acquisition_source:97233b0453e308dd6e04": {
+"name": "吟游诗人大师"
+},
+"acquisition_source:98573e866362bb1165f2": {
+"name": "下界首领：克雷纳克斯（领域深度 230）"
+},
+"acquisition_source:985987bf5dad812c5358": {
+"name": "捕手大师"
+},
+"acquisition_source:985cf1a98fa58f85a2a5": {
+"name": "下界首领：梅蒂拉（领域深度 170）"
+},
+"acquisition_source:99f3282881df7913e216": {
+"name": "下界首领：卡特琳娜（领域深度 340）"
+},
+"acquisition_source:9c4428b5bed6697edc0a": {
+"name": "下界首领：不息角斗士（领域深度 80）"
+},
+"acquisition_source:9c524c557e95bbc990fb": {
+"name": "下界首领：梅蒂拉（领域深度 345）"
+},
+"acquisition_source:9cba84198fd3cec3a163": {
+"name": "蛇怪大师"
+},
+"acquisition_source:9cd17c5da2d8c9df63df": {
+"name": "下界首领：奈利克斯（领域深度 90）"
+},
+"acquisition_source:9e3b1cb70c68a47010eb": {
+"name": "下界首领：奈利克斯（领域深度 265）"
+},
+"acquisition_source:9e46da3ba5093a7724e1": {
+"name": "下界首领：斯库拉与卡律布狄斯（领域深度 365）"
+},
+"acquisition_source:a188fd2146e007540910": {
+"name": "仙灵大师"
+},
+"acquisition_source:a2ca2c992a737afb0394": {
+"name": "自动机大师"
+},
+"acquisition_source:a50751b64bd5f4a7784a": {
+"name": "鸡蛇大师"
+},
+"acquisition_source:a5a332eabf8e618cb4a8": {
+"name": "下界首领：洛伊德（领域深度 275）"
+},
+"acquisition_source:a66184d9805a119ac6ce": {
+"name": "阴影大师"
+},
+"acquisition_source:a729df85087c12b9c362": {
+"name": "下界首领：吉一（领域深度 420）"
+},
+"acquisition_source:a8229e9bb59cd4d5e972": {
+"name": "下界首领：内在黑暗（领域深度 415）"
+},
+"acquisition_source:a83c394cbc89ccbf7927": {
+"name": "下界首领：小鬼英普顿（领域深度 375）"
+},
+"acquisition_source:a9acb9cb337f288e4e70": {
+"name": "龙大师"
+},
+"acquisition_source:aa0043ac19f5662bb44f": {
+"name": "下界首领：赛拉（领域深度 235）"
+},
+"acquisition_source:aac2f4828d0dee9b139a": {
+"name": "暗影大师"
+},
+"acquisition_source:ad99e992b15e5a97b90b": {
+"name": "海妖大师"
+},
+"acquisition_source:ae3cb14fcd3c47a8f4fd": {
+"name": "酒灵大师"
+},
+"acquisition_source:ae9a32e37f1ac71d5dc8": {
+"name": "提线木偶大师"
+},
+"acquisition_source:aedc48f9219e6a77606f": {
+"name": "下界首领：内在黑暗（领域深度 590）"
+},
+"acquisition_source:af5b83d9a8c4fb7a298f": {
+"name": "下界首领：维佳（领域深度 195）"
+},
+"acquisition_source:b0c7b2617d12a8560eac": {
+"name": "巨魔大师"
+},
+"acquisition_source:b0ff083fe8656f6ee6bf": {
+"name": "灾变大师"
+},
+"acquisition_source:b20b8ce75d7a5b495b58": {
+"name": "掠夺者初始生物"
+},
+"acquisition_source:b37316cb03644caa499d": {
+"name": "亵渎者初始生物"
+},
+"acquisition_source:b5795b265518c1fe714f": {
+"name": "混乱之王与混乱女王"
+},
+"acquisition_source:b5c5cfc730c448f80123": {
+"name": "祭司大师"
+},
+"acquisition_source:b5dc7b6faaf4fd213050": {
+"name": "太空猫大师"
+},
+"acquisition_source:b61c96decb8b4854e882": {
+"name": "深坑蠕虫大师"
+},
+"acquisition_source:b61d9a19c1e3d4bbe9d9": {
+"name": "蝎狮大师"
+},
+"acquisition_source:b62dafb66ec784b13ca5": {
+"name": "神裔：科尔格"
+},
+"acquisition_source:b649503f28256f5c2078": {
+"name": "下界首领：禅庞（领域深度 455）"
+},
+"acquisition_source:b6b873fe508731aafa3e": {
+"name": "下界首领：福波斯（领域深度 460）"
+},
+"acquisition_source:b7ab31c20fb91ee6dd15": {
+"name": "下界首领：审判与仁慈（领域深度 555）"
+},
+"acquisition_source:b93032dbcf2368192940": {
+"name": "下界首领：维克斯特（领域深度 155）"
+},
+"acquisition_source:b93763bfabe007b8b43a": {
+"name": "虚无论者大师"
+},
+"acquisition_source:b993a7d39fe8a891bff4": {
+"name": "人鱼专精与初始生物"
+},
+"acquisition_source:ba74d17e0e25b9e3337c": {
+"name": "下界首领：死亡行者（领域深度 180）"
+},
+"acquisition_source:bb174d8dd7fd62f79de0": {
+"name": "电气荚大师"
+},
+"acquisition_source:bc9e3a9a5be0fdc1bc6c": {
+"name": "团子大师"
+},
+"acquisition_source:bd409759d4b55665aadc": {
+"name": "魔械大师"
+},
+"acquisition_source:bdf1df881a91ff08143d": {
+"name": "下界首领：拉美西斯（领域深度 400）"
+},
+"acquisition_source:be63343465088ce25d1c": {
+"name": "击败所有下界首领 5 次"
+},
+"acquisition_source:bea8d5d9d14642f980f7": {
+"name": "牧师初始生物"
+},
+"acquisition_source:bf967c71b5364e34afe3": {
+"name": "机器随从大师"
+},
+"acquisition_source:c0f14b2c815009dcb4e0": {
+"name": "下界首领：克西尔瑞克西滋义斯（领域深度 335）"
+},
+"acquisition_source:c42b75aabcdd50d48b44": {
+"name": "下界首领：奇拉（领域深度 185）"
+},
+"acquisition_source:c6d0a42e44f5d386ad99": {
+"name": "下界首领：铁匠艾安（领域深度 425）"
+},
+"acquisition_source:c917cf29367a4f10b92f": {
+"name": "灵体大师"
+},
+"acquisition_source:c977d5caefbb6a607f1e": {
+"name": "下界首领：铁匠艾安（领域深度 75）"
+},
+"acquisition_source:cb06d1bd9fa2e757255a": {
+"name": "座天使大师"
+},
+"acquisition_source:cd076380f280bd85e0f7": {
+"name": "下界首领：吉兰（领域深度 465）"
+},
+"acquisition_source:cd1e4c24a203c3964702": {
+"name": "恶魔军团大师"
+},
+"acquisition_source:ce1cf62c690486a9704d": {
+"name": "收割者大师"
+},
+"acquisition_source:cf0e9df18dfa1e4e4c76": {
+"name": "树精大师"
+},
+"acquisition_source:cfa4d7ca07f45af87ab3": {
+"name": "奇美拉大师"
+},
+"acquisition_source:cfb6934bc58b3a2c9d44": {
+"name": "皮威斯大师"
+},
+"acquisition_source:d04b2ba1301fb935c5a5": {
+"name": "工匠大师"
+},
+"acquisition_source:d05e57ea8d608367f328": {
+"name": "下界首领：束缚者（领域深度 315）"
+},
+"acquisition_source:d32900234e56ae731615": {
+"name": "下界首领：萨瑞娅（领域深度 310）"
+},
+"acquisition_source:d3869be7394bc5e299f4": {
+"name": "奇趣蛋大师"
+},
+"acquisition_source:d3a136a1708198496ab6": {
+"name": "下界首领：默特尔（领域深度 85）"
+},
+"acquisition_source:d3bdd57537e822af9cae": {
+"name": "下界首领：卡特琳娜（领域深度 165）"
+},
+"acquisition_source:d439f7f6ba88433a4097": {
+"name": "螨虫大师"
+},
+"acquisition_source:d534a177f6874a2652f0": {
+"name": "火怪大师"
+},
+"acquisition_source:d572d1e43cc6ad4b2f27": {
+"name": "下界首领：奇拉（领域深度 535）"
+},
+"acquisition_source:d5b3596c53d1dffdc9cd": {
+"name": "下界首领：克西尔瑞克西滋义斯（领域深度 510）"
+},
+"acquisition_source:d9255599eeb4f624e1b1": {
+"name": "麻风怪大师"
+},
+"acquisition_source:db55a88d250073c14330": {
+"name": "幸运蛾大师"
+},
+"acquisition_source:db83447ebde4f225f8cd": {
+"name": "滴水兽大师"
+},
+"acquisition_source:dbfbded994c080f822b2": {
+"name": "狮鹫大师"
+},
+"acquisition_source:dc602bf502c2ec85e15c": {
+"name": "下界首领：克雷纳克斯（领域深度 405）"
+},
+"acquisition_source:de31984cfb7fc868bd93": {
+"name": "神话大师"
+},
+"acquisition_source:de48284a6abe7633e5bd": {
+"name": "混乱神龛"
+},
+"acquisition_source:df717b6a0425c71848da": {
+"name": "下界首领：审判与仁慈（领域深度 380）"
+},
+"acquisition_source:e013e0227d332b3913c2": {
+"name": "诽谤者大师"
+},
+"acquisition_source:e0592f9b80b9f783e8f0": {
+"name": "黄蜂大师"
+},
+"acquisition_source:e10b1985d612117d92e3": {
+"name": "伊姆大师"
+},
+"acquisition_source:e127a1d462cdf16bac3a": {
+"name": "下界首领：梅拉西斯具像（领域深度 325）"
+},
+"acquisition_source:e29a54b071e241c8f3bf": {
+"name": "变形者大师"
+},
+"acquisition_source:e357c17b8b6ae52ac52d": {
+"name": "下界首领：吉兰（领域深度 290）"
+},
+"acquisition_source:e3c1ec9a341fbe1cf505": {
+"name": "下界首领：泰勒（领域深度 565）"
+},
+"acquisition_source:e42b87c0d2d92c8edebe": {
+"name": "棕仙大师"
+},
+"acquisition_source:e7e889577fe4fa77b09d": {
+"name": "观察者大师"
+},
+"acquisition_source:e8181ebd721b18357913": {
+"name": "下界首领：斯普诺（领域深度 350）"
+},
+"acquisition_source:e9112b148ebe7e3c993d": {
+"name": "骷髅大师"
+},
+"acquisition_source:e92581edd003661dff48": {
+"name": "异界之门"
+},
+"acquisition_source:e9cb5d45d450e8efdb8e": {
+"name": "下界首领：审判与仁慈（领域深度 205）"
+},
+"acquisition_source:eab4de056c146d11f857": {
+"name": "地狱三头犬大师"
+},
+"acquisition_source:eadbead389a324352fd0": {
+"name": "裂隙舞者大师"
+},
+"acquisition_source:ebb0581267c948a5fc1d": {
+"name": "地狱骑士初始生物"
+},
+"acquisition_source:ec605a6cd7e80f96bb40": {
+"name": "典范大师"
+},
+"acquisition_source:f23764440b592b858fff": {
+"name": "地底居民大师"
+},
+"acquisition_source:f23d64e697bbf4406175": {
+"name": "下界首领：萨瑞娅（领域深度 485）"
+},
+"acquisition_source:f4742bbaa345192adec3": {
+"name": "血魔法师大师"
+},
+"acquisition_source:f56b4cec77acb5334ad3": {
+"name": "众神之门"
+},
+"acquisition_source:f6bba3a512b4a02d3ec3": {
+"name": "下界首领：维佳（领域深度 370）"
+},
+"acquisition_source:f73c0a74e3905e67fbef": {
+"name": "下界首领：不息角斗士（领域深度 430）"
+},
+"acquisition_source:f74b31be76d3a2cb1744": {
+"name": "宝玉兔大师"
+},
+"acquisition_source:fa0c7ea03e4ef2f910da": {
+"name": "报丧女妖大师"
+},
+"acquisition_source:fc1e462ef1a5bed731d8": {
+"name": "下界首领：诺特（领域深度 395）"
+},
+"acquisition_source:fc7f2042d40c1e21a9a8": {
+"name": "稀有遭遇"
+},
+"acquisition_source:fec232c2dd942fe9bb40": {
+"name": "下界首领：死亡行者（领域深度 530）"
+},
+"acquisition_source:ffddb1564d2ccd567c30": {
+"name": "下界首领：吉兰（领域深度 115）"
+},
 "artifact_property:0": {
 "description": "生物的攻击造成更多伤害。",
 "name": "攻击伤害"
@@ -41,6 +935,7 @@
 "name": "造成伤害时获得敏捷"
 },
 "artifact_property:18": {
+"description": "生物在使用攻击或法术造成伤害时有几率获得免疫。",
 "name": "造成伤害时获得免疫"
 },
 "artifact_property:19": {
@@ -5379,6 +6274,69 @@
 "creature:999": {
 "name": "小鬼主教"
 },
+"enchantment:0": {
+"name": "更多充能"
+},
+"enchantment:1": {
+"name": "层叠"
+},
+"enchantment:10": {
+"name": "有几率施放两次"
+},
+"enchantment:11": {
+"name": "慷慨"
+},
+"enchantment:12": {
+"name": "持续时间延长"
+},
+"enchantment:13": {
+"name": "提高属性值效能"
+},
+"enchantment:14": {
+"name": "伤害提高"
+},
+"enchantment:15": {
+"name": "治疗提升"
+},
+"enchantment:16": {
+"name": "效能基于攻击"
+},
+"enchantment:17": {
+"name": "系别转换"
+},
+"enchantment:18": {
+"name": "效能基于速度"
+},
+"enchantment:19": {
+"name": "效能基于防御"
+},
+"enchantment:2": {
+"name": "奇异"
+},
+"enchantment:20": {
+"name": "效能基于生命值"
+},
+"enchantment:3": {
+"name": "防御穿透"
+},
+"enchantment:4": {
+"name": "引力"
+},
+"enchantment:5": {
+"name": "使用后有几率攻击"
+},
+"enchantment:6": {
+"name": "使用后有几率防御"
+},
+"enchantment:7": {
+"name": "行动后施放几率"
+},
+"enchantment:8": {
+"name": "施放于额外目标"
+},
+"enchantment:9": {
+"name": "使用后有几率挑衅"
+},
 "enchantment_material:0": {
 "description": "这个物品可以带到附魔师处，为你的法术宝石添加以下词条：\n\n更多充能",
 "name": "玛瑙"
@@ -5556,10 +6514,861 @@
 "god:9": {
 "name": "伊瑟洛丝"
 },
+"heart:157": {
+"name": "娜拉丝之心"
+},
+"heart:158": {
+"name": "8004之心"
+},
+"heart:159": {
+"name": "索雷尔之心"
+},
+"heart:160": {
+"name": "阿达克西尔之心"
+},
+"heart:161": {
+"name": "阿卡拉之心"
+},
+"heart:162": {
+"name": "伊穆丝之心"
+},
+"heart:163": {
+"name": "格罗姆梅特之心"
+},
+"heart:164": {
+"name": "伦加斯之心"
+},
+"heart:165": {
+"name": "萨娜之心"
+},
+"heart:22": {
+"name": "阿贾·比尔库之心"
+},
+"heart:23": {
+"name": "阿拉卡丹之心"
+},
+"heart:25": {
+"name": "暗潜者之心"
+},
+"heart:26": {
+"name": "晶簇灵之心"
+},
+"heart:27": {
+"name": "迪卡亚之心"
+},
+"heart:28": {
+"name": "艾尔科之心"
+},
+"heart:29": {
+"name": "恩来之心"
+},
+"heart:30": {
+"name": "伊科洛斯之心"
+},
+"heart:31": {
+"name": "卡拉萨格之心"
+},
+"heart:32": {
+"name": "卡普雷之心"
+},
+"heart:33": {
+"name": "拉格洛尔之心"
+},
+"heart:34": {
+"name": "林塔之心"
+},
+"heart:35": {
+"name": "姆姆之心"
+},
+"heart:36": {
+"name": "诺克斯皮特之心"
+},
+"heart:37": {
+"name": "奥图姆之心"
+},
+"heart:38": {
+"name": "坦布兰之心"
+},
+"heart:39": {
+"name": "迷失者之心"
+},
+"heart:40": {
+"name": "缇丝娅之心"
+},
+"heart:41": {
+"name": "乌加特之心"
+},
+"heart:42": {
+"name": "沃肯之心"
+},
+"heart:43": {
+"name": "伊洛之心"
+},
+"inscription:006d1c5e8c8150c1624d": {
+"name": "抚慰轻风"
+},
+"inscription:00cb1019614d4f5e6f17": {
+"name": "穿刺"
+},
+"inscription:055c462bb89fd36b0178": {
+"name": "邪恶告解"
+},
+"inscription:07c0ddb395cd8ec6d6de": {
+"name": "暗影爪击"
+},
+"inscription:07c365db1aa38e3f648b": {
+"name": "壁垒"
+},
+"inscription:07fc33f1a76bb686ee94": {
+"name": "毒盾"
+},
+"inscription:0a5e37129dfd5a10acd5": {
+"name": "绞肉机"
+},
+"inscription:0c40061db2c54c12a531": {
+"name": "正义风暴"
+},
+"inscription:0caee180da9d0f3f29af": {
+"name": "烟火"
+},
+"inscription:0d040cb02aa4bf0acfd9": {
+"name": "地狱哭拳"
+},
+"inscription:0f305874e9b956047b22": {
+"name": "活体项链"
+},
+"inscription:0f6961fe01d90d7f0ac3": {
+"name": "献祭于光明"
+},
+"inscription:1065f6f01cf5cb8294c7": {
+"name": "死亡之握"
+},
+"inscription:10723e75f8e7fb2ceadd": {
+"name": "蓄能"
+},
+"inscription:110363c3848a03e9e091": {
+"name": "性感苹果酒"
+},
+"inscription:136a49e3cd34985c4e6c": {
+"name": "暗影灌注"
+},
+"inscription:152b0873618c84602807": {
+"name": "法术洪流"
+},
+"inscription:15dd41da0a80f5651241": {
+"name": "精神干扰"
+},
+"inscription:165c936fc2eb40fcecec": {
+"name": "最终形态"
+},
+"inscription:1756d3c6f74c917af3b5": {
+"name": "神圣之火"
+},
+"inscription:1800c06e87dd0d5c7b86": {
+"name": "邪恶狂热"
+},
+"inscription:186d9713a4b53621e7cd": {
+"name": "活体混沌之盾"
+},
+"inscription:1dfb16bc1e4752eabcf6": {
+"name": "活体巫术之盾"
+},
+"inscription:1f2b40cecdecc2dbd26a": {
+"name": "神圣新星"
+},
+"inscription:20759457b2e0abad09f3": {
+"name": "时至命终"
+},
+"inscription:219eb03ba04998b7c4e3": {
+"name": "真实之光"
+},
+"inscription:22635127573f48a198fa": {
+"name": "缠绕箭"
+},
+"inscription:23c61c9a53f4f9d8ccd8": {
+"name": "邻位爆发"
+},
+"inscription:24147b37bf3df566ee76": {
+"name": "酸雨"
+},
+"inscription:241eae2fb5a73002e277": {
+"name": "灵魂收割"
+},
+"inscription:25135325b8a1c15ab6d1": {
+"name": "审判"
+},
+"inscription:254181cb0460a5de8e6f": {
+"name": "心灵震爆"
+},
+"inscription:257c4a121ae568ba528f": {
+"name": "滋养"
+},
+"inscription:2595f4f7b66973ec5eb5": {
+"name": "活体缎带"
+},
+"inscription:2645b83418fc873e2fd6": {
+"name": "割伤"
+},
+"inscription:274fb137d56626e71074": {
+"name": "黑暗低语"
+},
+"inscription:2bb93eac2b55062d2e64": {
+"name": "水晶盾"
+},
+"inscription:2cda94e0a0f7358d5cd6": {
+"name": "天堂之怒"
+},
+"inscription:2d7bcc6b117ad44609c9": {
+"name": "邪恶之怒"
+},
+"inscription:2e58ba402964ac349546": {
+"name": "活体生命长矛"
+},
+"inscription:2ee1ab95b9643d857fc8": {
+"name": "永冻"
+},
+"inscription:2eeff9a504595d2405b4": {
+"name": "临终愿望"
+},
+"inscription:32a7d19a2ef597539c96": {
+"name": "歼灭"
+},
+"inscription:32c5832611152e8498be": {
+"name": "真视术"
+},
+"inscription:3394103c27be71166ee9": {
+"name": "血月"
+},
+"inscription:33c178c95af1fba0aaf1": {
+"name": "暗影冲击"
+},
+"inscription:37a4e760a2c048df62e3": {
+"name": "尸爆"
+},
+"inscription:3b4dfa614e47978f35b6": {
+"name": "神圣祭坛"
+},
+"inscription:3cad9d5b2546f36c1feb": {
+"name": "活体生命之盾"
+},
+"inscription:3d2f838b74b0d00a34e1": {
+"name": "摧残"
+},
+"inscription:3d472dd3a5a7971f4150": {
+"name": "粗口"
+},
+"inscription:3dbf6181f12c417a3273": {
+"name": "地之附魔"
+},
+"inscription:3e0ec2af6f26a8e394ce": {
+"name": "奥术附魔"
+},
+"inscription:3e39129c3ae6081b99d5": {
+"name": "屈服于疯狂"
+},
+"inscription:3ea630b8c12fa3a79665": {
+"name": "闪电打击"
+},
+"inscription:3f20375dbf27aef2cb21": {
+"name": "大地之拥"
+},
+"inscription:409a14887e0958f1efcd": {
+"name": "荣耀"
+},
+"inscription:409b049aa8444def918c": {
+"name": "恶魔之怒"
+},
+"inscription:42e5dcee04605c23a446": {
+"name": "恐惧之刃"
+},
+"inscription:438e044b7281f1c16da8": {
+"name": "破甲拳"
+},
+"inscription:45ec0a642e0258a08d56": {
+"name": "守护者之力"
+},
+"inscription:4730803373fb530d51d1": {
+"name": "流星雨"
+},
+"inscription:487e0744c7fff4f5c33f": {
+"name": "风切"
+},
+"inscription:499555b0fd3bf3d03e39": {
+"name": "活体钉锤"
+},
+"inscription:4a58c6bdbbf52d5d3d7a": {
+"name": "加固"
+},
+"inscription:4ac36307e4b83929df26": {
+"name": "分裂拳"
+},
+"inscription:4b5e57f6eb2f42b9039b": {
+"name": "网"
+},
+"inscription:4b81374c7735f2fb90eb": {
+"name": "毒气"
+},
+"inscription:4f40075829b0db17ebfd": {
+"name": "愤怒果园"
+},
+"inscription:50180db51de35b64a56a": {
+"name": "活体戒指"
+},
+"inscription:516584071d628a04e5bb": {
+"name": "生命线"
+},
+"inscription:51cc1b67ed85b81b9751": {
+"name": "兽化"
+},
+"inscription:5202febcbf6220f0bd7d": {
+"name": "蓝宝石之力"
+},
+"inscription:532ca5fc6c34b9b977e1": {
+"name": "纠缠根须"
+},
+"inscription:54fc117f87835437b26f": {
+"name": "翡翠之力"
+},
+"inscription:55a20099bce1c10a5446": {
+"name": "活体巫术长矛"
+},
+"inscription:57064978542522969fbf": {
+"name": "巨人之力"
+},
+"inscription:58322affe1257ff8f689": {
+"name": "托伦之拳"
+},
+"inscription:5a5617c22af86eea0e3e": {
+"name": "乌托邦"
+},
+"inscription:5c4ae077b4b3cf7b9b9a": {
+"name": "琥珀色麦酒"
+},
+"inscription:5c67112ac343236e8cc6": {
+"name": "骨矛"
+},
+"inscription:5dab431d62b144234cd7": {
+"name": "大脑冻结"
+},
+"inscription:6008898fe150b669c60a": {
+"name": "金色黑啤"
+},
+"inscription:61e365c08ac91b1f1521": {
+"name": "活体死亡长矛"
+},
+"inscription:6418a1897dedd45232c0": {
+"name": "红宝石之力"
+},
+"inscription:681507cdb298bb9a58b4": {
+"name": "欢乐麦芽"
+},
+"inscription:6898a2278332b5a1ca72": {
+"name": "浓烈颇特酒"
+},
+"inscription:68c29122fd63d5f3397a": {
+"name": "神圣杜松子酒"
+},
+"inscription:68c4ab7357022538deb3": {
+"name": "谦逊"
+},
+"inscription:6a0dc01b09051fd1df26": {
+"name": "狮心"
+},
+"inscription:6a54ee6df303fd16136f": {
+"name": "僵尸拍击"
+},
+"inscription:6a6925df8359f31d74a8": {
+"name": "黑暗召唤术"
+},
+"inscription:6c4754ea42bacf4eb2ad": {
+"name": "剑刃风暴"
+},
+"inscription:6c8d4a2c6cde265e4aff": {
+"name": "鬼影缠身"
+},
+"inscription:6dce96a16282b1ea3284": {
+"name": "心灵游戏"
+},
+"inscription:6e49a740aa8f7a42150b": {
+"name": "华丽绽放"
+},
+"inscription:6f5e90519c659be7e9db": {
+"name": "火焰风暴"
+},
+"inscription:70929dc75e1fa981c1b6": {
+"name": "碎冰"
+},
+"inscription:70d866e3838cb157222c": {
+"name": "寄生"
+},
+"inscription:71ada070abf1d3830231": {
+"name": "血肉奉献"
+},
+"inscription:731dd328348b107f88af": {
+"name": "召唤之方尖碑"
+},
+"inscription:732da342eb56f67a8d2a": {
+"name": "赎罪"
+},
+"inscription:74f18bb184ccc94e7127": {
+"name": "精神屏障"
+},
+"inscription:74f1a7cdb56df5de5063": {
+"name": "混沌之语"
+},
+"inscription:7514368eb705c08745c7": {
+"name": "烟雾弹"
+},
+"inscription:75d5b54ddd2569173ae5": {
+"name": "钢铁皮肤"
+},
+"inscription:761c12fc180ef296e5d6": {
+"name": "风之附魔"
+},
+"inscription:77704ac85aadc258e807": {
+"name": "审判之刃"
+},
+"inscription:78bddfdec31f7e8c840d": {
+"name": "星爆"
+},
+"inscription:7a905c2ecef36dec1b18": {
+"name": "违抗光明"
+},
+"inscription:7ba52bc2cae68afa59de": {
+"name": "黑暗思绪"
+},
+"inscription:7cd7d1ffa51d2cc3bd31": {
+"name": "幻影"
+},
+"inscription:7d27dd296cbf8af3db98": {
+"name": "刺骨"
+},
+"inscription:7d28a210dd540b5de1aa": {
+"name": "骸骨奉献"
+},
+"inscription:7e2e3dab7e6f80360a5e": {
+"name": "移植骨"
+},
+"inscription:7f07304dd032c6a6420e": {
+"name": "分裂箭"
+},
+"inscription:7f89ddf1a314a15212a3": {
+"name": "心灵崩坏"
+},
+"inscription:802050279fc0a7947283": {
+"name": "冰霜箭"
+},
+"inscription:802f222709d0a76ce700": {
+"name": "思考与祈祷"
+},
+"inscription:80645be4e87057c061d2": {
+"name": "破魂者"
+},
+"inscription:8123fc57de73f17510b6": {
+"name": "启迪"
+},
+"inscription:81f03f1ba6c88153f419": {
+"name": "内在力量"
+},
+"inscription:82835a109c5d5957781e": {
+"name": "十字架刑"
+},
+"inscription:829bd38f85d2115aa88c": {
+"name": "不死鸟之羽"
+},
+"inscription:82bbcd639a4c6c71b63a": {
+"name": "毁伤"
+},
+"inscription:82ee0c6281009ad71248": {
+"name": "火焰箭"
+},
+"inscription:837027c38bedec126bc1": {
+"name": "醇香拉格啤酒"
+},
+"inscription:83716a35515f728928d7": {
+"name": "龙卷风"
+},
+"inscription:83811fb2a48396e9cfb0": {
+"name": "乌鸦群袭"
+},
+"inscription:8a19d79cc4d98fdbcc39": {
+"name": "黏土人"
+},
+"inscription:8a42fdc22fe2ddbffef3": {
+"name": "蒙尘斗篷"
+},
+"inscription:8a741eb9c8922e9e08fc": {
+"name": "抛光"
+},
+"inscription:8b54595f540eae73edec": {
+"name": "活力伏特加"
+},
+"inscription:8dac7159200c6149b07a": {
+"name": "不稳定召唤"
+},
+"inscription:8e11386019db8168f8ee": {
+"name": "吞噬"
+},
+"inscription:8f6332c62e6b0bbc8d54": {
+"name": "混沌之刃"
+},
+"inscription:8ff3fb593569693330d2": {
+"name": "召唤替身"
+},
+"inscription:90378fcb134b9ddee1c0": {
+"name": "扭曲现实"
+},
+"inscription:907488e8fe0306f3d73f": {
+"name": "星火术"
+},
+"inscription:909315f776134bf1af51": {
+"name": "死亡之地"
+},
+"inscription:90a7c8b02b2361ff67bc": {
+"name": "活体靴子"
+},
+"inscription:9223f441d3ad2f2a601f": {
+"name": "活体盔甲"
+},
+"inscription:92315877bf11e39aa604": {
+"name": "灵魂之火"
+},
+"inscription:928e74d4211940c84c6d": {
+"name": "心灵爆炸"
+},
+"inscription:931ed8325ddff7e766f6": {
+"name": "血雨"
+},
+"inscription:93de2e0051a4501eaa45": {
+"name": "碧绿宝珠"
+},
+"inscription:958be33f660081772540": {
+"name": "寄生前夕"
+},
+"inscription:96257ed029f17b763a34": {
+"name": "活体斧"
+},
+"inscription:98617a79dcc6b22a2294": {
+"name": "星之契约"
+},
+"inscription:9994a5bd4df6a5a02445": {
+"name": "野蛮孢子"
+},
+"inscription:9a3285a30abdd009f4d5": {
+"name": "尸盾"
+},
+"inscription:9d973ef61a5530a49a46": {
+"name": "托伦同调"
+},
+"inscription:9daac7b0831d817dc5a9": {
+"name": "追踪箭"
+},
+"inscription:9e7a658e77eac75f954f": {
+"name": "串刺"
+},
+"inscription:9ef4e7d52147122ebae4": {
+"name": "坏死"
+},
+"inscription:9f30427c212e99e49782": {
+"name": "冰霜护甲"
+},
+"inscription:a236b0bb35a52719d871": {
+"name": "地刺"
+},
+"inscription:a23ad44a6513a1ef9555": {
+"name": "活体自然长矛"
+},
+"inscription:a292dd41efab69a6053e": {
+"name": "暗夜之剑"
+},
+"inscription:a2ac1154bc6593a047a3": {
+"name": "快速冻结"
+},
+"inscription:a3863c5d7ce546d24186": {
+"name": "火墙术"
+},
+"inscription:a3bd7d2a85e23761adf5": {
+"name": "活体死亡之盾"
+},
+"inscription:a4a238facde0d9318d38": {
+"name": "鲜美苏格兰威士忌"
+},
+"inscription:a4ce996f70c5e989845d": {
+"name": "疫病蔓延"
+},
+"inscription:a5ee2123ab6e7d5dc85c": {
+"name": "破釜沉舟"
+},
+"inscription:a78ed83861f64d31655c": {
+"name": "活体斗篷"
+},
+"inscription:a8261baa34930f15dda8": {
+"name": "摧毁"
+},
+"inscription:a9feb0f5355405825ffb": {
+"name": "脓液喷发"
+},
+"inscription:ab361083690263d3e0a7": {
+"name": "心灵戏法"
+},
+"inscription:abce7d20f8bf7e31070e": {
+"name": "灵魂献祭"
+},
+"inscription:b0a5e23d94975a454000": {
+"name": "审判之光"
+},
+"inscription:b2be620610c06f952390": {
+"name": "显灵"
+},
+"inscription:b323f6716624ce0d8659": {
+"name": "烈焰打击"
+},
+"inscription:b6196ad979bd7ad20f11": {
+"name": "石化"
+},
+"inscription:b6cc1b391728d616d20e": {
+"name": "活体头盔"
+},
+"inscription:b99543d111364c0c9ae2": {
+"name": "猝死"
+},
+"inscription:b9d37b0ba21ba326ba93": {
+"name": "活体自然之盾"
+},
+"inscription:bb61ff2b8f8cd797bf3f": {
+"name": "活体巫师帽"
+},
+"inscription:bccea3247c0ef214fe3e": {
+"name": "爆响"
+},
+"inscription:beefe7823953340cbf97": {
+"name": "万灵之召"
+},
+"inscription:bf08bc08d03a15fa5a38": {
+"name": "天堂之拳"
+},
+"inscription:bf648e312779342bb0c6": {
+"name": "余波"
+},
+"inscription:bf667b6bfec68510fd4d": {
+"name": "高效喷吐"
+},
+"inscription:c27fed393f79587c0a1a": {
+"name": "石肤术"
+},
+"inscription:c2ebb587c009280c16cd": {
+"name": "天谴"
+},
+"inscription:c329aab0fb160ad69adc": {
+"name": "爆炸箭"
+},
+"inscription:c501008aa4038fe0701c": {
+"name": "二连击"
+},
+"inscription:c6a1ff7a6f77c97c7e82": {
+"name": "灵能爆破"
+},
+"inscription:c7935748bd98de23e6ed": {
+"name": "破裂"
+},
+"inscription:c8a30c5e0666aad25adc": {
+"name": "庇护"
+},
+"inscription:cb22a511680c23b656ed": {
+"name": "破坏"
+},
+"inscription:cdca4d170e5ccf1ed648": {
+"name": "活体混沌长矛"
+},
+"inscription:ce65059deea582ecaa13": {
+"name": "变形"
+},
+"inscription:cfd22427f46d4da4c43d": {
+"name": "活体剑"
+},
+"inscription:d27bd701c90682f3e87e": {
+"name": "死亡虹吸"
+},
+"inscription:d2fa0e68a5824ca58e1a": {
+"name": "巨石"
+},
+"inscription:d313fe7255576760914c": {
+"name": "发酵啤酒花"
+},
+"inscription:d3b37c5e86f045a4c340": {
+"name": "野蛮咆哮"
+},
+"inscription:d47c40bea34483aafa4a": {
+"name": "和风"
+},
+"inscription:d4cc56aa47e0b5c789d4": {
+"name": "愤怒"
+},
+"inscription:d4e3fc7b0477747da28f": {
+"name": "重力"
+},
+"inscription:d583197d70b8038013d7": {
+"name": "鞭笞"
+},
+"inscription:d6cc0a088c07683c65cd": {
+"name": "刷新"
+},
+"inscription:d81bc59a7f48ef98c648": {
+"name": "火球术"
+},
+"inscription:d90d45c9ea4d2db1dc87": {
+"name": "炼狱"
+},
+"inscription:dbf426b46376d0a0e507": {
+"name": "攻其不备"
+},
+"inscription:dc3dd57e3c5b074bb4da": {
+"name": "平等"
+},
+"inscription:dde79c7cc133b0040e0f": {
+"name": "黑暗水晶"
+},
+"inscription:de70fa60cac227cbc132": {
+"name": "爆裂"
+},
+"inscription:df1536a9d2ab7ca85900": {
+"name": "时间漫游"
+},
+"inscription:df17c9ca66366c12bac1": {
+"name": "诋毁"
+},
+"inscription:df9c1bf6a43bbd03eb23": {
+"name": "恶魔之核"
+},
+"inscription:dfd0f337c49c11d6b8fd": {
+"name": "灼热辉光"
+},
+"inscription:e0cfa99b64ae7c540cbb": {
+"name": "神圣庇护"
+},
+"inscription:e152d866bc85450b7c1c": {
+"name": "腐化"
+},
+"inscription:e17c90675226ad86b46b": {
+"name": "创造之盘"
+},
+"inscription:e2053e5da434f6adc2f3": {
+"name": "活体弓"
+},
+"inscription:e2123228b9f03147cc89": {
+"name": "神圣之地"
+},
+"inscription:e24a5f6ffe8462ad3d23": {
+"name": "反响"
+},
+"inscription:e42932b7a79c40e45f6b": {
+"name": "模糊"
+},
+"inscription:e55bcafb6d1cdf2b90f6": {
+"name": "死亡绽放"
+},
+"inscription:e5a559c8ce04fb73d98c": {
+"name": "眩晕"
+},
+"inscription:e6860f8d3ade587f55aa": {
+"name": "宇宙涟漪"
+},
+"inscription:e6f201a62bc377c62bd7": {
+"name": "刀刃边缘"
+},
+"inscription:e7e11072fe726fcea8d1": {
+"name": "驱逐"
+},
+"inscription:e868c4707417d0481dd7": {
+"name": "虫洞"
+},
+"inscription:e9693d7c5fbeaa72a708": {
+"name": "群袭"
+},
+"inscription:ea41ed5f07319706ca6c": {
+"name": "活体护手"
+},
+"inscription:ead2826f59d67db1ce10": {
+"name": "狂放朗姆酒"
+},
+"inscription:eba4ae33f54ae0f96bed": {
+"name": "星系"
+},
+"inscription:ebcd2a8082777b8382cd": {
+"name": "黑暗突变"
+},
+"inscription:ec2a957549ace3289d31": {
+"name": "完全腐化"
+},
+"inscription:ed5a21d3cfc38cd6d5bd": {
+"name": "灵魂奉献"
+},
+"inscription:ee110d1c2313b7c94098": {
+"name": "黑暗炽天使"
+},
+"inscription:efa1fbfd208e9a2dd222": {
+"name": "劲爆波旁威士忌"
+},
+"inscription:f09d2bf5a832ef665b54": {
+"name": "元素守护"
+},
+"inscription:f1c92fc8e230c6e57e2f": {
+"name": "心灵撕裂"
+},
+"inscription:f24d3e4e549edcaffdcb": {
+"name": "远古祈祷"
+},
+"inscription:f2b3c9ceee746a3c6089": {
+"name": "地狱之爪"
+},
+"inscription:f2cda2bb43c6fe7ca813": {
+"name": "神圣长矛"
+},
+"inscription:f33f099bca3aaa789359": {
+"name": "干燥酒精"
+},
+"inscription:f4dddde6f5e6b514b73c": {
+"name": "秘密物品"
+},
+"inscription:f717586765ca6d4e7a99": {
+"name": "精疲力竭"
+},
+"inscription:f86b6bae50059f1790bc": {
+"name": "飞升"
+},
+"inscription:f87a3981a9df5e5c9f47": {
+"name": "割裂"
+},
+"inscription:f88ad1e5beaefb4e9ab3": {
+"name": "爆裂拳"
+},
+"inscription:f8a8f21a3505b68568af": {
+"name": "炼狱之火"
+},
+"inscription:f9c56bb9485e95a7fd96": {
+"name": "肾上腺素激增"
+},
+"inscription:fa3a88af596c5899ffc4": {
+"name": "背水一战"
+},
+"inscription:fa7835fc1c74a9e014c7": {
+"name": "地震"
+},
+"inscription:fb1a968787d2918a22d3": {
+"name": "活体法杖"
+},
+"inscription:fc2f43bd110c823c2304": {
+"name": "活体重盾"
+},
+"inscription:fd2a48131663d821d7a2": {
+"name": "辣味啤酒"
+},
 "material:0": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n攻击\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "红琥珀"
 },
 "material:1": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n智力\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "紫琥珀"
 },
 "material:10": {
@@ -6015,33 +7824,43 @@
 "name": "无休王冠"
 },
 "material:1100": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n生命值/攻击\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "暗色琥珀"
 },
 "material:1101": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n生命值/智力\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "烟青琥珀"
 },
 "material:1102": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n生命值/防御\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "淡色琥珀"
 },
 "material:1103": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n生命值/速度\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "明亮琥珀"
 },
 "material:1104": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n攻击/智力\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "深色琥珀"
 },
 "material:1105": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n攻击/防御\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "玫红琥珀"
 },
 "material:1106": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n攻击/速度\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "光亮琥珀"
 },
 "material:1107": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n智力/防御\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "浑浊琥珀"
 },
 "material:1108": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n智力/速度\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "闪耀琥珀"
 },
 "material:1109": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n防御/速度\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "闪亮琥珀"
 },
 "material:111": {
@@ -6441,6 +8260,7 @@
 "name": "炽天使魔符"
 },
 "material:12": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n法术宝石槽：\n生物获得额外的法术宝石槽。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "穿孔器"
 },
 "material:120": {
@@ -6884,6 +8704,7 @@
 "name": "兹亚肌腱"
 },
 "material:13": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n闪避几率：\n生物有更高的闪避几率。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "油滑石块"
 },
 "material:130": {
@@ -7326,6 +9147,7 @@
 "name": "病蛙粪便"
 },
 "material:14": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n暴击几率：\n生物有更高几率造成暴击伤害。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "锯齿岩石"
 },
 "material:140": {
@@ -9185,6 +11007,7 @@
 "name": "骗子手镜"
 },
 "material:1819": {
+"description": "将此物品镶嵌到神器的特性槽中以获得此特性：我们其中一人必须改变：\n这个生物对与其有相同性格优点的敌人造成的增加200%。",
 "name": "骗子裙撑"
 },
 "material:182": {
@@ -9432,9 +11255,11 @@
 "name": "腐败者之钳"
 },
 "material:2": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n防御\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "蓝琥珀"
 },
 "material:20": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n生命强度：\n生物对生命生物造成更多伤害，承受更少伤害。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "生命克星"
 },
 "material:200": {
@@ -9478,6 +11303,7 @@
 "name": "王之匕首"
 },
 "material:21": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n死亡强度：\n生物对死亡生物造成更多伤害，承受更少伤害。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "死亡克星"
 },
 "material:210": {
@@ -9521,6 +11347,7 @@
 "name": "毁灭人偶"
 },
 "material:22": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n混沌强度：\n生物对混沌生物造成更多伤害，承受更少伤害。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "混沌克星"
 },
 "material:220": {
@@ -9564,6 +11391,7 @@
 "name": "狂热之趾"
 },
 "material:23": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n巫术强度：\n生物对巫术生物造成更多伤害，承受更少伤害。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "巫术克星"
 },
 "material:230": {
@@ -9607,6 +11435,7 @@
 "name": "恐怯项圈"
 },
 "material:24": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n自然强度：\n生物对自然生物造成更多伤害，承受更少伤害。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "自然克星"
 },
 "material:240": {
@@ -9870,6 +11699,7 @@
 "name": "骷髅护腕"
 },
 "material:3": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n速度\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "绿琥珀"
 },
 "material:30": {
@@ -10309,6 +12139,7 @@
 "name": "亡魂龙鳞"
 },
 "material:4": {
+"description": "将此物品镶嵌到神器的属性值槽中以获得词条：\n\n生命值\n\n你需要5个这种材料才能用于镶嵌。",
 "name": "黄琥珀"
 },
 "material:40": {
@@ -12616,6 +14447,7 @@
 "name": "炸弹咒物"
 },
 "material:927": {
+"description": "将此物品镶嵌到神器的技巧槽中以获得词条：\n\n造成伤害时获得免疫：\n生物在使用攻击或法术造成伤害时有几率获得免疫。\n\n你需要3个这种材料才能用于镶嵌。",
 "name": "免疫石板"
 },
 "material:928": {
@@ -17487,6 +19319,117 @@
 "description": "持有者在当前战斗中每施放过一次法术，法术伤害就会增加5%。",
 "name": "裂骨者，阿瑞玛基的异界法杖 · 等级 20"
 },
+"shop:19109d7619faa0012906": {
+"name": "自然公会"
+},
+"shop:1911728be641fa08ad58": {
+"name": "神明商店（莫特姆）"
+},
+"shop:1a8761557dc8627dbe46": {
+"name": "巫术公会"
+},
+"shop:21533a9c712b41b5160a": {
+"name": "神明商店（阿祖拉）"
+},
+"shop:256d667c732bdf0a44b2": {
+"name": "神明商店（艾瑞比丝）"
+},
+"shop:2ba742d3375783a50016": {
+"name": "神明商店（特内布里斯）"
+},
+"shop:2eb34a9f516aac61529b": {
+"name": "神明商店（维内多）"
+},
+"shop:34f04c3d6a4764d9c233": {
+"name": "神明商店（蕾伽丽丝）"
+},
+"shop:38b80fb5832663bdbe2b": {
+"name": "神明商店（亚历山大）"
+},
+"shop:39689335cd14c7c3fc0f": {
+"name": "神明商店（珀迪森）"
+},
+"shop:3a2aeb3e74f526df0cd7": {
+"name": "竞技场商店"
+},
+"shop:47cdc5f5cf993105be41": {
+"name": "神明商店（缪斯）"
+},
+"shop:4d5ad4ff157c7d8b917c": {
+"name": "生命公会"
+},
+"shop:54de0575f518398e2e08": {
+"name": "神明商店（瑞克露莎）"
+},
+"shop:554c58b40ae83534c594": {
+"name": "神明商店（阿波克拉诺）"
+},
+"shop:5595e07a576986437e39": {
+"name": "神明商店（利斯特）"
+},
+"shop:60a34ae409116b3aea13": {
+"name": "神明商店（维特拉戈）"
+},
+"shop:66a98c65e3aaa833ebd4": {
+"name": "神明商店（4080）"
+},
+"shop:77d2a189940da62a4be5": {
+"name": "神明商店（杰纳罗斯）"
+},
+"shop:7acf1dfa155be7cc8e04": {
+"name": "神明商店（安妮莎）"
+},
+"shop:8fd199dddf4e3cbeb836": {
+"name": "神明商店（佐特）"
+},
+"shop:97ed87d98fced1e2f6fe": {
+"name": "神明商店（贡弗瑞安）"
+},
+"shop:9d2a813c271b5fd27b2b": {
+"name": "神明商店（阿瑞玛基）"
+},
+"shop:9db48b925947c19ab6fe": {
+"name": "神明商店（伊欧利安）"
+},
+"shop:9ded434a5e9927cba924": {
+"name": "死亡公会"
+},
+"shop:ade15ad624a8d8860cb7": {
+"name": "神明商店（瓦尔卡纳）"
+},
+"shop:af860d5dab6d4cb6d081": {
+"name": "混沌公会"
+},
+"shop:b30af7c1aee1e7425a04": {
+"name": "神明商店（梅拉西斯）"
+},
+"shop:b4c366804b2ad599ad83": {
+"name": "神明商店（弗里登）"
+},
+"shop:c42a5e3ad9007dc1c09a": {
+"name": "神明商店（特米尔·莫尔戈）"
+},
+"shop:ca86222a403d4acf501b": {
+"name": "赌博矮人商店"
+},
+"shop:d200c455aa1b88515d4a": {
+"name": "神明商店（苏拉斯莉）"
+},
+"shop:d691458d97da358db313": {
+"name": "神明商店（托伦）"
+},
+"shop:dd28475268d03b762acc": {
+"name": "神明商店（奥鲁姆）"
+},
+"shop:f90c16862a7729cf9126": {
+"name": "神明商店（莎兰）"
+},
+"shop:f9fb3c4b5edf14c7c93e": {
+"name": "神明商店（伊瑟洛丝）"
+},
+"shop:fc97936bee17e9b88864": {
+"name": "神明商店（塔尔塔里斯）"
+},
 "spec:1": {
 "description": "天才与疯子之间仅有一线之隔，很难说塑灵师究竟站在哪一边。这些近乎狂热的法师终日沉浸于锤炼自己的灵偶造物：这种独一无二的生命体，随着主人的黑暗实验不断推进而变得愈发强大。\n\n作为塑灵师，你的队伍中将始终拥有一个名为灵偶的独特生物。你整个战斗策略很可能都围绕它展开。你可以直接强化你的灵偶，甚至利用其他生物在战斗中进一步增强它的力量。",
 "name": "塑灵师"
@@ -17544,6 +19487,7 @@
 "name": "狂信徒"
 },
 "spec:22": {
+"description": "护林员以他们的草灵伙伴为荣，他们将大部分精力集中在这只珍贵的生物上，而非其他生物。这种独特的法师掌握了独特的技巧，能够激发草灵的全部潜力，使其在战斗中迅速变形，给敌人带来毁灭性的打击。\n\n作为护林员，你的队伍中将始终有一只名为草灵的独特生物。在战斗中，你的生物们的行动将为草灵提供养分，使它迅速进化，最终变成一股无法阻挡的自然力量。",
 "name": "护林员"
 },
 "spec:23": {
@@ -28774,6 +30718,69 @@
 "name": "疯狂想法"
 }
 },
+"gem_labels": {
+"0": "x%额外充能",
+"1": "伤害提高x%",
+"10": "系别转换：混乱",
+"11": "系别转换：死亡",
+"12": "系别转换：生命",
+"13": "系别转换：巫术",
+"14": "系别转换：自然",
+"15": "x%几率防御",
+"16": "x%几率挑衅",
+"17": "x%几率攻击",
+"18": "引力",
+"19": "x%效能基于攻击",
+"2": "治疗效果提高x%",
+"20": "奇异",
+"21": "x%效能基于防御",
+"22": "x%效能基于速度",
+"23": "层叠",
+"24": "x%攻击后施放几率",
+"25": "x%防御后施放几率",
+"26": "x%挑衅后施放几率",
+"27": "x%治疗后施放几率",
+"3": "x%几率施放两次",
+"4": "施放于额外目标",
+"5": "x%效能基于生命值",
+"6": "慷慨",
+"7": "x%防御穿透",
+"8": "持续时间增加x",
+"9": "属性值+/ - 提高x%"
+},
+"god_titles": {
+"god:0": "光之女神",
+"god:1": "暗之女神",
+"god:10": "愤怒之神",
+"god:11": "毒药女神",
+"god:12": "时间之神",
+"god:13": "海洋之神",
+"god:14": "幸运之神",
+"god:15": "鲜血之神",
+"god:16": "纷争之神",
+"god:17": "影之神",
+"god:18": "狩猎之神",
+"god:19": "虚荣之神",
+"god:2": "火神",
+"god:20": "灭绝之神",
+"god:21": "梦境之神",
+"god:22": "虚伪之神",
+"god:23": "大地女神",
+"god:24": "平衡之神",
+"god:25": "争斗之神",
+"god:26": "创造女神",
+"god:27": "不确定女神",
+"god:28": "科学之神",
+"god:29": "预言女神",
+"god:3": "智慧之神",
+"god:30": "融合之神",
+"god:4": "极乐之神",
+"god:5": "霜冻之神",
+"god:6": "风神",
+"god:7": "惩罚之神",
+"god:8": "战争之神",
+"god:9": "幻象女神"
+},
 "raw": {
 "condition|condition:0": "拥有{CONDNAME_BUFF_PROTECT}的生物承受的伤害减少50%。",
 "condition|condition:1": "{CONDNAME_BUFF_SAVAGE}的生物在攻击时有额外、独立的暴击几率。",
@@ -32591,6 +34598,152 @@
 "relic:9|70": "在此圣物或其持有者{ACTION_attacks}敌人后，他们会移除敌人的{ACTION_provoking}状态。",
 "relic:9|80": "当敌人{ACTION_casts}一个提供增益的法术时，它也会对持有者{ACTION_casts}该法术。",
 "relic:9|90": "在此圣物{ACTION_attacks}后，增加持有者的{STAT_speed}5%。"
+},
+"requirements": {
+"currency": {
+"4080 Emblems": "4080徽章",
+"Aeolian Emblems": "伊欧利安徽章",
+"Alexandria Emblems": "亚历山大徽章",
+"Anneltha Emblems": "安妮莎徽章",
+"Apocranox Emblems": "阿波克拉诺徽章",
+"Ariamaki Emblems": "阿瑞玛基徽章",
+"Aurum Emblems": "奥鲁姆徽章",
+"Azural Emblems": "阿祖拉徽章",
+"Brimstone": "硫磺",
+"Crystal": "水晶",
+"Erebyss Emblems": "艾瑞比丝徽章",
+"Essence": "精华",
+"Friden Emblems": "弗里登徽章",
+"Genaros Emblems": "杰纳罗斯徽章",
+"Gonfurian Emblems": "贡弗瑞安徽章",
+"Granite": "花岗岩",
+"Lister Emblems": "利斯特徽章",
+"Meraxis Emblems": "梅拉西斯徽章",
+"Mortem Emblems": "莫特姆徽章",
+"Muse Emblems": "缪斯徽章",
+"Perdition Emblems": "珀迪森徽章",
+"Power": "能量",
+"Reclusa Emblems": "瑞克露莎徽章",
+"Regalis Emblems": "蕾伽丽丝徽章",
+"Shallan Emblems": "莎兰徽章",
+"Surathli Emblems": "苏拉斯莉徽章",
+"T'mere M'rgo Emblems": "特米尔·莫尔戈徽章",
+"Tartarith Emblems": "塔尔塔里斯徽章",
+"Tenebris Emblems": "特内布里斯徽章",
+"Torun Emblems": "托伦徽章",
+"Venedon Emblems": "维内多徽章",
+"Vertraag Emblems": "维特拉戈徽章",
+"Vulcanar Emblems": "瓦尔卡纳徽章",
+"Yseros Emblems": "伊瑟洛丝徽章",
+"Zonte Emblems": "佐特徽章"
+},
+"interaction": {
+"Blood Stains": "血迹",
+"Bone Piles": "焦骨",
+"Bookshelves": "书架",
+"Brains": "脑子",
+"Braziers": "霓虹火盆",
+"Bust Carvings": "受虐狂雕像",
+"Cages": "笼子",
+"Cog Pile": "齿轮",
+"Effigies": "小雕像",
+"Eggs": "蛋",
+"Fairy Groups": "仙灵",
+"Frozen Yetis": "冰冻雪怪",
+"Gem Dust": "宝石尘",
+"Ghosts": "幽灵",
+"Graves": "木乃伊墓穴",
+"Horseshoes": "马掌",
+"House of Cards": "纸牌屋",
+"Hunter's Lodge": "猎人小屋",
+"Im Cave": "伊姆洞穴",
+"Inactive Automatons": "闲置自动机",
+"Inactive Modrons": "闲置魔械",
+"Iron Maidens": "铁处女",
+"Knights": "骑士",
+"Masks": "面具",
+"Mirrors": "镜子",
+"Mucus": "粘液",
+"Oases": "绿洲",
+"Oozes": "软泥怪",
+"Pipes": "长笛",
+"Portals": "相位传送门",
+"Robes": "长袍",
+"Skull Piles": "骷髅堆",
+"Spires": "尖塔",
+"Statues": "灵体雕像",
+"Totems": "图腾",
+"Vines": "捕噬草",
+"Wishing Stars": "许愿星",
+"Worm Pits": "深坑蠕虫坑"
+},
+"source_realm_depth": {
+"15 (1 for Necromancer)": "15（死灵法师为 1）",
+"16 (1 for Monk)": "16（武僧为 1）",
+"19 (1 for Animator)": "19（塑灵师为 1）",
+"19 (1 for Cabalist)": "19（秘术师为 1）",
+"19 (1 for Mermaid)": "19（人鱼为 1）",
+"25 (1 for Inquisitor)": "25（审判官为 1）",
+"30 (1 for Defiler)": "30（亵渎者为 1）",
+"30 (1 for Pyromancer)": "30（烈焰术士为 1）",
+"31 (1 for Warden)": "31（守护者为 1）",
+"37 (1 for Evoker)": "37（塑能师为 1）",
+"4 (1 for Witch Doctor)": "4（巫医为 1）",
+"45 (1 for Cleric)": "45（牧师为 1）",
+"45 (1 for Hell Knight)": "45（地狱骑士为 1）",
+"45 (1 for Reaver)": "45（掠夺者为 1）",
+"45 (1 for Sorcerer)": "45（术士为 1）",
+"64 (1 for Bloodmage)": "64（血法师为 1）"
+},
+"target": {
+"4080": "4080",
+"Aeolian": "伊欧利安",
+"Alexandria": "亚历山大",
+"Anneltha": "安妮莎",
+"Apocranox": "阿波克拉诺",
+"Ariamaki": "阿瑞玛基",
+"Aurum": "奥鲁姆",
+"Azural": "阿祖拉",
+"Erebyss": "艾瑞比丝",
+"Friden": "弗里登",
+"Genaros": "杰纳罗斯",
+"Gonfurian": "贡弗瑞安",
+"Lister": "利斯特",
+"Meraxis": "梅拉西斯",
+"Mortem": "莫特姆",
+"Muse": "缪斯",
+"Perdition": "珀迪森",
+"Reclusa": "瑞克露莎",
+"Regalis": "蕾伽丽丝",
+"Shallan": "莎兰",
+"Surathli": "苏拉斯莉",
+"T'mere M'rgo": "特米尔·莫尔戈",
+"Tartarith": "塔尔塔里斯",
+"Tenebris": "特内布里斯",
+"Torun": "托伦",
+"Venedon": "维内多",
+"Vertraag": "维特拉戈",
+"Vulcanar": "瓦尔卡纳",
+"Yseros": "伊瑟洛丝",
+"Zonte": "佐特"
+}
+},
+"spell_aliases": {
+"spell:174": [
+"盾爆术"
+],
+"spell:199": [
+"时间漫步法术"
+],
+"spell:432": [
+"一次杜恩符文"
+],
+"spell:601": [
+"鼓励之言"
+],
+"spell:685": [
+"调制药水"
+]
 },
 "tokens": {
 "ACTION_attack": "攻击",

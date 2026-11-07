@@ -75,13 +75,7 @@ const components = computed(() =>
   >
     <div class="section-head">
       <h2>
-        <RouterLink
-          v-if="data.name && shop.name === `${data.name} God Shop`"
-          class="link"
-          :to="objectRoute(shop.id)"
-          >{{ t("reference.shop") }}</RouterLink
-        >
-        <ObjectLink v-else :item="shop" />
+        <RouterLink class="link" :to="objectRoute(shop.id)">{{ t("reference.shop") }}</RouterLink>
       </h2>
       <small>{{ t("reference.items", shop.offers.length) }}</small>
     </div>
