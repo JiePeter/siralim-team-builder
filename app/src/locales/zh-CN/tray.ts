@@ -85,5 +85,6 @@ export default {
       noMatches: "没有匹配的{label}",
       openInSearch: "在搜索中打开",
     },
+    useKind: "使用{kind}",
   },
 };
