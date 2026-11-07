@@ -134,6 +134,14 @@ const credits = [
         ><i class="icon icon-team"></i>{{ t("app.build") }}</RouterLink
       >
     </nav>
+    <select
+      class="language"
+      :aria-label="t('app.language')"
+      :value="locale"
+      @change="setLocale(($event.target as HTMLSelectElement).value as Locale)"
+    >
+      <option v-for="(name, code) in LOCALES" :key="code" :value="code">{{ name }}</option>
+    </select>
     <button
       v-if="!sidebar"
       type="button"
@@ -156,14 +164,6 @@ const credits = [
   <footer>
     {{ t("app.footer") }}
     <button type="button" class="about-link" @click="aboutOpen = true">{{ t("app.about") }}</button>
-    <select
-      class="language"
-      :aria-label="t('app.language')"
-      :value="locale"
-      @change="setLocale(($event.target as HTMLSelectElement).value as Locale)"
-    >
-      <option v-for="(name, code) in LOCALES" :key="code" :value="code">{{ name }}</option>
-    </select>
   </footer>
   <ModalDialog v-model:open="aboutOpen" :title="t('app.about')" sheet>
     <div class="choices about">
@@ -355,7 +355,6 @@ nav .active::after {
 .tray-open {
   align-self: center;
   gap: var(--space-8);
-  margin-left: auto;
   min-height: var(--control);
   padding: 0 var(--space-8);
   background: transparent;
@@ -431,11 +430,13 @@ footer {
   text-underline-offset: 3px;
 }
 .language {
+  align-self: center;
   width: auto;
+  flex-shrink: 0;
+  margin-left: auto;
   min-height: var(--control);
   padding: 0 var(--space-8);
-  background-color: transparent;
-  border-color: transparent;
+  white-space: nowrap;
   color: var(--text);
   font-size: var(--fs-12);
 }
