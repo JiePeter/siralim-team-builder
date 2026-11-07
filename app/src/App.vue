@@ -290,6 +290,7 @@ header {
   font-size: var(--fs-13);
   font-weight: 400;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 nav {
   display: flex;
@@ -431,14 +432,12 @@ footer {
 }
 .language {
   align-self: center;
-  width: auto;
   flex-shrink: 0;
+  width: auto;
   margin-left: auto;
   min-height: var(--control);
-  padding: 0 var(--space-8);
   white-space: nowrap;
-  color: var(--text);
-  font-size: var(--fs-12);
+  font-size: var(--fs-13);
 }
 .about {
   display: grid;
@@ -516,6 +515,9 @@ footer {
 @media (max-width: 767px) {
   header {
     padding: 0 var(--space-16);
+  }
+  .brand span {
+    display: none;
   }
   nav {
     position: fixed;
