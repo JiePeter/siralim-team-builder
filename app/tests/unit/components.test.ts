@@ -3,6 +3,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { createMemoryHistory, createRouter } from "vue-router";
 import type { GemProperty, SynergyItem } from "@/data";
+import ArtifactEditor from "@/components/ArtifactEditor.vue";
 import EffectText from "@/components/EffectText.vue";
 import GemEditor from "@/components/GemEditor.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
@@ -75,6 +76,39 @@ describe("routeView", () => {
     const route = { method: "purchase", requirements: { cost: 10, currency: "苏拉斯莉徽章" } };
     expect(routeView(route, { godName: "苏拉斯莉" })?.facts).toEqual(["10 Emblems"]);
     expect(routeView(route)?.facts).toEqual(["10 苏拉斯莉徽章"]);
+  });
+});
+
+describe("ArtifactEditor", () => {
+  it("writes nothing until something is changed", async () => {
+    setActivePinia(createPinia());
+    const catalog = {
+      artifact_primary: { Sword: { stat: "attack" }, Staff: { stat: "intelligence" } },
+      artifact_properties: [],
+      spells: [],
+    };
+    useTeamStore().index = {
+      rules: { artifact_slots: { stats: 3, tricks: 2 } },
+      catalog,
+    } as never;
+    const editor = mount(ArtifactEditor, {
+      props: {
+        item: null,
+        catalog: catalog as never,
+        team: { inventory: [] } as never,
+        atSlot: 0,
+        kindOf: () => undefined,
+      },
+      global: { plugins: [router] },
+    });
+    await flushPromises();
+    expect(editor.emitted("apply")).toBeUndefined();
+
+    const staff = editor.findAll(".artifact-types button").find((b) => b.text() === "Staff")!;
+    await staff.trigger("click");
+    await flushPromises();
+    expect(editor.emitted("apply")).toHaveLength(1);
+    expect(editor.emitted("apply")![0]![1]).toMatchObject({ type: "Staff" });
   });
 });
 

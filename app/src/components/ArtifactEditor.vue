@@ -17,11 +17,12 @@ const props = defineProps<{
   item: Equipment | null;
   catalog: Catalog;
   team: Team;
+  /** The slot this Artifact sits in. */
+  atSlot: number;
   kindOf: (id: string) => string | undefined;
 }>();
 const emit = defineEmits<{
   apply: [item: Equipment, configuration: ArtifactConfig, taken: string | null];
-  search: [kind: string, q: string];
 }>();
 
 const padded = (ids: string[] | undefined, length: number) =>
@@ -192,9 +193,9 @@ watch(config, save, { deep: true });
           :team="team"
           :catalog="catalog"
           :kind-of="kindOf"
+          :target="{ slot: atSlot, field: 'artifact' }"
           @pick="pickTrait"
           @take="takeTrait"
-          @search="(q) => emit('search', 'material', q)"
         />
       </div>
     </ModalDialog>

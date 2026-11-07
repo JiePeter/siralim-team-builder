@@ -228,7 +228,11 @@ const picked = computed(() => {
 @media (max-width: 767px) {
   .trait-cell > .equipped,
   .trait-cell > .equipped[draggable="true"] {
-    padding: var(--space-8) var(--space-12);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 44px;
+    padding: var(--space-4) var(--space-12);
   }
   .trait-name {
     font-size: var(--fs-13);

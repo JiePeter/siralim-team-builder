@@ -3,12 +3,15 @@ import { gemProperties, joinSegments, type Catalog, type GemProperty } from "@/d
 import { artifactValueText } from "@/domain/artifact";
 import { t } from "@/i18n";
 import type { CharacterField, SlotField } from "@/domain/assembly";
+import { placementRefusal } from "@/domain/placement";
 import {
+  carriersOf,
   isCharacterPart,
   type ArtifactConfig,
   type Carriers,
   type Equipment,
   type SlotKinds,
+  type Team,
   type TeamIndex,
 } from "@/domain/team";
 
@@ -62,6 +65,43 @@ export function carriedInto(carriers: Carriers, field: PickerField): boolean {
   if (field === "base" || field === "fusion") return !!carriers.creature;
   if (field === "artifact" || field === "artifactTrait") return carriers.materials.length > 0;
   return false;
+}
+
+/** Whether a component is the kind a field holds; a configured Artifact stays an Artifact. */
+export function fieldFits(
+  index: TeamIndex,
+  id: string,
+  kind: string | undefined,
+  configured: boolean,
+  field: SlotField,
+): boolean {
+  const carried = configured ? null : carriersOf(index, id);
+  if (carried && (carried.creature || carried.materials.length)) return carriedInto(carried, field);
+  return fieldKinds(index.rules.slot_kinds)[field].includes(kind ?? "");
+}
+
+/** Whether any position on the Build page, with Nether fields shown or not, takes this tray item. */
+export function canPlace(
+  index: TeamIndex,
+  team: Team,
+  item: Equipment,
+  kind: string | undefined,
+  showNether: boolean,
+): boolean {
+  if (
+    isCharacterPart(index.catalog, item.id, "characterBase") ||
+    isCharacterPart(index.catalog, item.id, "characterAnointment")
+  )
+    return true;
+  const fields: SlotField[] = ["base", "fusion", "artifact", "relic", "spells"];
+  if (showNether) fields.push("nether");
+  return team.slots.some((_, slot) =>
+    fields.some(
+      (field) =>
+        fieldFits(index, item.id, kind, !!item.artifact, field) &&
+        !placementRefusal(index, team, { slot, field }, item.id),
+    ),
+  );
 }
 
 /** Pool items a field can take, by the kind each component has in the team rules. */

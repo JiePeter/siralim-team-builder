@@ -66,6 +66,9 @@
 .icon-team {
   --icon: var(--icon-team);
 }
+.icon-move {
+  --icon: var(--icon-move);
+}
 .icon-character {
   --icon: var(--icon-character);
 }
@@ -333,6 +336,20 @@ button[aria-pressed="true"]:not(.object-cell) {
   height: var(--control);
   padding: 0;
   flex: none;
+}
+/* An icon with its short name: a row action that an icon alone would not explain. */
+button.labelled-key {
+  display: inline-flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  font-size: 10px;
+  line-height: 12px;
+  white-space: nowrap;
 }
 /* A stepper is one key split by 1px rules. */
 .stepper {

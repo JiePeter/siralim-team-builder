@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, provide, ref, useId, watch } from "vue";
+import { nextTick, onMounted, provide, ref, useId, watch } from "vue";
 import { useRoute } from "vue-router";
 import { t } from "@/i18n";
 import { DIALOG_ACTIONS, DIALOG_FOOTER } from "./dialog";
@@ -41,6 +41,12 @@ watch(
 );
 onMounted(() => sync(open.value));
 
+/** Escape closes the element; the owner may keep the dialog open on the view it came from. */
+function closed() {
+  open.value = false;
+  nextTick(() => sync(open.value));
+}
+
 /** A click on the dialog element itself is on the backdrop. A pending Apply keeps the dialog open. */
 function backdropClick(event: MouseEvent) {
   if (event.target === dialog.value && !foot.value?.childElementCount) open.value = false;
@@ -52,7 +58,7 @@ function backdropClick(event: MouseEvent) {
     ref="dialog"
     :class="[drawer ? 'drawer' : 'choice-dialog', { sheet }]"
     :aria-label="title"
-    @close="open = false"
+    @close="closed"
     @click="backdropClick"
   >
     <div class="section-head dialog-head">

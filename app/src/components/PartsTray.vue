@@ -2,7 +2,7 @@
 import { computed, inject, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
-import { useEventListener, useTimeoutFn } from "@vueuse/core";
+import { useEventListener, useStorage, useTimeoutFn } from "@vueuse/core";
 import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
 import { t } from "@/i18n";
 import { MAX_TRAIT_COPIES, placedParts, whereIs } from "@/domain/placement";
@@ -11,12 +11,12 @@ import DropZone from "./DropZone.vue";
 import ObjectCell from "./ObjectCell.vue";
 import PreviewDialog from "./PreviewDialog.vue";
 import PropertyPills from "./PropertyPills.vue";
-import { shownAs } from "./assembly";
+import { canPlace, shownAs } from "./assembly";
 import { component } from "./components";
 import { kindGroup, kindGroups } from "./presentation";
 import { dragged, draggedSelection, useDragSource } from "./dragging";
 import { attempt, toast } from "./toast";
-import { flashed, lineKey, selected, trayOpen, useEntity } from "./tray";
+import { flashed, lineKey, selected, startPlacing, trayOpen, useEntity } from "./tray";
 import { DIALOG_ACTIONS } from "./dialog";
 
 defineProps<{ sheet?: boolean }>();
@@ -30,6 +30,8 @@ const entity = useEntity();
 const drag = useDragSource();
 const preview = ref<Equipment | null>(null);
 const list = ref<HTMLElement | null>(null);
+const showNether = useStorage("siralim-planner.show-nether", false);
+const kindOf = (id: string) => index.value?.kinds.get(id);
 
 /** One per team, so the tray never holds two of them. */
 const single = new Set(["relic", "specialization", "perk"]);
@@ -131,12 +133,27 @@ async function remove(line: Line) {
     toast(t("tray.removed", { name: label }), { label: t("tray.undo"), run: () => attempt(undo) });
 }
 
+/** A line that no position takes opens its look-up, so placing never starts with nowhere to go. */
+function placeable(line: Line) {
+  return (
+    building.value &&
+    line.uids.length > 0 &&
+    !!index.value &&
+    canPlace(index.value, team.value, line.item, kindOf(line.item.id), showNether.value)
+  );
+}
+
 function choose(line: Line) {
-  if (!building.value || !line.uids.length) {
+  if (isSelected(line)) {
+    selected.value = null;
+    return;
+  }
+  if (!placeable(line)) {
     preview.value = line.item;
     return;
   }
-  selected.value = isSelected(line) ? null : { uid: line.uids[0]! };
+  const sheet = trayOpen.value;
+  startPlacing({ uid: line.uids[0]! }, sheet ? () => (trayOpen.value = true) : null);
   trayOpen.value = false;
 }
 

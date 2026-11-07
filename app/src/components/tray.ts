@@ -10,6 +10,17 @@ import { selectionId, useCatalog, type Candidate } from "./selection";
 
 /** The tray item or equipped gear about to be placed by tapping a field. */
 export const selected = ref<Selection | null>(null);
+let onCancel: (() => unknown) | null = null;
+/** Choose something for placing; Cancel runs `back`, which returns to where the choice was made. */
+export function startPlacing(selection: Selection, back: (() => unknown) | null = null) {
+  selected.value = selection;
+  onCancel = back;
+}
+export function cancelPlacing() {
+  selected.value = null;
+  onCancel?.();
+  onCancel = null;
+}
 /** The phone tray sheet. */
 export const trayOpen = ref(false);
 /** A tray item to call attention to: just added, or the target of a jump. */

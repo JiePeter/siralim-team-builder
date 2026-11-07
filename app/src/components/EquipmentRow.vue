@@ -103,5 +103,6 @@ const corner = computed(() =>
     <button v-else type="button" :class="['drop-target', { next }]" @click="emit('place')">
       <i class="icon icon-plus"></i>{{ label }}
     </button>
+    <p v-if="warning" class="field-warning">{{ warning }}</p>
   </DropZone>
 </template>

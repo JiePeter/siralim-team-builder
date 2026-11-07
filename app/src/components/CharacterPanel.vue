@@ -20,7 +20,6 @@ const emit = defineEmits<{
   drop: [field: CharacterField, position: number];
   remove: [field: CharacterField, position: number];
   perks: [];
-  inspect: [id: string];
   clear: [];
 }>();
 
@@ -109,11 +108,7 @@ const perk = (position: number) => {
         v-if="perk(position - 1)"
         class="equipped"
         v-bind="drag({ character: 'characterAnointment', position: position - 1 })"
-        @click="
-          selected
-            ? emit('place', 'characterAnointment', position - 1)
-            : emit('inspect', perk(position - 1)!.id)
-        "
+        @click="emit('place', 'characterAnointment', position - 1)"
       >
         <EquipmentLine :data="component(perk(position - 1)!.id)">
           <template #menu>

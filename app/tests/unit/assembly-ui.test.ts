@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { characterChoices, poolChoices } from "@/components/assembly";
+import { canPlace, characterChoices, poolChoices } from "@/components/assembly";
 import { candidates } from "@/components/candidates";
 import type { Catalog, Discovery } from "@/data/types";
 import { OTHER } from "@/domain/attributes";
@@ -129,6 +129,33 @@ describe("team store changes pass through team validation", () => {
       "This creature already has this Trait",
     );
     expect(store.team.slots[0]!.artifact).toBeUndefined();
+  });
+
+  it("restores the team after a change made elsewhere, unless it has changed since", async () => {
+    const store = useTeamStore();
+    await store.addToTray(gatewatcher);
+    const mark = store.restorePoint();
+    await store.addToTray(acidBomb);
+    const undo = mark();
+    undo();
+    expect(store.trayCount).toBe(1);
+
+    const stale = store.restorePoint();
+    await store.addToTray(acidBomb);
+    const late = stale();
+    await store.addToTray(acidBomb);
+    expect(late).toThrow();
+    expect(store.trayCount).toBe(3);
+  });
+
+  it("offers no placing for a tray item that no position takes", async () => {
+    const store = useTeamStore();
+    const index = await store.rules();
+    const perk = index.catalog.perks.find((p) => !p.anointment)!;
+    const place = (id: string) =>
+      canPlace(index, store.team, { uid: "x", id }, index.kinds.get(id), false);
+    expect(place(perk.id)).toBe(false);
+    expect(place(gatewatcher)).toBe(true);
   });
 
   it("undoes an add", async () => {

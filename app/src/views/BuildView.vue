@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, toRaw, useId, watch } from "vue";
+import { computed, nextTick, ref, toRaw, useId, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useEventListener, useFileDialog, useMediaQuery, useStorage, useSwipe } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { assetUrl, object, type Carrier } from "@/data";
-import { useSearchStore } from "@/stores/search";
 import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
-import type { Attributes } from "@/domain/attributes";
 import {
   fieldLabels,
   isListField,
@@ -30,7 +28,6 @@ import {
 } from "@/domain/placement";
 import {
   asItem,
-  carriersOf,
   characterEffects,
   isCharacterPart,
   itemId,
@@ -41,10 +38,11 @@ import {
 } from "@/domain/team";
 import ArtifactEditor from "@/components/ArtifactEditor.vue";
 import CarrierPicker from "@/components/CarrierPicker.vue";
+import CellPlate from "@/components/CellPlate.vue";
 import CharacterEditor from "@/components/CharacterEditor.vue";
 import CharacterPanel from "@/components/CharacterPanel.vue";
-import DialogFooter from "@/components/DialogFooter.vue";
 import DropZone from "@/components/DropZone.vue";
+import EditorActions from "@/components/EditorActions.vue";
 import EquipmentLine from "@/components/EquipmentLine.vue";
 import EquipmentRow from "@/components/EquipmentRow.vue";
 import FieldPicker from "@/components/FieldPicker.vue";
@@ -57,11 +55,9 @@ import RelicEditor from "@/components/RelicEditor.vue";
 import TraitCell from "@/components/TraitCell.vue";
 import {
   BLEND,
-  carriedInto,
+  fieldFits,
   fieldKinds,
-  fieldKind,
   propertyLabel,
-  type PickerField,
   slotIndex,
   useGemProperties,
 } from "@/components/assembly";
@@ -70,9 +66,10 @@ import { spriteOf } from "@/components/presentation";
 import { draggedSelection, dragged, useDragSource, type Selection } from "@/components/dragging";
 import { attempt, toast, toastError } from "@/components/toast";
 import { t } from "@/i18n";
-import { placementLabel, selected } from "@/components/tray";
+import { placementLabel, selected, startPlacing } from "@/components/tray";
 
-type Dialog =
+/** `from` is the dialog to return to when this one closes without a choice. */
+type Dialog = (
   | { type: "pool"; target: Position }
   | { type: "carrier"; target: Position; uid: string; kind: string; options: Carrier[] }
   | { type: "character"; field: CharacterField; position: number }
@@ -80,7 +77,8 @@ type Dialog =
   | { type: "copy"; at: Position }
   | { type: "artifact"; slot: number }
   | { type: "relic"; slot: number }
-  | { type: "perks" };
+  | { type: "perks" }
+) & { from?: Dialog };
 
 const store = useTeamStore();
 const { team, index, trayCount } = storeToRefs(store);
@@ -91,7 +89,6 @@ const teamsMenu = useId();
 const teamsOpen = ref(false);
 const fileMenu = useId();
 const fileOpen = ref(false);
-const search = useSearchStore();
 const route = useRoute();
 const router = useRouter();
 const drag = useDragSource();
@@ -113,12 +110,8 @@ const fields = computed(() =>
 const TRAIT_FIELDS = ["base", "fusion", "artifact"] as const;
 const dialog = ref<Dialog | null>(null);
 const preview = ref<Equipment | null>(null);
-const coarse = useMediaQuery("(pointer: coarse)");
-/** The Trait field whose look-up is open and can start a swap. */
-const swapFrom = ref<Position | null>(null);
-watch(preview, (item) => {
-  if (!item) swapFrom.value = null;
-});
+/** Remakes the Artifact editor after an Undo, so it shows the restored Artifact. */
+const artifactVersion = ref(0);
 const notesField = ref<HTMLTextAreaElement | null>(null);
 // A phone can discard a hidden page before its field loses focus.
 useEventListener(document, "visibilitychange", () => {
@@ -157,7 +150,7 @@ watch(characterOpen, (value) => {
 const dialogOpen = computed({
   get: () => dialog.value !== null,
   set: (value) => {
-    if (!value) dialog.value = null;
+    if (!value) dialog.value = dialog.value?.from ?? null;
   },
 });
 const kindOf = (id: string) => index.value?.kinds.get(id);
@@ -281,16 +274,10 @@ const placingConfigured = computed(() => {
 
 /** Whether the item being placed is the kind a field holds. */
 function fits(field: SlotField): boolean {
-  if (!placing.value) return false;
+  if (!placing.value || !index.value) return false;
   const from = placingSelection.value;
   if (from && "slot" in from && from.field === "nether" && field !== "nether") return false;
-  const carried =
-    index.value && !placingConfigured.value ? carriersOf(index.value, placing.value) : null;
-  if (carried && (carried.creature || carried.materials.length)) return carriedInto(carried, field);
-  return (
-    !!index.value &&
-    fieldKinds(index.value.rules.slot_kinds)[field].includes(placingKind.value ?? "")
-  );
+  return fieldFits(index.value, placing.value, placingKind.value, placingConfigured.value, field);
 }
 /** Why the selection cannot go into `target`, or null when it can. */
 function refusal(target: Position, selection: Selection, id: string): string | null {
@@ -381,12 +368,18 @@ const cells = computed(() =>
   }),
 );
 
+/** Names the slot both ways, by number and by its creature, with the field. */
+function fieldTitle(at: Position) {
+  const creature = component(itemId(team.value.slots[at.slot]?.base) ?? "")?.name;
+  return [slotIndex(at.slot), creature, fieldLabels[at.field]].filter(Boolean).join(" · ");
+}
+
 const dialogTitle = computed(() => {
   const d = dialog.value;
   if (!d) return "";
   switch (d.type) {
     case "pool":
-      return placementLabel(d.target);
+      return fieldTitle(d.target);
     case "carrier":
       return d.kind === "creature" ? t("build.selectCreature") : t("build.selectMaterial");
     case "character":
@@ -396,9 +389,9 @@ const dialogTitle = computed(() => {
     case "copy":
       return t("build.copyTo");
     case "artifact":
-      return t("build.artifact");
+      return fieldTitle({ slot: d.slot, field: "artifact" });
     case "relic":
-      return t("build.relic");
+      return fieldTitle({ slot: d.slot, field: "relic" });
     case "perks":
       return t("build.specialization");
   }
@@ -421,16 +414,77 @@ async function install(uid: string, target: Position, resolvedId: string) {
   dialog.value = null;
 }
 
+/** Offer to undo what ran since `mark` was taken. */
+function offerUndo(mark: () => () => void, text: string, after?: () => void) {
+  const undo = mark();
+  toast(text, {
+    label: t("build.undo"),
+    run: () =>
+      attempt(() => {
+        undo();
+        after?.();
+      }),
+  });
+}
+
+/** Run a placement into `target`; when that takes a filled field's occupant out, it can be undone. */
+async function placingOver(target: Position, swap: boolean, run: () => unknown, next?: () => void) {
+  const occupied = isListField(target.field) && target.index === undefined;
+  const occupant = occupied ? undefined : itemId(equipmentAt(target));
+  const mark = store.restorePoint();
+  await run();
+  next?.();
+  // The toast joins the dialog on screen, which `next` may have just closed.
+  await nextTick();
+  if (!occupant || itemId(equipmentAt(target)) === occupant) return;
+  const name = occupant === BLANK_ARTIFACT ? t("build.artifact") : component(occupant)?.name;
+  offerUndo(mark, swap ? t("build.swapped") : t("build.wentToTray", { name }));
+}
+
+function placeWithUndo(target: Position, selection: Selection | null = selected.value) {
+  const swap =
+    !!selection && "slot" in selection && !!traitSwap(index.value!, team.value, selection, target);
+  return placingOver(target, swap, () => place(target, selection));
+}
+
+/** What a tap on a field does: with something chosen it places it, otherwise it opens the field. */
+function openField(target: Position) {
+  if (selected.value) return attempt(() => placeWithUndo(target));
+  const filled = !!equipmentAt(target);
+  if (target.field === "artifact") dialog.value = { type: "artifact", slot: target.slot };
+  else if (target.field === "relic" && filled) dialog.value = { type: "relic", slot: target.slot };
+  else if (target.field === "spells" && target.index !== undefined && filled)
+    dialog.value = { type: "gem", at: target };
+  else dialog.value = { type: "pool", target };
+}
+
+/** Open the picker for a filled field from its editor; closing it returns to the editor. */
+function replaceFrom(target: Position) {
+  dialog.value = { type: "pool", target, from: dialog.value ?? undefined };
+}
+
+/** A choice in a field that has an editor continues into it. */
+function afterPick(target: Position) {
+  if (dialog.value?.type === "carrier") return;
+  if (target.field === "relic") dialog.value = { type: "relic", slot: target.slot };
+  else if (target.field === "spells")
+    dialog.value = {
+      type: "gem",
+      at: {
+        slot: target.slot,
+        field: "spells",
+        index: target.index ?? (team.value.slots[target.slot]!.spells?.length ?? 1) - 1,
+      },
+    };
+  else dialog.value = null;
+}
+
 /**
  * Put the chosen or dragged item into a field, replacing what is there; placed gear exchanges
- * Traits with a filled Trait field instead. With nothing chosen an empty field opens its picker;
- * an occupied one is left alone.
+ * Traits with a filled Trait field instead.
  */
 async function place(target: Position, selection: Selection | null = selected.value) {
-  if (!selection) {
-    if (isListField(target.field) || !equipmentAt(target)) dialog.value = { type: "pool", target };
-    return;
-  }
+  if (!selection) return;
   if ("character" in selection || "member" in selection) throw new Error(t("build.onlyGear"));
   const moving =
     "uid" in selection
@@ -484,11 +538,9 @@ async function placeCharacter(
   selection: Selection | null = selected.value,
 ) {
   if (!selection) {
-    const filled =
-      field === "characterBase"
-        ? team.value.character.specialization
-        : team.value.character.anointments[position];
-    if (!filled) dialog.value = { type: "character", field, position };
+    if (field === "characterBase" && team.value.character.specialization)
+      dialog.value = { type: "perks" };
+    else dialog.value = { type: "character", field, position };
     return;
   }
   if (!("uid" in selection)) {
@@ -496,25 +548,73 @@ async function placeCharacter(
     selected.value = null;
     return;
   }
-  await store.placeCharacterPart(selection.uid, field, position);
   selected.value = null;
-  dialog.value = null;
+  await overCharacter(
+    field,
+    position,
+    () => store.placeCharacterPart(selection.uid, field, position),
+    () => (dialog.value = field === "characterBase" ? { type: "perks" } : null),
+  );
+}
+
+const characterAt = (field: CharacterField, position: number) =>
+  field === "characterBase"
+    ? team.value.character.specialization
+    : team.value.character.anointments[position];
+
+/** Run a change to a character part; when it takes a filled part out, it can be undone. */
+async function overCharacter(
+  field: CharacterField,
+  position: number,
+  run: () => unknown,
+  next?: () => void,
+) {
+  const occupant = characterAt(field, position);
+  const mark = store.restorePoint();
+  await run();
+  next?.();
+  await nextTick();
+  if (occupant && characterAt(field, position) !== occupant)
+    offerUndo(mark, t("build.wentToTray", { name: component(occupant)?.name }));
 }
 
 function pickPool(uid: string) {
   const d = dialog.value;
-  if (d?.type === "pool") attempt(() => place(d.target, { uid }));
+  if (d?.type !== "pool") return;
+  attempt(() =>
+    placingOver(
+      d.target,
+      false,
+      () => place(d.target, { uid }),
+      () => afterPick(d.target),
+    ),
+  );
 }
 
-async function takePool(id: string) {
+function takePool(id: string) {
   const d = dialog.value;
   if (d?.type !== "pool") return;
-  if ((await attempt(() => store.take(id, d.target))) !== undefined) dialog.value = null;
+  attempt(() =>
+    placingOver(
+      d.target,
+      false,
+      () => store.take(id, d.target),
+      () => afterPick(d.target),
+    ),
+  );
 }
 
 function pickCarrier(option: Carrier) {
   const d = dialog.value;
-  if (d?.type === "carrier") attempt(() => install(d.uid, d.target, option.id));
+  if (d?.type !== "carrier") return;
+  attempt(() =>
+    placingOver(
+      d.target,
+      false,
+      () => install(d.uid, d.target, option.id),
+      () => afterPick(d.target),
+    ),
+  );
 }
 
 /** A Specialization goes to its field, an Anointment to the next free one. */
@@ -531,11 +631,17 @@ function pickCharacter(uid: string) {
   if (d?.type === "character") attempt(() => placeCharacter(d.field, d.position, { uid }));
 }
 
-async function takeCharacter(id: string) {
+function takeCharacter(id: string) {
   const d = dialog.value;
   if (d?.type !== "character") return;
-  if ((await attempt(() => store.takeCharacterPart(id, d.field))) !== undefined)
-    dialog.value = null;
+  attempt(() =>
+    overCharacter(
+      d.field,
+      d.position,
+      () => store.takeCharacterPart(id, d.field, d.position),
+      () => (dialog.value = d.field === "characterBase" ? { type: "perks" } : null),
+    ),
+  );
 }
 
 async function placeOnTile(target: number) {
@@ -550,8 +656,9 @@ async function placeOnTile(target: number) {
       selected.value = null;
       return store.swapSlots(selection.slot, target);
     }
-    return place({ slot: target, field }, selection);
+    return placeWithUndo({ slot: target, field }, selection);
   }
+  selected.value = null;
   if (selection.member === target) return;
   await store.swapSlots(selection.member, target);
   if (openSlot.value === selection.member) openSlot.value = target;
@@ -559,12 +666,18 @@ async function placeOnTile(target: number) {
 }
 
 function tapTile(i: number) {
-  if (selected.value && acceptsMember(i)) attempt(() => placeOnTile(i));
+  const moving = selected.value && "member" in selected.value ? selected.value.member : null;
+  if (moving === i) selected.value = null;
+  else if (selected.value && acceptsMember(i)) attempt(() => placeOnTile(i));
   else if (phone.value) openSlotPage(i);
-  else {
-    openSlot.value = i;
-    slotOpen.value = true;
-  }
+  else showSlotPanel(i);
+}
+
+/** Beside the sheet the open slot is in the route too, so it survives a trip to Search. */
+function showSlotPanel(i: number) {
+  openSlot.value = i;
+  slotOpen.value = true;
+  router.replace({ query: { slot: String(i + 1) } });
 }
 
 function openSlotPage(i: number) {
@@ -577,24 +690,24 @@ function closeSlot() {
   if (route.query.slot) router.replace({ query: {} });
 }
 
-function inspectField(target: Position) {
-  if (target.field === "artifact") dialog.value = { type: "artifact", slot: target.slot };
-  else if (target.field === "relic") dialog.value = { type: "relic", slot: target.slot };
-  else preview.value = asItem(equipmentAt(target)!);
+/** Placing happens on the sheet; Cancel comes back to the slot page and dialog it started from. */
+function placeFromHere(selection: Selection) {
+  const from = dialog.value;
+  const slot = page.value === "slot" ? openSlot.value : null;
+  startPlacing(selection, async () => {
+    if (slot !== null) await router.push({ query: { slot: String(slot + 1), page: "slot" } });
+    dialog.value = from;
+  });
+  dialog.value = null;
+  if (slot !== null) closePage();
 }
 
-/** Touch has no drag, so a Trait's look-up also offers the swap. */
-function inspectTrait(target: Position) {
-  const item = asItem(equipmentAt(target)!);
-  if (coarse.value && item.id !== BLANK_ARTIFACT) {
-    swapFrom.value = target;
-    preview.value = item;
-  } else inspectField(target);
+async function sendToTray(at: Position) {
+  if (await attempt(() => store.unequip(at))) dialog.value = null;
 }
 
-function startSwap() {
-  selected.value = swapFrom.value;
-  preview.value = null;
+async function sendCharacterToTray(field: CharacterField, position: number) {
+  if (await attempt(() => store.removeCharacterPart(field, position))) dialog.value = null;
 }
 
 const SLOT_COUNT = 6;
@@ -626,20 +739,10 @@ function closePage() {
   else router.replace({ query: {} });
 }
 
-function configure(target: Position) {
-  dialog.value = { type: target.field === "artifact" ? "artifact" : "relic", slot: target.slot };
-}
-
 function dropped() {
   const selection = draggedSelection();
   dragged.value = null;
   return selection;
-}
-
-function searchFor(field: PickerField, q = "", attributes: Attributes = {}) {
-  dialog.value = null;
-  search.browse(fieldKind[field], q, attributes);
-  router.push({ name: "search" });
 }
 
 /** The other slots with a Primary, which can take a copy of the gear. */
@@ -689,7 +792,18 @@ function applyGem(properties: string[], variants: Record<string, number>) {
 
 function applyArtifact(item: Equipment, configuration: ArtifactConfig, taken: string | null) {
   const d = dialog.value;
-  if (d?.type === "artifact") attempt(() => store.setArtifact(d.slot, item, configuration, taken));
+  if (d?.type !== "artifact") return;
+  const before = itemId(team.value.slots[d.slot]?.artifact);
+  const mark = store.restorePoint();
+  attempt(async () => {
+    await store.setArtifact(d.slot, item, configuration, taken);
+    if (before && before !== BLANK_ARTIFACT && before !== item.id)
+      offerUndo(
+        mark,
+        t("build.wentToTray", { name: component(before)?.name }),
+        () => artifactVersion.value++,
+      );
+  });
 }
 
 function applyRelic(id: string, rank: number) {
@@ -784,6 +898,52 @@ const gemPosition = (position: number): Position => ({
   field: "spells",
   index: position,
 });
+const gemAtSlot = (slot: number, position: number): Position => ({
+  slot,
+  field: "spells",
+  index: position,
+});
+/** Two rows of two keys on a card: the Relic, then Spell Gems up to the usual three. */
+const GEM_KEYS = 3;
+const gearGems = (slot: number) => {
+  const gems = team.value.slots[slot]!.spells ?? [];
+  return gems.length > GEM_KEYS
+    ? { shown: gems.slice(0, GEM_KEYS - 1), hidden: gems.length - GEM_KEYS + 1 }
+    : { shown: gems, hidden: 0 };
+};
+const relicRank = (relic: EquipmentRef) => String(asItem(relic).rank || 1);
+const specialization = computed(() => team.value.character.specialization);
+/** Anointments the Character row has room for; the rest are on the Character page. */
+const ANOINTMENT_KEYS = 5;
+const anointmentCapacity = computed(() =>
+  index.value ? characterEffects(index.value, team.value.character).anointment_capacity : 0,
+);
+function openCharacter(field: CharacterField, position: number) {
+  attempt(() => placeCharacter(field, position));
+}
+
+/** The field a dialog is about and what is in it, to lead the page with. */
+const dialogField = computed<Position | null>(() =>
+  dialog.value?.type === "pool" ? dialog.value.target : null,
+);
+const currentItem = computed(() => {
+  const at = dialogField.value;
+  const item = at && equipmentAt(at);
+  return item ? asItem(item) : null;
+});
+const currentCharacter = computed(() => {
+  const d = dialog.value;
+  if (d?.type !== "character") return null;
+  return characterAt(d.field, d.position) ?? null;
+});
+/** A field can swap with another that holds a Trait. */
+const canSwap = (at: Position) => ["base", "fusion"].includes(at.field) && !!equipmentAt(at);
+const dialogWarning = computed(() => {
+  const d = dialog.value;
+  if (d?.type === "pool" && !isListField(d.target.field))
+    return fieldWarning(d.target.slot, d.target.field);
+  return d?.type === "artifact" ? fieldWarning(d.slot, "artifact") : null;
+});
 </script>
 
 <template>
@@ -864,13 +1024,13 @@ const gemPosition = (position: number): Position => ({
           class="view-tab"
           role="tab"
           :aria-selected="slotOpen"
-          @click="slotOpen = true"
+          @click="showSlotPanel(openSlot)"
         >
           {{ $t("build.slots") }}
         </button>
       </div>
       <button
-        v-if="notices.length"
+        v-if="notices.length && !(phone && selected)"
         type="button"
         class="notices-toggle"
         :aria-expanded="noticesOpen"
@@ -1068,9 +1228,9 @@ const gemPosition = (position: number): Position => ({
                 :accepts="accepts({ slot: cell.index, field })"
                 :hint="fieldHint({ slot: cell.index, field })"
                 :warning="fieldWarning(cell.index, field)"
-                @place="attempt(() => place({ slot: cell.index, field }))"
-                @drop="attempt(() => place({ slot: cell.index, field }, dropped()))"
-                @inspect="inspectTrait({ slot: cell.index, field })"
+                @place="openField({ slot: cell.index, field })"
+                @drop="attempt(() => placeWithUndo({ slot: cell.index, field }, dropped()))"
+                @inspect="openField({ slot: cell.index, field })"
               />
               <div v-if="showNether" class="nether-band">
                 <TraitCell
@@ -1082,9 +1242,9 @@ const gemPosition = (position: number): Position => ({
                   :accepts="accepts(netherAt(cell.index, position))"
                   :hint="null"
                   :warning="null"
-                  @place="attempt(() => place(netherAt(cell.index, position)))"
-                  @drop="attempt(() => place(netherAt(cell.index, position), dropped()))"
-                  @inspect="inspectTrait(netherAt(cell.index, position))"
+                  @place="openField(netherAt(cell.index, position))"
+                  @drop="attempt(() => placeWithUndo(netherAt(cell.index, position), dropped()))"
+                  @inspect="openField(netherAt(cell.index, position))"
                 />
                 <TraitCell
                   v-if="(team.slots[cell.index]!.nether?.length ?? 0) < NETHER_TRAITS"
@@ -1094,20 +1254,93 @@ const gemPosition = (position: number): Position => ({
                   :accepts="accepts({ slot: cell.index, field: 'nether' })"
                   :hint="null"
                   :warning="null"
-                  @place="attempt(() => place({ slot: cell.index, field: 'nether' }))"
-                  @drop="attempt(() => place({ slot: cell.index, field: 'nether' }, dropped()))"
+                  @place="openField({ slot: cell.index, field: 'nether' })"
+                  @drop="
+                    attempt(() => placeWithUndo({ slot: cell.index, field: 'nether' }, dropped()))
+                  "
                   @inspect="() => {}"
                 />
+              </div>
+              <div v-if="phone" class="gear-keys">
+                <DropZone :accepts="accepts({ slot: cell.index, field: 'relic' })">
+                  <button
+                    type="button"
+                    class="gear-key"
+                    :aria-label="
+                      [
+                        $t('build.relic'),
+                        team.slots[cell.index]!.relic &&
+                          component(itemId(team.slots[cell.index]!.relic)!)?.name,
+                      ]
+                        .filter(Boolean)
+                        .join(': ')
+                    "
+                    @click="openField({ slot: cell.index, field: 'relic' })"
+                  >
+                    <CellPlate
+                      v-if="
+                        team.slots[cell.index]!.relic &&
+                        component(itemId(team.slots[cell.index]!.relic)!)
+                      "
+                      compact
+                      :data="component(itemId(team.slots[cell.index]!.relic)!)!"
+                      :corner="relicRank(team.slots[cell.index]!.relic!)"
+                    />
+                    <template v-else
+                      ><i class="icon icon-plus"></i>{{ $t("build.relic") }}</template
+                    >
+                  </button>
+                </DropZone>
+                <DropZone
+                  v-for="(gem, position) in gearGems(cell.index).shown"
+                  :key="asItem(gem).uid || position"
+                  :accepts="accepts({ slot: cell.index, field: 'spells' })"
+                >
+                  <button
+                    type="button"
+                    class="gear-key"
+                    :aria-label="
+                      [$t('build.spellGem'), component(itemId(gem)!)?.name]
+                        .filter(Boolean)
+                        .join(': ')
+                    "
+                    @click="openField(gemAtSlot(cell.index, position))"
+                  >
+                    <CellPlate
+                      v-if="component(itemId(gem)!)"
+                      compact
+                      :data="component(itemId(gem)!)!"
+                      :properties="propertyCount(gem)"
+                    />
+                  </button>
+                </DropZone>
+                <button
+                  v-if="gearGems(cell.index).hidden"
+                  type="button"
+                  class="gear-key gear-more"
+                  :aria-label="$t('build.gemsMore', { count: gearGems(cell.index).hidden })"
+                  @click="openSlotPage(cell.index)"
+                >
+                  +{{ gearGems(cell.index).hidden }}
+                </button>
+                <DropZone
+                  v-else-if="gearGems(cell.index).shown.length < GEM_KEYS"
+                  :accepts="accepts({ slot: cell.index, field: 'spells' })"
+                >
+                  <button
+                    type="button"
+                    class="gear-key"
+                    :aria-label="$t('build.spellGem')"
+                    @click="openField({ slot: cell.index, field: 'spells' })"
+                  >
+                    <i class="icon icon-plus"></i>{{ $t("build.spellGem") }}
+                  </button>
+                </DropZone>
               </div>
             </template>
           </div>
         </div>
-        <DropZone
-          v-if="phone"
-          class="character-entry-drop"
-          :accepts="acceptsCharacter('characterBase') || acceptsCharacter('characterAnointment')"
-          @drop="() => {}"
-        >
+        <div v-if="phone" class="character-row">
           <button
             type="button"
             class="character-entry"
@@ -1115,9 +1348,45 @@ const gemPosition = (position: number): Position => ({
           >
             <strong>{{ $t("build.character") }}</strong>
             <span>{{ characterSummary }}</span>
-            <i class="icon icon-right"></i>
           </button>
-        </DropZone>
+          <DropZone :accepts="acceptsCharacter('characterBase')">
+            <button
+              type="button"
+              class="gear-key"
+              :aria-label="$t('build.specialization')"
+              @click="openCharacter('characterBase', 0)"
+            >
+              <CellPlate
+                v-if="specialization && component(specialization)"
+                compact
+                :data="component(specialization)!"
+              />
+              <i v-else class="icon icon-plus"></i>
+            </button>
+          </DropZone>
+          <DropZone
+            v-for="position in Math.min(anointmentCapacity, ANOINTMENT_KEYS)"
+            :key="position"
+            :accepts="acceptsCharacter('characterAnointment')"
+          >
+            <button
+              type="button"
+              class="gear-key"
+              :aria-label="$t('editors.anointment', { position })"
+              @click="openCharacter('characterAnointment', position - 1)"
+            >
+              <CellPlate
+                v-if="
+                  team.character.anointments[position - 1] &&
+                  component(team.character.anointments[position - 1]!)
+                "
+                compact
+                :data="component(team.character.anointments[position - 1]!)!"
+              />
+              <i v-else class="icon icon-plus"></i>
+            </button>
+          </DropZone>
+        </div>
         <section
           v-if="showSlot"
           :ref="(el) => (slotPage = phone ? (el as HTMLElement | null) : null)"
@@ -1134,7 +1403,15 @@ const gemPosition = (position: number): Position => ({
             >
               <i class="icon icon-left"></i>
             </button>
-            <span class="slot-name">{{ $t("build.slot", { n: slotIndex(openSlot) }) }}</span>
+            <span class="slot-name">{{
+              phone ? slotIndex(openSlot) : $t("build.slot", { n: slotIndex(openSlot) })
+            }}</span>
+            <span v-if="cells[openSlot]!.label" class="slot-creature">
+              <strong>{{ cells[openSlot]!.label }}</strong>
+              <small v-if="slot.base">{{
+                traitName(slotTraits(index!, slot)[0]?.trait ?? "")
+              }}</small>
+            </span>
             <span v-if="phone" class="slot-pips" aria-hidden="true">
               <i
                 v-for="cell in cells"
@@ -1142,6 +1419,14 @@ const gemPosition = (position: number): Position => ({
                 :class="{ current: cell.index === openSlot, vacant: cell.vacant }"
               ></i>
             </span>
+            <button
+              v-if="phone && !cells[openSlot]!.vacant"
+              type="button"
+              class="labelled-key"
+              @click="placeFromHere({ member: openSlot })"
+            >
+              <i class="icon icon-move"></i>{{ $t("editors.keys.move") }}
+            </button>
             <button
               v-if="!cells[openSlot]!.vacant"
               type="button"
@@ -1171,7 +1456,7 @@ const gemPosition = (position: number): Position => ({
                 v-if="field === 'nether'"
                 class="gem-area nether-area"
                 :accepts="accepts({ slot: openSlot, field })"
-                @drop="attempt(() => place({ slot: openSlot, field }, dropped()))"
+                @drop="attempt(() => placeWithUndo({ slot: openSlot, field }, dropped()))"
               >
                 <small>{{ $t("build.nether") }}</small>
                 <div
@@ -1179,11 +1464,7 @@ const gemPosition = (position: number): Position => ({
                   :key="asItem(trait).uid || position"
                   v-bind="drag(netherAt(openSlot, position))"
                   class="gem equipped"
-                  @click="
-                    selected
-                      ? attempt(() => place({ slot: openSlot, field }))
-                      : inspectField(netherAt(openSlot, position))
-                  "
+                  @click="openField(netherAt(openSlot, position))"
                 >
                   <EquipmentLine :data="component(itemId(trait)!)">
                     <template #menu>
@@ -1203,7 +1484,7 @@ const gemPosition = (position: number): Position => ({
                   v-if="(slot.nether?.length ?? 0) < NETHER_TRAITS"
                   type="button"
                   class="drop-target"
-                  @click="attempt(() => place({ slot: openSlot, field }))"
+                  @click="openField({ slot: openSlot, field })"
                 >
                   <i class="icon icon-plus"></i>{{ $t("build.nether") }}
                 </button>
@@ -1217,9 +1498,9 @@ const gemPosition = (position: number): Position => ({
                 :next="field === 'base' && !slot.base"
                 :copyable="copySlots.length > 0"
                 :warning="fieldWarning(openSlot, field)"
-                @place="attempt(() => place({ slot: openSlot, field }))"
-                @drop="attempt(() => place({ slot: openSlot, field }, dropped()))"
-                @inspect="inspectField({ slot: openSlot, field })"
+                @place="openField({ slot: openSlot, field })"
+                @drop="attempt(() => placeWithUndo({ slot: openSlot, field }, dropped()))"
+                @inspect="openField({ slot: openSlot, field })"
                 @copy="dialog = { type: 'copy', at: { slot: openSlot, field } }"
                 @remove="attempt(() => store.unequip({ slot: openSlot, field }))"
               />
@@ -1227,7 +1508,7 @@ const gemPosition = (position: number): Position => ({
             <DropZone
               class="gem-area"
               :accepts="accepts({ slot: openSlot, field: 'spells' })"
-              @drop="attempt(() => place({ slot: openSlot, field: 'spells' }, dropped()))"
+              @drop="attempt(() => placeWithUndo({ slot: openSlot, field: 'spells' }, dropped()))"
             >
               <small>{{ $t("build.spellGems") }}</small>
               <div
@@ -1237,8 +1518,8 @@ const gemPosition = (position: number): Position => ({
                 class="gem equipped"
                 @click="
                   selected
-                    ? attempt(() => place({ slot: openSlot, field: 'spells' }))
-                    : (dialog = { type: 'gem', at: gemPosition(position) })
+                    ? attempt(() => placeWithUndo({ slot: openSlot, field: 'spells' }))
+                    : openField(gemPosition(position))
                 "
               >
                 <EquipmentLine
@@ -1272,7 +1553,7 @@ const gemPosition = (position: number): Position => ({
               <button
                 type="button"
                 class="drop-target"
-                @click="attempt(() => place({ slot: openSlot, field: 'spells' }))"
+                @click="openField({ slot: openSlot, field: 'spells' })"
               >
                 <i class="icon icon-plus"></i>{{ $t("build.spellGem") }}
               </button>
@@ -1297,7 +1578,6 @@ const gemPosition = (position: number): Position => ({
         @drop="(field, position) => attempt(() => placeCharacter(field, position, dropped()))"
         @remove="(field, position) => attempt(() => store.removeCharacterPart(field, position))"
         @perks="dialog = { type: 'perks' }"
-        @inspect="(id) => (preview = { uid: '', id })"
         @clear="clearCharacter"
       />
       <section class="notes-panel" :aria-label="$t('build.notes')">
@@ -1318,6 +1598,11 @@ const gemPosition = (position: number): Position => ({
       :title="dialogTitle"
       :sheet="dialog?.type === 'carrier' || dialog?.type === 'copy'"
     >
+      <div v-if="dialogWarning" class="build-notices field-notice">
+        <ul>
+          <li>{{ dialogWarning }}</li>
+        </ul>
+      </div>
       <div v-if="dialog?.type === 'pool' && index" class="choices">
         <FieldPicker
           :field="dialog.target.field"
@@ -1325,20 +1610,33 @@ const gemPosition = (position: number): Position => ({
           :team="team"
           :catalog="index.catalog"
           :kind-of="kindOf"
+          :target="dialog.target"
+          :replacing="!!currentItem"
           @pick="pickPool"
           @take="takePool"
-          @search="
-            (q, a) => searchFor(dialog!.type === 'pool' ? dialog!.target.field : 'base', q, a)
-          "
         >
-          <button
-            v-if="dialog.target.field === 'artifact'"
-            type="button"
-            class="choice choice-action"
-            @click="configure(dialog.target)"
-          >
-            <i class="icon icon-plus"></i>{{ $t("build.configureArtifact") }}
-          </button>
+          <template #current>
+            <div v-if="currentItem" class="picker-current">
+              <EquipmentLine :data="component(currentItem.id)">
+                <template #menu>
+                  <button type="button" class="labelled-key" @click="preview = currentItem">
+                    <i class="icon icon-eye"></i>{{ $t("editors.keys.details") }}
+                  </button>
+                  <button
+                    v-if="canSwap(dialog.target)"
+                    type="button"
+                    class="labelled-key"
+                    @click="placeFromHere(dialogField!)"
+                  >
+                    <i class="icon icon-replace"></i>{{ $t("editors.keys.swap") }}
+                  </button>
+                  <button type="button" class="labelled-key" @click="sendToTray(dialogField!)">
+                    <i class="icon icon-undo"></i>{{ $t("editors.keys.tray") }}
+                  </button>
+                </template>
+              </EquipmentLine>
+            </div>
+          </template>
         </FieldPicker>
       </div>
       <CarrierPicker
@@ -1355,10 +1653,36 @@ const gemPosition = (position: number): Position => ({
           :team="team"
           :catalog="index.catalog"
           :kind-of="kindOf"
+          :replacing="!!currentCharacter"
           @pick="pickCharacter"
           @take="takeCharacter"
-          @search="(q, a) => searchFor(dialog!.type === 'character' ? dialog!.field : 'base', q, a)"
-        />
+        >
+          <template #current>
+            <div v-if="currentCharacter" class="picker-current">
+              <EquipmentLine :data="component(currentCharacter)">
+                <template #menu>
+                  <button
+                    type="button"
+                    class="labelled-key"
+                    @click="preview = { uid: '', id: currentCharacter! }"
+                  >
+                    <i class="icon icon-eye"></i>{{ $t("editors.keys.details") }}
+                  </button>
+                  <button
+                    type="button"
+                    class="labelled-key"
+                    @click="
+                      dialog?.type === 'character' &&
+                      sendCharacterToTray(dialog.field, dialog.position)
+                    "
+                  >
+                    <i class="icon icon-undo"></i>{{ $t("editors.keys.tray") }}
+                  </button>
+                </template>
+              </EquipmentLine>
+            </div>
+          </template>
+        </FieldPicker>
       </div>
       <div v-else-if="dialog?.type === 'copy'" class="choices">
         <button
@@ -1372,43 +1696,70 @@ const gemPosition = (position: number): Position => ({
           <EquipmentLine :data="target.data" :line="target.line" />
         </button>
       </div>
-      <GemEditor
-        v-else-if="dialog?.type === 'gem' && gemAt(dialog)"
-        :item="gemAt(dialog)!"
-        :properties="gemProperties"
-        :compatible="index?.rules.property_compatibility[gemAt(dialog)!.id]"
-        @apply="applyGem"
-      />
-      <ArtifactEditor
-        v-else-if="dialog?.type === 'artifact' && index"
-        :item="artifactOf(dialog.slot)"
-        :catalog="index.catalog"
-        :team="team"
-        :kind-of="kindOf"
-        @apply="applyArtifact"
-        @search="(_, q) => searchFor('artifactTrait', q)"
-      />
-      <RelicEditor
-        v-else-if="dialog?.type === 'relic' && index"
-        :id="relicOf(dialog.slot).id"
-        :relics="[...index.relics.values()]"
-        :rank="relicOf(dialog.slot).rank"
-        @apply="applyRelic"
-      />
-      <CharacterEditor
-        v-else-if="dialog?.type === 'perks' && index"
-        :character="team.character"
-        :specialization="specializationName"
-        :royal="specializationKey === 'Royal'"
-        :perks="index.perks"
-        @apply="(character) => attempt(() => store.setCharacter(character))"
-      />
+      <template v-else-if="dialog?.type === 'gem' && gemAt(dialog)">
+        <EditorActions
+          replace
+          tray
+          @replace="dialog?.type === 'gem' && replaceFrom(dialog.at)"
+          @tray="dialog?.type === 'gem' && sendToTray(dialog.at)"
+        />
+        <GemEditor
+          :item="gemAt(dialog)!"
+          :properties="gemProperties"
+          :compatible="index?.rules.property_compatibility[gemAt(dialog)!.id]"
+          @apply="applyGem"
+        />
+      </template>
+      <template v-else-if="dialog?.type === 'artifact' && index">
+        <EditorActions
+          :tray="!!artifactOf(dialog.slot)"
+          @tray="
+            dialog?.type === 'artifact' && sendToTray({ slot: dialog.slot, field: 'artifact' })
+          "
+        />
+        <ArtifactEditor
+          :key="artifactVersion"
+          :item="artifactOf(dialog.slot)"
+          :catalog="index.catalog"
+          :team="team"
+          :at-slot="dialog.slot"
+          :kind-of="kindOf"
+          @apply="applyArtifact"
+        />
+      </template>
+      <template v-else-if="dialog?.type === 'relic' && index">
+        <EditorActions
+          replace
+          tray
+          @replace="dialog?.type === 'relic' && replaceFrom({ slot: dialog.slot, field: 'relic' })"
+          @tray="dialog?.type === 'relic' && sendToTray({ slot: dialog.slot, field: 'relic' })"
+        />
+        <RelicEditor
+          :id="relicOf(dialog.slot).id"
+          :relics="[...index.relics.values()]"
+          :rank="relicOf(dialog.slot).rank"
+          @apply="applyRelic"
+        />
+      </template>
+      <template v-else-if="dialog?.type === 'perks' && index">
+        <EditorActions
+          replace
+          tray
+          @replace="
+            dialog = { type: 'character', field: 'characterBase', position: 0, from: dialog! }
+          "
+          @tray="sendCharacterToTray('characterBase', 0)"
+        />
+        <CharacterEditor
+          :character="team.character"
+          :specialization="specializationName"
+          :royal="specializationKey === 'Royal'"
+          :perks="index.perks"
+          @apply="(character) => attempt(() => store.setCharacter(character))"
+        />
+      </template>
     </ModalDialog>
-    <PreviewDialog v-model:item="preview">
-      <DialogFooter v-if="swapFrom">
-        <button type="button" class="primary" @click="startSwap">{{ $t("build.swap") }}</button>
-      </DialogFooter>
-    </PreviewDialog>
+    <PreviewDialog v-model:item="preview" />
   </section>
 </template>
 
@@ -1765,19 +2116,71 @@ const gemPosition = (position: number): Position => ({
 .gem-area > small {
   color: var(--text);
 }
+.character-row {
+  display: flex;
+  align-items: stretch;
+  min-height: var(--row);
+  background: var(--cell);
+}
 .character-entry {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: var(--space-12);
-  width: 100%;
-  min-height: var(--row);
-  padding: 0 var(--space-8) 0 var(--space-12);
-  background: var(--cell);
+  flex: 1;
+  align-content: center;
+  justify-content: stretch;
+  min-width: 0;
+  padding: 0 var(--space-8);
+  background: none;
   clip-path: none;
   text-align: left;
 }
 .character-entry > strong {
   color: var(--kind-character);
+  font-size: var(--fs-13);
+  line-height: 18px;
+}
+.gear-keys {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--line);
+}
+.gear-key {
+  display: grid;
+  width: 100%;
+  min-width: 44px;
+  height: 100%;
+  min-height: 44px;
+  padding: 2px;
+  place-items: center;
+  background: none;
+  clip-path: none;
+  font-size: var(--fs-12);
+  line-height: 14px;
+  --key-line: transparent;
+}
+.gear-more {
+  color: var(--muted);
+  font: 400 16px / 1 var(--pixel-font);
+}
+.slot-creature {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.slot-creature > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.slot-creature > small {
+  color: var(--muted);
+  font-size: var(--fs-13);
+  font-weight: 400;
+}
+.picker-current {
+  padding-bottom: var(--space-12);
+}
+.field-notice {
+  border-width: 0 0 1px;
 }
 .character-entry > span {
   overflow: hidden;
@@ -1814,12 +2217,22 @@ const gemPosition = (position: number): Position => ({
 }
 @media (max-width: 767px) {
   .team {
-    padding: var(--space-12) var(--gutter) var(--space-24);
+    gap: var(--space-8);
+    padding: var(--space-4) var(--gutter) var(--space-24);
+  }
+  /* The four card rows and the gear keys, so the whole team fits one screen with its Character. */
+  .traits-shown .slot-column {
+    grid-row: span 5;
+    padding-bottom: 0;
+  }
+  .nether-shown.traits-shown .slot-column {
+    grid-row: span 6;
   }
   .traits-shown .slot-cell {
     align-items: center;
     gap: var(--space-4);
-    padding: var(--space-8) 7px var(--space-8) 11px;
+    min-height: 44px;
+    padding: var(--space-4) 7px var(--space-4) 11px;
   }
   /* A long team name shortens before the keys move; the notices fill the second row. */
   .team-head {

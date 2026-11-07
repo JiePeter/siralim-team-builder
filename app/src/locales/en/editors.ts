@@ -15,6 +15,7 @@ export default {
     character: "Character",
     clearCharacter: "Clear Character",
     shortLabels: { base: "Pri", fusion: "Fus", artifact: "Art", nether: "Net" },
+    keys: { details: "Details", swap: "Swap", tray: "To tray", replace: "Replace", move: "Move" },
     properties: "Properties",
     gemLimit: "A Spell Gem can have at most {max} properties",
     artifact: {
