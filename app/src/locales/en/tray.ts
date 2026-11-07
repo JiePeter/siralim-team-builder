@@ -85,6 +85,5 @@ export default {
       noMatches: "No {label} matches",
       openInSearch: "Open in Search",
     },
-    useKind: "Use {kind}",
   },
 };

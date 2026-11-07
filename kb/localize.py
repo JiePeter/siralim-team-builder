@@ -277,6 +277,21 @@ class Localizer:
             if raw:
                 self.set_raw("condition", key, raw)
 
+    def race_texts(self):
+        """Some races are named only by their creature row; the sheet's descriptions are the locale's own."""
+        phrases = self.r.phrases
+        for key, name, description in self.db.execute(
+            "SELECT id,name,description FROM entity WHERE kind='race'"
+        ).fetchall():
+            if key not in self.names:
+                tag = self.s.tag("L_CRIT_", name)
+                local = (self.s.get(tag) if tag else None) or phrases.get(name)
+                if local:
+                    self.rename(key, local)
+                    self.missing["race"] = [n for n in self.missing["race"] if n != name]
+            if description in phrases:
+                self.set_description(key, phrases[description])
+
     def simple(self, kind, prefix):
         for key, game in self.game_rows(kind):
             tag = self.s.tag(prefix, game["name"])
@@ -364,6 +379,8 @@ class Localizer:
             if lines:
                 self.rename(key, self.by_name["race"].get(name, name), "\n".join(lines))
             else:
+                if name in self.by_name["race"]:
+                    self.rename(key, self.by_name["race"][name])
                 self.missing["card_set"].append(name)
 
     def specializations(self):
@@ -837,6 +854,7 @@ class Localizer:
         self.conditions()
         self.simple("material", "L_MAT_")
         self.simple("race", "L_")
+        self.race_texts()
         self.simple("realm", "L_BIOME_")
         self.simple("god", "L_")
         self.simple("specialization", "L_")

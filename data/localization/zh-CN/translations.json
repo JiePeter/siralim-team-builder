@@ -129,6 +129,9 @@
 "acquisition_source:1b2498e7cfbc952f75c7": {
 "name": "下界首领：内在黑暗（领域深度 240）"
 },
+"acquisition_source:1b613b13c5dd3339f67a": {
+"name": "队伍中有团子时稀有遭遇"
+},
 "acquisition_source:1ba43beeb6b8d48df572": {
 "name": "夺魂者大师"
 },
@@ -204,6 +207,9 @@
 "acquisition_source:334897ae3dab54695cd3": {
 "name": "下界首领：诺特（领域深度 220）"
 },
+"acquisition_source:33f7ddc071233b62d654": {
+"name": "队伍全为团子时，在下界稀有遭遇"
+},
 "acquisition_source:34244223cb2cebf44c97": {
 "name": "恶鬼大师"
 },
@@ -267,6 +273,9 @@
 "acquisition_source:4526f67f9bd643c7f86c": {
 "name": "蝙蝠大师"
 },
+"acquisition_source:457386a6f23c3b32e997": {
+"name": "队伍中有团子时，在阿波克拉诺的领域采集南瓜"
+},
 "acquisition_source:464051fd955bf5ee636e": {
 "name": "神裔大师"
 },
@@ -296,6 +305,9 @@
 },
 "acquisition_source:5137a8c3d1487359436f": {
 "name": "虚空领主大师"
+},
+"acquisition_source:5247cb6f9ea2a772e750": {
+"name": "获得憎恶毛绒玩具并反复骚扰它"
 },
 "acquisition_source:53610765863015cd3e67": {
 "name": "下界首领：梅拉西斯具像（领域深度 500）"
@@ -654,6 +666,9 @@
 "acquisition_source:b20b8ce75d7a5b495b58": {
 "name": "掠夺者初始生物"
 },
+"acquisition_source:b22b3b9a79696fd337bc": {
+"name": "队伍中有团子时，在最高深度完成 100 个领域任务"
+},
 "acquisition_source:b37316cb03644caa499d": {
 "name": "亵渎者初始生物"
 },
@@ -723,11 +738,17 @@
 "acquisition_source:c42b75aabcdd50d48b44": {
 "name": "下界首领：奇拉（领域深度 185）"
 },
+"acquisition_source:c554a6440d87a1e49e57": {
+"name": "融合任意两只团子种族的生物"
+},
 "acquisition_source:c6d0a42e44f5d386ad99": {
 "name": "下界首领：铁匠艾安（领域深度 425）"
 },
 "acquisition_source:c917cf29367a4f10b92f": {
 "name": "灵体大师"
+},
+"acquisition_source:c9767cc53d676d622e52": {
+"name": "在赞泰领主的传送门处击败他"
 },
 "acquisition_source:c977d5caefbb6a607f1e": {
 "name": "下界首领：铁匠艾安（领域深度 75）"
@@ -863,6 +884,9 @@
 },
 "acquisition_source:f23d64e697bbf4406175": {
 "name": "下界首领：萨瑞娅（领域深度 485）"
+},
+"acquisition_source:f3ba6792d0a4e13cd74b": {
+"name": "队伍中有团子时，在托伦的领域采集水果"
 },
 "acquisition_source:f4742bbaa345192adec3": {
 "name": "血魔法师大师"
@@ -1505,6 +1529,12 @@
 "card_set:9315f06949f29f588642": {
 "description": "你的生物有5%几率额外攻击一次。\n你的生物有5%几率额外施放一次法术。\n使这些效果发生的几率翻倍。",
 "name": "鹿角翼兔"
+},
+"card_set:942c59c72bf62ed73362": {
+"name": "圣物"
+},
+"card_set:945b5227710355b0ba96": {
+"name": "伪神裔"
 },
 "card_set:988d8787371693b40e39": {
 "description": "你的生物从属性值提升效果中获得的防御增加10%。\n你的生物从属性值提升效果中获得的防御增加10%。\n你的生物从属性值提升效果中获得的防御增加10%。",
@@ -17411,489 +17441,665 @@
 "name": "神圣之威 · 牧师"
 },
 "race:0018898de4ce2f73bee1": {
+"description": "与队伍中的狮鹫协同",
 "name": "狮鹫"
 },
 "race:004b092857ce1deecbc6": {
+"description": "与最大生命值协同",
 "name": "巨怪"
 },
 "race:03a8f0dd8edb33781a83": {
+"description": "复活时效果",
 "name": "不死鸟"
 },
 "race:05c9ff76c0497a6497a1": {
+"description": "多种施法效果",
 "name": "魔法书"
 },
 "race:0625ac59910726548778": {
+"description": "大量不同效果",
 "name": "神裔"
 },
 "race:0863fde42a5746b1f35e": {
+"description": "与诅咒减益协同并惩罚",
 "name": "木乃伊"
 },
 "race:08aaa9f32114b313e08f": {
+"description": "整回合未受伤害时触发的强力效果",
 "name": "蛇怪"
 },
 "race:092cda390b4741615119": {
+"description": "与智力协同",
 "name": "渡鸦"
 },
 "race:0b132ea2f6cd37dd630d": {
+"description": "与当前生命值和最大生命值协同",
 "name": "巨人"
 },
 "race:0bb09d80600eec3eb9d7": {
+"description": "与恐惧减益协同",
 "name": "暗影"
 },
 "race:0e7f3c5c909ce8afb978": {
+"description": "有条件的成长型伤害加成",
 "name": "观察者"
 },
 "race:0e804bdf9b5666dab38f": {
+"description": "多种效果，侧重统计队伍中的系别",
 "name": "蛙灵"
 },
 "race:0f7e50484ef8ee63e628": {
+"description": "受到伤害时反击的效果",
 "name": "闪尾"
 },
 "race:0fc4816bb32221ae6b75": {
+"description": "有益于己方队伍的回合开始时效果",
 "name": "祭司"
 },
 "race:166123ce92410cd854ba": {
+"description": "与队伍中的黄蜂协同，略侧重攻击",
 "name": "黄蜂"
 },
 "race:166a73112532054434c5": {
+"description": "与队伍中的同系生物协同",
 "name": "斯芬克斯"
 },
 "race:16ae28bfc8c4226173ab": {
+"description": "与流血减益协同",
 "name": "皮威斯"
 },
 "race:17f6591caea018f62fc7": {
+"description": "多种攻击强化效果，并与狂暴减益协同",
 "name": "恶鬼"
 },
 "race:18cfd00ded1adf6c2457": {
+"description": "与束缚和中毒减益协同",
 "name": "蛛魔"
 },
 "race:1927f69f9dd7dbe94e67": {
+"description": "强化特定法术",
 "name": "魔鬃兽"
 },
 "race:1958fad5a810f2b4a5bb": {
+"description": "与狂热减益协同",
 "name": "海民"
 },
 "race:1a511972d427f5c94cb3": {
+"description": "与队伍中的电气荚和速度协同",
 "name": "电气荚"
 },
 "race:1b294789fc2527b7cb8d": {
+"description": "与受到间接伤害和持有伤害型减益协同",
 "name": "雕像"
 },
 "race:1df2f7d0958e2b93a598": {
+"description": "防护和减伤效果，略侧重相邻",
 "name": "末日守卫"
 },
 "race:1f6fbb3b61641d8e0cdf": {
+"description": "施加减益并与之协同",
 "name": "麻风怪"
 },
 "race:22bc929ab9053d152c34": {
+"description": "行动时效果翻倍，但效果减弱",
 "name": "双头蛇"
 },
 "race:2778e8c6cec0d6c17553": {
+"description": "装备法术宝石不受系别限制，并与宝石被封印协同",
 "name": "太空猫"
 },
 "race:29558041ada8e4803368": {
+"description": "每经过一回合变得更强",
 "name": "末日兽"
 },
 "race:29db257b6385b99933b5": {
+"description": "多种防护效果",
 "name": "魔械"
 },
 "race:29e2ebed8cc2f524c4d7": {
+"description": "战斗开始时共享属性值",
 "name": "仲裁者"
 },
 "race:2a1c17234dad1fc3e56c": {
+"description": "多种反击并惩罚敌方行动的效果",
 "name": "飞龙"
 },
 "race:2a464fb9262ffe25d09a": {
+"description": "永久减益，并强化与相关减益的协同",
 "name": "元素龙"
 },
 "race:2ac11a92104c4d7d1403": {
+"description": "攻击时效果和有条件的攻击强化",
 "name": "骷髅"
 },
 "race:2cea2a8aa66e8bdac3d4": {
+"description": "用降低时间线位置惩罚敌方行动",
 "name": "捕噬草"
 },
 "race:2fdfb2a32ee1c40f9c00": {
+"description": "多种效果，略侧重强化攻击",
 "name": "切割者"
 },
 "race:32e382dfb93f0f3f26f7": {
+"description": "与队伍中的团子协同",
 "name": "团子"
 },
 "race:334df0be950494576bc0": {
+"description": "与燃烧减益协同",
 "name": "火怪"
 },
 "race:35485c729814c72b188f": {
+"description": "多种有益于全队的效果",
 "name": "相位战士"
 },
 "race:3a419467866c1174426c": {
+"description": "与队伍中的使魔协同，侧重施法效果",
 "name": "使魔"
 },
 "race:3b4f08233cd361a9c691": {
+"description": "与队伍中的恶魔军团协同",
 "name": "恶魔军团"
 },
 "race:3ba4d61f592ca8c90e60": {
+"description": "多种效果，侧重惩罚所受伤害和敌方行动",
 "name": "巨像"
 },
 "race:3e9a1e2231a0c38674e8": {
+"description": "多种效果，略侧重恐惧减益",
 "name": "地底居民"
 },
 "race:4bf0b47c1be2e6d0f603": {
+"description": "提升防御及利用防御的效果",
 "name": "长生花"
 },
 "race:4c5cddb7859b93eebf26": {
+"description": "大量不同效果",
 "name": "魔像"
 },
 "race:4e84dd4540ba63a9dfa9": {
+"description": "与巫术系法术和智力协同",
 "name": "秘咒师"
 },
 "race:519ba91a5a5b4afb9dc6": {
+"description": "施加减益并造成额外伤害的攻击时效果",
 "name": "天使"
 },
 "race:551916735aeecf147410": {
+"description": "多种有害的回合开始时、回合结束时和行动时效果",
 "name": "巨魔"
 },
 "race:5666505d884252b8c6bd": {
+"description": "复活时效果，并与重生增益协同",
 "name": "骨魔"
 },
 "race:566bba57506446638637": {
+"description": "与吸血增益协同",
 "name": "血蛭"
 },
 "race:57eace3ce78bbe23ea7e": {
+"description": "与排斥增益协同",
 "name": "虚空领主"
 },
 "race:58fc07e995e1e6088dad": {
+"description": "与恶狼仆从协同",
 "name": "猎犬"
 },
 "race:5a9434fdf924cdfb2956": {
+"description": "全队共享各种效果和行动",
 "name": "堕落者"
 },
 "race:5cabba76b7936a4334fa": {
+"description": "大量不同效果",
 "name": "半神"
 },
 "race:5d7577cd000effe7bbfa": {
+"description": "与己方生物身上的减益协同",
 "name": "受虐狂"
 },
 "race:5e067a52c7c610e2228a": {
+"description": "与队伍中的伊姆魔像协同",
 "name": "伊姆"
 },
 "race:60280e12933862e2f155": {
+"description": "多种影响战斗中所有生物的效果",
 "name": "典范"
 },
 "race:6247a5ccc27edc5161f4": {
+"description": "与中毒减益协同",
 "name": "烟雾"
 },
 "race:645df12c0452573fa0f4": {
+"description": "多种有益于己方队伍的效果",
 "name": "圣灵"
 },
 "race:64c393506db87e3ffa5f": {
+"description": "与速度协同",
 "name": "食尸鬼"
 },
 "race:6627835f988e2c5e5053": {
+"description": "强化神器",
 "name": "工匠"
 },
 "race:67116a8b5426fd51e13e": {
+"description": "全队共享有益行动",
 "name": "史莱姆"
 },
 "race:686d22d695e2c21166a8": {
+"description": "大幅提升属性值，属性值增减时失效",
 "name": "克拉肯"
 },
 "race:687f2181e010409a3ed1": {
+"description": "多种强力效果，但受伤时时间线位置下降",
 "name": "鬼火"
 },
 "race:68da4167b0cd79b79da4": {
+"description": "对敌方系别的克制增强",
 "name": "魔鬼"
 },
 "race:692e51978c0e4aa1f130": {
+"description": "强力的战斗开始时效果",
 "name": "宝箱怪"
 },
 "race:6a2f5acd1cc161bdd570": {
+"description": "与队伍中的神话协同",
 "name": "神话"
 },
 "race:6ddf28f040f22b18f962": {
+"description": "与死亡系法术和仆从协同",
 "name": "巫妖"
 },
 "race:701c1bbcc9b8054d8ae0": {
+"description": "多种施法效果",
 "name": "灯灵"
 },
 "race:740cc8ad4d5c43dd162f": {
+"description": "与队伍中的熊人协同",
 "name": "熊人"
 },
 "race:765c083ecb88d6aa3c81": {
+"description": "从目标窃取并有益于己方队伍的攻击时效果",
 "name": "血魔法师"
 },
 "race:7703304fc63510e82378": {
+"description": "获得仆从并与之协同",
 "name": "审判官"
 },
 "race:780d84b20d7ae7e62929": {
+"description": "阻止行动时效果",
 "name": "精灵"
 },
 "race:78df5bcc88af6f17e70f": {
+"description": "与生物性格协同",
 "name": "诽谤者"
 },
 "race:7918e0d39a0ddd0df86c": {
+"description": "攻击时效果，并与攻击和攻击次数协同",
 "name": "虚无论者"
 },
 "race:79a77e8724cfb2d88441": {
+"description": "永久增益，并与队伍中的奇趣蛋协同",
 "name": "奇趣蛋"
 },
 "race:79ca2057b15f4a24e5c8": {
+"description": "与混沌系法术协同",
 "name": "滴水兽"
 },
 "race:7af3fd4bb27087f959be": {
+"description": "与生命系法术协同",
 "name": "座天使"
 },
 "race:7f8cafc8690f2707d1b7": {
+"description": "与牺牲己方生物相关的死亡时和挑衅时效果",
 "name": "狂魔"
 },
 "race:8002baa0ea6ca7bcffba": {
+"description": "死亡时效果",
 "name": "尸妖"
 },
 "race:8148117f27591c26b04c": {
+"description": "队伍中数量最多的种族的行动会被其他成员模仿",
 "name": "夺魂者"
 },
 "race:82dc38dfd3a41deff35d": {
+"description": "强化并强制系别克制优势",
 "name": "放逐者"
 },
 "race:8421ef2a0ca19d3914c0": {
+"description": "与施加减益和惩罚相关的攻击时效果",
 "name": "螨虫"
 },
 "race:863f81743c31cd191b07": {
+"description": "多种干扰和阻止效果",
 "name": "颤地兽"
 },
 "race:87bbe879c7a5f5784a70": {
+"description": "大量强力效果",
 "name": "化身"
 },
 "race:89e7b681fa9f4da1acad": {
+"description": "惩罚敌人闪避的闪避时效果",
 "name": "捕手"
 },
 "race:8a3b2dde19c3466bd265": {
+"description": "攻击与防护效果兼有",
 "name": "阿匹斯"
 },
 "race:8a4262979b06fa58a105": {
+"description": "多种与攻击和反击相关的效果",
 "name": "女武神"
 },
 "race:8a62e967fcd6dfa5d753": {
+"description": "强化己方系别，惩罚敌方系别",
 "name": "信标"
 },
 "race:8b70525601e83408334d": {
+"description": "惩罚敌方队伍的各种状态",
 "name": "深坑幽灵"
 },
 "race:8c7ad921eb8dd3697c98": {
+"description": "多种削弱敌人的效果",
 "name": "幽鬼"
 },
 "race:8cc0575d1cdf1641200b": {
+"description": "施放不同系别法术带来的效果和协同",
 "name": "法术杂耍者"
 },
 "race:8d0223f2ee347e08f0f8": {
+"description": "多种不同效果",
 "name": "机器随从"
 },
 "race:9058f79c893a1d7e20b1": {
+"description": "大量效果，略侧重改变攻击依据的属性值",
 "name": "吟游诗人"
 },
 "race:9201cb8c6ee9a36eb6b4": {
+"description": "与软弱和易伤减益协同",
 "name": "憎恶"
 },
 "race:9315f06949f29f588642": {
+"description": "与灾祸法术协同",
 "name": "鹿角翼兔"
 },
+"race:942c59c72bf62ed73362": {
+"name": "圣物"
+},
+"race:945b5227710355b0ba96": {
+"name": "伪神裔"
+},
 "race:988d8787371693b40e39": {
+"description": "多种回合开始时和回合结束时效果",
 "name": "深坑蠕虫"
 },
 "race:9991ed5e7fcdc1aacbc6": {
+"description": "伤害敌人的回合开始时效果",
 "name": "自动机"
 },
 "race:9a105749cfcbac2e07d7": {
+"description": "生命值保持在 90% 以上时生效的强力效果",
 "name": "风暴"
 },
 "race:9bd65b64aa13ed0aee21": {
+"description": "与自然系法术协同",
 "name": "小鬼"
 },
 "race:9f0638fd60feedbc1a5d": {
+"description": "攻击时效果与防护效果兼有",
 "name": "圣斗士"
 },
 "race:a0745f7ed88cfac6058d": {
+"description": "多种效果，包括干扰和惩罚死亡的效果",
 "name": "水妖"
 },
 "race:a5c032f4faf0c5b1a73c": {
+"description": "多种针对敌方施法的干扰效果",
 "name": "漩涡"
 },
 "race:a603d1737c5f94e910ed": {
+"description": "与屏障增益协同",
 "name": "智天使"
 },
 "race:a68999add325ba9952dd": {
+"description": "治疗时效果和治疗强化",
 "name": "幽灵"
 },
 "race:a7a43d88fdb4307f18d2": {
+"description": "执行特定行动时激活的强化",
 "name": "炽天使"
 },
 "race:a9c43be948c5cabd56ef": {
+"description": "惩罚敌方行动的行动时效果",
 "name": "龙"
 },
 "race:aaab7dbda5ad431ca75e": {
+"description": "与枯萎减益协同",
 "name": "海洋蹒跚者"
 },
 "race:ad8b0a2eae9a5b0b1104": {
+"description": "与攻击协同",
 "name": "蝎狮"
 },
 "race:adc5877fb1da7d50eec1": {
+"description": "多种防护效果，侧重与愈合减益协同",
 "name": "树精"
 },
 "race:ae391de9c5171466f31e": {
+"description": "与融合生物的系别协同",
 "name": "奇美拉"
 },
 "race:aeb9bc7cc59af7ee6a39": {
+"description": "与石化减益协同",
 "name": "蛇发女妖"
 },
 "race:aff7dfbe4614e06f20a7": {
+"description": "各种行动发生时施放随机已装备法术",
 "name": "蝾螈"
 },
 "race:b053a0576307e36e0677": {
+"description": "护林员的专长组可大幅强化",
 "name": "草灵"
 },
 "race:b1f8e41d467deb5a2230": {
+"description": "反应式施法，但无法手动施法",
 "name": "地狱三头犬"
 },
 "race:b252d4eb5acf5aeaef1e": {
+"description": "与军械法术协同",
 "name": "构造体"
 },
 "race:b398fa3625c3e076f6f0": {
+"description": "与减益数量协同",
 "name": "酒灵"
 },
 "race:b89992c9edcd14d1297e": {
+"description": "施放法术越多越强",
 "name": "宝玉兔"
 },
 "race:baf1f24970f312d4c98c": {
+"description": "多种效果，侧重牺牲生命值换取更强行动",
 "name": "复生者"
 },
 "race:bb7b8e39808fbc0ba87d": {
+"description": "操控并惩罚敌方的行动和效果",
 "name": "提线木偶"
 },
 "race:bbb113032e6c01840dd5": {
+"description": "减少敌方行动上限",
 "name": "萨堤尔"
 },
 "race:bc1c7bdf2a007cc9108f": {
+"description": "塑灵师的专长组可大幅强化",
 "name": "灵偶"
 },
 "race:bd7cbbd0b3d5bf143b32": {
+"description": "暴击时效果",
 "name": "阿修罗"
 },
 "race:bd8bf4f1e8c62eb16adf": {
+"description": "闪避时效果和更高的闪避几率",
 "name": "具像"
 },
 "race:c013ce932d22df0127d6": {
+"description": "封印敌方法术宝石，并惩罚宝石被封印的敌人",
 "name": "粉碎者"
 },
 "race:c0528b20931b2a245af1": {
+"description": "重复触发行动时效果",
 "name": "裂隙舞者"
 },
 "race:c0d79bc7026990951b6b": {
+"description": "有条件的属性值提升效果",
 "name": "幸运蛾"
 },
 "race:c0dead5e587d3942f2ab": {
+"description": "把有害行动转为有益行动",
 "name": "变形者"
 },
 "race:c184e171dd1405f36700": {
+"description": "与队伍中的幼蝾协同",
 "name": "幼蝾"
 },
+"race:c2d79a9da96ccc63a137": {
+"description": "保持隐形增益",
+"name": "魂猫"
+},
 "race:c5c767165ca51f2522ee": {
+"description": "强化特定法术",
 "name": "报丧女妖"
 },
 "race:c5ee1a1f0bc21d1422f9": {
+"description": "强化法术宝石附魔",
 "name": "雄鹿"
 },
 "race:c6cb50e7eea0df1fd3ea": {
+"description": "有益于己方队伍的攻击时效果",
 "name": "独角兽"
 },
 "race:ca5bcec12f716f44d974": {
+"description": "盟友攻击命中时触发的各种效果",
 "name": "蝙蝠"
 },
 "race:cccc68c7928e63feb966": {
+"description": "多种不利于敌人的效果",
 "name": "罪恶"
 },
 "race:ce20e45f4f693db2971d": {
+"description": "多种行动时强化效果，但有严重负面效果",
 "name": "仙灵"
 },
 "race:cf2476a042e62826681d": {
+"description": "降低属性值并施加减益的攻击时效果",
 "name": "战猪"
 },
 "race:d48f03bc471040c25dad": {
+"description": "多种干扰目标的效果",
 "name": "鹰身女妖"
 },
 "race:d4d6cb99915dfaa46ca7": {
+"description": "大量不同效果",
 "name": "异界"
 },
 "race:d7b45c44f4e11b8e535f": {
+"description": "反应式攻击和攻击强化",
 "name": "半人马"
 },
 "race:d8aad66238aad582c767": {
+"description": "多种与减益相关的效果",
 "name": "瘟疫医生"
 },
 "race:dae735d9574223b6274c": {
+"description": "多种干扰效果",
 "name": "海妖"
 },
 "race:dde6e8974b46a1eddcd7": {
+"description": "人鱼的专长组可大幅强化",
 "name": "守护者"
 },
 "race:df10ba57ae883115bdd2": {
+"description": "侧重防护的挑衅时效果",
 "name": "末日要塞"
 },
 "race:e02d7fca852ac60ed43f": {
+"description": "与隐形增益协同",
 "name": "阴影"
 },
 "race:e0d1a7c8826237ec810d": {
+"description": "战斗开始时有几率施放已装备法术",
 "name": "灵狐"
 },
 "race:e231b5794511709bae83": {
+"description": "回合开始时杀死所有盟友并获得属性值加成",
 "name": "森林恐魔"
 },
 "race:e3851d2d09beb3240c8c": {
+"description": "兼有缴械减益协同和神器强化",
 "name": "混合体"
 },
 "race:e88559cc13f4588e472d": {
+"description": "与低生命值和受到攻击协同",
 "name": "牛头人"
 },
 "race:e8fcac1e4876234c00fa": {
+"description": "影响目标相邻生物的攻击效果",
 "name": "棕仙"
 },
 "race:e9a63a4eb15738ae85cd": {
+"description": "与队伍中的猎手协同，侧重弹射的攻击时效果",
 "name": "猎手"
 },
 "race:ea2590fa037e34eab983": {
+"description": "与获得增益和增益数量协同",
 "name": "树妖"
 },
 "race:ea580d7de19c0713764f": {
+"description": "与队伍中的伊姆协同",
 "name": "伊姆魔像"
 },
 "race:eba759e904741b9a2814": {
+"description": "以负面效果为代价的强力强化",
 "name": "流亡者"
 },
 "race:ec23cef03131da4f8bc0": {
+"description": "依靠与队友相邻触发的行动和效果",
 "name": "灵体"
 },
 "race:f092670242a37d435ec3": {
+"description": "与霜冻减益协同",
 "name": "雪怪"
 },
+"race:f0dce5845962dc3700ff": {
+"description": "攻击和法术伤害完全取决于速度",
+"name": "魔怪"
+},
 "race:f1b0f4055173a551154c": {
+"description": "与攻击和智力相关的效果",
 "name": "卢卡尼亚"
 },
 "race:f367cb9aea06c8effcf7": {
+"description": "每个生物回合结束时有小几率施放强力法术",
 "name": "灾变"
 },
 "race:f9bee57891a6db8ffa26": {
+"description": "强化系别和种族协同",
 "name": "鸡蛇"
 },
 "race:f9d0f7af72540ad92770": {
+"description": "与炸弹减益协同",
 "name": "毒居者"
 },
 "race:faea16399a669ce02715": {
+"description": "提升属性值的回合开始时效果",
 "name": "发条机械"
 },
 "race:fb1c347f00f3ec34e1ba": {
+"description": "强化法术宝石及其附魔词条",
 "name": "宝石灵"
 },
 "race:fb640606a2e763d088e7": {
+"description": "击杀时效果",
 "name": "屠戮者"
 },
 "race:fc8db96bab2a414d1db5": {
+"description": "击杀时效果",
 "name": "收割者"
 },
 "realm:0": {
