@@ -79,11 +79,7 @@ describe("routeView", () => {
 });
 
 describe("GemEditor", () => {
-  const property = (
-    id: string,
-    name: string,
-    variants: GemProperty["variants"],
-  ): GemProperty => ({
+  const property = (id: string, name: string, variants: GemProperty["variants"]): GemProperty => ({
     id,
     name,
     game_property_ids: variants.map((v) => v.id),
