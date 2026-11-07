@@ -817,11 +817,13 @@ class Localizer:
             english = json.loads((SNAPSHOT / "tokens.json").read_text(encoding="utf-8-sig"))
             local = {name: self.r.token(name) for name in english}
         self.db.execute("INSERT OR REPLACE INTO meta VALUES('locale',?)", (self.locale,))
+        # Class entities keep their names, so the game's names for them come from its tokens.
+        classes = {k[len("CLASS_") :]: v for k, v in local.items() if k.startswith("CLASS_")}
         for key, value in (
             ("tokens", local),
             ("raw_overrides", self.raw_overrides),
             ("localized", True),
-            ("names", {kind: names for kind, names in self.by_name.items()}),
+            ("names", {**self.by_name, "class": classes}),
         ):
             self.db.execute(
                 "INSERT OR REPLACE INTO meta VALUES(?,?)",

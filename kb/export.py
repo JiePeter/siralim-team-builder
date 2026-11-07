@@ -87,7 +87,8 @@ def input_fingerprint(knowledge):
     digest = hashlib.sha256()
     code = sorted((ROOT / "kb").glob("*.py"))
     raw = sorted(path for path in (ROOT / "data/raw").rglob("*") if path.is_file())
-    for path in code + raw:
+    messages = sorted((ROOT / "data/localization").glob("*/messages.json"))
+    for path in code + raw + messages:
         digest.update(path.relative_to(ROOT).as_posix().encode() + path.read_bytes())
     with database(knowledge.path) as db:
         for (table,) in db.execute(
@@ -440,7 +441,7 @@ def discovery_pack(found):
             "values": labels,
             "unoffered_relations": sorted(UNOFFERED_RELATIONS),
             "unoffered_values": sorted(UNOFFERED_VALUES),
-            "value_aliases": [[c, v, _(alias)] for (c, v), alias in VALUE_ALIASES.items()],
+            "value_aliases": [[c, v, alias] for (c, v), alias in VALUE_ALIASES.items()],
         },
     }
 

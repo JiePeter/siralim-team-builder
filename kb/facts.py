@@ -9,7 +9,16 @@ A token is a tuple (layer, name, *args) of JSON scalars, or tuples of them:
   subject  display-only text that could not be typed; it never links
 """
 
-from .matching import frozen, qualifier_text, qualitative
+from .matching import (
+    frozen,
+    named,
+    qualifier_text,
+    qualitative,
+    spell_class_text,
+    spell_type_text,
+    worded,
+)
+from .messages import _, name as local_name, phrase
 
 GAIN_EVENTS = {
     "stat_change:target",
@@ -60,10 +69,10 @@ def restricts(token):
 
 
 MODIFIER_TARGETS = {
-    "vsClass": "Against ",
-    "vsWith": "Against enemies with ",
-    "appliesTo": "Applies to ",
-    "who": "Creature: ",
+    "vsClass": "Against {what}",
+    "vsWith": "Against enemies with {what}",
+    "appliesTo": "Applies to {what}",
+    "who": "Creature: {what}",
 }
 EQUIPMENT = {
     "spellGems": "Spell Gems:",
@@ -189,19 +198,33 @@ def conditions(rule, record):
 
 
 def _count(mode, what):
-    return {"none": "No ", "limited": "Limited ", "all": "Requires all "}.get(
-        mode, "Requires "
-    ) + what
+    template = {"none": "No {what}", "limited": "Limited {what}", "all": "Requires all {what}"}
+    return _(template.get(mode, "Requires {what}"), what=phrase(what))
 
 
 def _comparison(what, of, op, value):
     text = what + (" of " + of if of else "") + (" " + COMPARISONS[op] + " " + value if op else "")
     text = qualitative(text)
-    return text[:1].upper() + text[1:]
+    return phrase(text[:1].upper() + text[1:])
 
 
 def _subject(whose, field, values):
-    return "Requires " + (whose + " " if whose else "") + field + ": " + " or ".join(values)
+    template = "Requires " + (whose + " " if whose else "") + field + ": {values}"
+    return _(template, values=phrase(" or ").join(local_name(field, v) for v in values))
+
+
+def _health(side, after):
+    threshold = _("Health " + side + " threshold")
+    if after:
+        return _("{threshold} after {after}", threshold=threshold, after=phrase(after))
+    return threshold
+
+
+def _stat_comparison(stat, who, higher):
+    subject = _("{what} of {of}", what=phrase(stat), of=phrase(who)) if who else phrase(stat)
+    if higher:
+        return _("{stat} higher than {higher}", stat=subject, higher=phrase(higher))
+    return _("{stat} above threshold", stat=subject)
 
 
 STATES = {
@@ -217,79 +240,94 @@ STATES = {
 
 def _state(whose, state):
     if whose:
-        return whose.capitalize() + " is " + state
-    return STATES.get(state) or state[:1].upper() + state[1:]
+        return _("{whose} is {state}", whose=phrase(whose.capitalize()), state=phrase(state))
+    return _(STATES[state]) if state in STATES else phrase(state[:1].upper() + state[1:])
+
+
+def _clauses(values):
+    return phrase("; ").join(phrase(v) for v in values)
 
 
 LABELS = {
-    ("req", "same_creature"): lambda: "Same creature",
-    ("req", "target_side"): lambda side: (
-        "Requires the affected target to be " + ("an ally" if side == "ally" else "an enemy")
+    ("req", "same_creature"): lambda: _("Same creature"),
+    ("req", "target_side"): lambda side: _(
+        "Requires the affected target to be an ally"
+        if side == "ally"
+        else "Requires the affected target to be an enemy"
     ),
-    ("req", "selected_holder"): lambda: "Selected creature must carry the reacting effect",
-    ("req", "named_holder"): lambda name: "Trait holder: " + name.title(),
-    ("req", "other_ally"): lambda: "Another allied creature",
-    ("req", "adjacent_ally"): lambda: "Adjacent allied creature",
-    ("req", "applied_by_holder"): lambda: "Status applied by the Trait holder",
-    ("req", "stat_direction"): lambda d: "Requires a stat " + ("gain" if d == "up" else "loss"),
-    ("req", "affected_stat"): lambda stats: (
-        "Requires the affected stat: " + ", ".join(s.title() for s in stats)
+    ("req", "selected_holder"): lambda: _("Selected creature must carry the reacting effect"),
+    ("req", "named_holder"): lambda holder: _(
+        "Trait holder: {holder}", holder=phrase(holder.title())
     ),
-    ("req", "enemy_cause"): lambda: "Requires an enemy to cause the event",
-    ("req", "allied_cause"): lambda: "Requires an allied cause",
-    ("req", "holder_cause"): lambda: "Event caused by the Trait holder",
-    ("req", "caused_by"): lambda by: "Event caused by " + by,
-    ("req", "damage_source"): lambda source: "Requires damage from " + source,
-    ("req", "source"): lambda source: "Requires source: " + source,
-    ("req", "spell_class"): lambda name: "Requires a " + name + " spell",
-    ("req", "spell_type"): lambda name: "Requires spell type: " + name.capitalize(),
-    ("req", "damaging_spell"): lambda: "Requires a damaging spell",
-    ("req", "base_action"): lambda: "Extra attack or cast",
-    ("req", "critical"): lambda: "Requires critical damage",
-    ("req", "modifier_target"): lambda field, value: (
-        MODIFIER_TARGETS.get(field, "Requires ") + qualitative(str(thawed(value)))
+    ("req", "other_ally"): lambda: _("Another allied creature"),
+    ("req", "adjacent_ally"): lambda: _("Adjacent allied creature"),
+    ("req", "applied_by_holder"): lambda: _("Status applied by the Trait holder"),
+    ("req", "stat_direction"): lambda d: _(
+        "Requires a stat gain" if d == "up" else "Requires a stat loss"
+    ),
+    ("req", "affected_stat"): lambda stats: _(
+        "Requires the affected stat: {stats}",
+        stats=phrase(", ").join(phrase(s.title()) for s in stats),
+    ),
+    ("req", "enemy_cause"): lambda: _("Requires an enemy to cause the event"),
+    ("req", "allied_cause"): lambda: _("Requires an allied cause"),
+    ("req", "holder_cause"): lambda: _("Event caused by the Trait holder"),
+    ("req", "caused_by"): lambda by: _("Event caused by {by}", by=phrase(by)),
+    ("req", "damage_source"): lambda source: _(
+        "Requires damage from {source}", source=worded(source)
+    ),
+    ("req", "source"): lambda source: _("Requires source: {source}", source=worded(source)),
+    ("req", "spell_class"): spell_class_text,
+    ("req", "spell_type"): spell_type_text,
+    ("req", "damaging_spell"): lambda: _("Requires a damaging spell"),
+    ("req", "base_action"): lambda: _("Extra attack or cast"),
+    ("req", "critical"): lambda: _("Requires critical damage"),
+    ("req", "modifier_target"): lambda field, value: _(
+        MODIFIER_TARGETS.get(field, "Requires {what}"),
+        what=worded(qualitative(str(thawed(value)))),
     ),
     ("req", "qualifier"): lambda key, value: qualifier_text(key, thawed(value)),
-    ("req", "has_status"): lambda status: "Requires " + status,
-    ("req", "lacks_status"): lambda status: "Requires no " + status,
+    ("req", "has_status"): lambda status: _("Requires {what}", what=worded(status)),
+    ("req", "lacks_status"): lambda status: _("Requires no {status}", status=worded(status)),
     ("req", "race"): lambda whose, values: _subject(whose, "race", values),
     ("req", "class"): lambda whose, values: _subject(whose, "class", values),
-    ("req", "party_all"): lambda race: "Requires a party of only " + race + " creatures",
-    ("req", "party_has"): lambda race: "Requires " + race + " in the party",
-    ("req", "party_count"): lambda of, count: "Requires " + count + " creatures of a " + of,
+    ("req", "party_all"): lambda race: _(
+        "Requires a party of only {race} creatures", race=named("race", race)
+    ),
+    ("req", "party_has"): lambda race: _("Requires {race} in the party", race=named("race", race)),
+    ("req", "party_count"): lambda of, count: _(
+        "Requires {count} creatures of a {of}", count=count, of=phrase(of)
+    ),
     ("req", "action_state"): _state,
-    ("req", "equipment"): lambda *values: " ".join(values),
-    ("req", "timeline_position"): lambda at: "At the " + at + " of the Timeline",
+    ("req", "equipment"): lambda *values: phrase(" ".join(values)),
+    ("req", "timeline_position"): lambda at: _("At the {at} of the Timeline", at=phrase(at)),
     ("req", "count"): _count,
-    ("req", "full_health"): lambda: "Full Health",
-    ("req", "manual_cast"): lambda: "Requires a manual cast",
-    ("req", "chance"): lambda: "Depends on chance",
-    ("req", "minion"): lambda minions: "Requires " + " or ".join(minions),
-    ("req", "health_threshold"): lambda side, after: (
-        "Health " + side + " threshold" + (" after " + after if after else "")
+    ("req", "full_health"): lambda: _("Full Health"),
+    ("req", "manual_cast"): lambda: _("Requires a manual cast"),
+    ("req", "chance"): lambda: _("Depends on chance"),
+    ("req", "minion"): lambda minions: _(
+        "Requires {what}", what=phrase(" or ").join(worded(m) for m in minions)
     ),
-    ("req", "fatal_damage"): lambda: "Fatal damage",
-    ("req", "damage_threshold"): lambda: "Damage exceeds threshold",
-    ("req", "stat_comparison"): lambda stat, who, higher: (
-        stat
-        + (" of " + who if who else "")
-        + (" higher than " + higher if higher else " above threshold")
-    ),
+    ("req", "health_threshold"): _health,
+    ("req", "fatal_damage"): lambda: _("Fatal damage"),
+    ("req", "damage_threshold"): lambda: _("Damage exceeds threshold"),
+    ("req", "stat_comparison"): _stat_comparison,
     ("req", "comparison"): _comparison,
-    ("req", "resource"): lambda *pairs: " ".join(
-        k.capitalize() + " " + qualitative(v) for k, v in pairs
+    ("req", "resource"): lambda *pairs: phrase(
+        " ".join(k.capitalize() + " " + qualitative(v) for k, v in pairs)
     ),
-    ("mod", "scales_with"): lambda per: "For each " + qualitative(per),
-    ("avail", "specialization"): lambda name, anointment: (
-        name + (" Perk / Anointment" if anointment else " Specialization")
+    ("mod", "scales_with"): lambda per: phrase("For each " + qualitative(per)),
+    ("avail", "specialization"): lambda specialization, anointment: _(
+        "{specialization} Perk / Anointment" if anointment else "{specialization} Specialization",
+        specialization=local_name("specialization", specialization),
     ),
-    ("avail", "ascension"): lambda: "Requires Ascension",
-    ("avail", "relic_rank"): lambda rank: "Relic Rank " + str(rank),
-    ("avail", "relic_rank_condition"): lambda *values: "; ".join(values),
-    ("req", "outcome"): lambda *values: "; ".join(values),
-    ("req", "condition"): lambda kind, *values: "; ".join(values),
-    ("lim", "activation"): lambda *values: "; ".join(values),
-    ("subject", "text"): lambda text: text,
+    ("avail", "ascension"): lambda: _("Requires Ascension"),
+    ("avail", "relic_rank"): lambda rank: _("Relic Rank {rank}", rank=rank),
+    ("avail", "relic_rank_condition"): lambda *values: _clauses(values),
+    ("req", "outcome"): lambda *values: _clauses(values),
+    ("req", "condition"): lambda kind, *values: _clauses(values),
+    ("lim", "activation"): lambda *values: _clauses(values),
+    ("subject", "text"): phrase,
 }
 
 

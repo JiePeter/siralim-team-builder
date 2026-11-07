@@ -2,6 +2,8 @@
 
 import re
 
+from .messages import _, name as local_name, phrase
+
 
 def normal(value):
     return " ".join(str(value or "").casefold().split())
@@ -28,6 +30,27 @@ def frozen(value):
     return tuple(frozen(v) for v in value) if isinstance(value, list) else value
 
 
+def named(kind, text):
+    """One or more "/"-joined game names of a kind, in the pack's language."""
+    return "/".join(local_name(kind, part) for part in text.split("/"))
+
+
+def worded(text):
+    """An annotation's value: status and minion names, or what the pack's language lists."""
+    return "/".join(phrase(local_name("condition", part)) for part in text.split("/"))
+
+
+def spell_class_text(text):
+    return _("Requires a {spell_class} spell", spell_class=named("class", text))
+
+
+def spell_type_text(text):
+    return _("Requires spell type: {spell_type}", spell_type=phrase(text.capitalize()))
+
+
+NAMED_QUALIFIERS = {"race": "race", "sourceRace": "race", "class": "class"}
+
+
 def qualifier_text(key, value):
     booleans = {
         "manual": ("Automatic casts", "Manual casts"),
@@ -43,19 +66,18 @@ def qualifier_text(key, value):
     }
     if type(value) is bool:
         if key in booleans:
-            return booleans[key][int(value)]
-        return ("Requires " if value else "Excludes ") + re.sub(
-            r"(?<!^)(?=[A-Z])", " ", key
-        ).lower()
+            return _(booleans[key][int(value)])
+        what = phrase(re.sub(r"(?<!^)(?=[A-Z])", " ", key).lower())
+        return _("Requires {what}" if value else "Excludes {what}", what=what)
     if key == "direction" and value in ("up", "down"):
-        return "Stat gain" if value == "up" else "Stat loss"
+        return _("Stat gain") if value == "up" else _("Stat loss")
     text = "/".join(str(v) for v in value) if isinstance(value, list) else str(value)
     # Read like the typed requirement for the same field, so the two are one fact.
     typed = {
-        "spellClass": lambda: "Requires a " + text + " spell",
-        "spellType": lambda: "Requires spell type: " + text.capitalize(),
-        "status": lambda: "Requires " + text,
-        "source": lambda: "Requires source: " + qualitative(text),
+        "spellClass": lambda: spell_class_text(text),
+        "spellType": lambda: spell_type_text(text),
+        "status": lambda: _("Requires {what}", what=worded(text)),
+        "source": lambda: _("Requires source: {source}", source=worded(qualitative(text))),
     }
     if key in typed:
         return typed[key]()
@@ -76,7 +98,9 @@ def qualifier_text(key, value):
     }
     label = labels.get(key, re.sub(r"(?<!^)(?=[A-Z])", " ", key).capitalize())
     # Turn number, cadence and zero amounts identify the event.
-    return label + ": " + (text if key in ("onTurn", "cadence", "amount") else qualitative(text))
+    shown = text if key in ("onTurn", "cadence", "amount") else qualitative(text)
+    local = named(NAMED_QUALIFIERS[key], shown) if key in NAMED_QUALIFIERS else worded(shown)
+    return _("{label}: {value}", label=phrase(label), value=local)
 
 
 ATTACK_SOURCES = {"attack", "attacks", "attack or spell", "attacks or spells", "attacks and spells"}

@@ -1,11 +1,15 @@
+import json
 import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
 
+from kb.discovery import Discovery
 from kb.export import compact_catalog
+from kb.facts import render
 from kb.knowledge import Knowledge
 from kb.localize import build
+from kb.messages import use
 from kb.pages import PageTables
 
 
@@ -45,6 +49,21 @@ class LocalizedJoinTests(unittest.TestCase):
         self.assertIn("盾爆术", text)
         segments = cards.inline.segments("trait:1451", text)
         self.assertIn(("spell:174", "盾爆术"), [(p.get("id"), p["text"]) for p in segments])
+
+    def test_facts_and_filter_labels_use_the_games_names(self):
+        with sqlite3.connect(self.path) as db:
+            names = db.execute("SELECT value FROM meta WHERE key='names'").fetchone()[0]
+        use("zh-CN", json.loads(names))
+        self.addCleanup(use, "en")
+        self.assertEqual(render(("req", "has_status", "Burning")), "需要燃烧")
+        self.assertEqual(
+            render(("avail", "specialization", "Windrunner", True)), "风行者专长／圣油"
+        )
+        self.assertEqual(render(("req", "qualifier", "spellClass", "Chaos")), "需要混沌法术")
+        label = lambda category, value: Discovery.label(None, category, value)
+        self.assertEqual(label("race", "Griffon"), json.loads(names)["race"]["Griffon"])
+        self.assertEqual(label("class", "Chaos"), "混沌")
+        self.assertEqual(label("minion", "Zombies"), "僵尸")
 
     def test_always_active_perks_follow_their_ids_in_another_sort_order(self):
         english = Knowledge().build_catalog()

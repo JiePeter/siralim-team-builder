@@ -24,6 +24,11 @@ def _(template, **params):
     return _phrases.get(template, template).format(**params)
 
 
+def phrase(english):
+    """Wording that arrives with the data, in the pack's language; it is never formatted."""
+    return _phrases.get(english, english)
+
+
 def name(kind, english):
     """A game name in the pack's language."""
     return _names.get(kind, {}).get(english, english)

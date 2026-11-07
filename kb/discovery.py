@@ -4,7 +4,7 @@ import json
 import sqlite3
 from .annotations import event_key, named_statuses, trigger_id, trigger_label
 from .facts import STAT_AMOUNT, STAT_SET, event, listened
-from .messages import _, name as local_name
+from .messages import _, name as local_name, phrase
 
 CATEGORIES = {
     "status": "Status",
@@ -141,6 +141,8 @@ TYPE_LABELS = {
 }
 EXCLUDED = {"artifact", "enchantment"}
 VALUE_ALIASES = {("stat", "Health"): "Maximum Health"}
+# The kind whose game names label a filter category's values; minions are conditions in the game.
+NAMED_VALUES = {"status": "condition", "minion": "condition", "race": "race", "class": "class"}
 STATUS_VERBS = {
     "status_modifier": "modifies",
     "prevent_status": "prevents",
@@ -454,6 +456,6 @@ class Discovery:
             return _(ACTION_LABELS.get(value, value))
         if value in VALUE_LABELS:
             return _(VALUE_LABELS[value])
-        if category == "status":
-            return local_name("condition", value)
+        if category in NAMED_VALUES:
+            return phrase(local_name(NAMED_VALUES[category], value))
         return _(value)
