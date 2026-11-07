@@ -1,185 +1,290 @@
-// Share links are `#team=<code>`, where code is the team as nested arrays of numbers, compressed
-// with raw deflate and encoded as unpadded base64url.
-import type { ArtifactConfig, Equipment, EquipmentRef, Slot, Team } from "./team";
+// Share links are `#team=<code>`, where code is the team as a bit stream encoded as unpadded
+// base64url. Each field takes only the bits its values need. Name and notes follow as UTF-8 text.
+import { t } from "@/i18n";
+import { PARTY_SIZE, itemId, newTeam, type ArtifactConfig, type Equipment } from "./team";
+import type { EquipmentRef, Slot, Team } from "./team";
 
-/** An id packs to number * 16 + its kind's position here; existing links depend on the positions. */
-const KINDS = [
-  "artifact",
-  "artifact_property",
-  "creature",
-  "enchantment",
-  "material",
-  "perk",
-  "relic",
-  "spec",
-  "spell",
-  "trait",
-];
+/** Id bits per kind, with room for ids a game update may add. */
+const ID_BITS: Record<string, number> = {
+  artifact: 2,
+  artifact_property: 7,
+  creature: 12,
+  enchantment: 6,
+  material: 12,
+  perk: 11,
+  relic: 6,
+  spec: 7,
+  spell: 11,
+  trait: 12,
+};
+const KINDS = Object.keys(ID_BITS);
+const ARTIFACT_TYPES = ["Helmet", "Sword", "Staff", "Shield", "Boots"];
+const VARIANT_BITS = 6;
+const RELIC_RANK_BITS = 7;
+const GEM_COUNT_BITS = 4;
+const NETHER_COUNT_BITS = 2;
+const PROPERTY_COUNT_BITS = 2;
 
-function packId(id: string): number {
-  const [kind, number] = id.split(":");
-  const at = KINDS.indexOf(kind!);
-  if (at < 0 || !/^\d+$/.test(number ?? "")) throw new Error(`Id cannot be shared: ${id}`);
-  return Number(number) * 16 + at;
-}
+class BitWriter {
+  private bytes: number[] = [];
+  private used = 0;
 
-function unpackId(code: number): string {
-  const kind = KINDS[code % 16];
-  if (!kind) throw new Error(`Invalid shared id: ${code}`);
-  return `${kind}:${Math.floor(code / 16)}`;
-}
-
-type Packed = unknown[];
-type Blank<T> = T | null | undefined;
-type PackedArtifact = [Blank<string>, Blank<number[]>, Blank<number[]>, Blank<number>];
-type PackedItem =
-  | number
-  | [
-      number,
-      Blank<number[]>?,
-      Blank<number[]>?,
-      Blank<PackedArtifact>?,
-      Blank<number>?,
-      Blank<number>?,
-    ];
-type PackedSlot = [
-  Blank<PackedItem>?,
-  Blank<PackedItem>?,
-  Blank<PackedItem>?,
-  Blank<PackedItem[]>?,
-  Blank<PackedItem>?,
-  Blank<PackedItem[]>?,
-];
-type PackedTeam = [
-  string,
-  string,
-  PackedSlot[],
-  PackedItem[],
-  [Blank<number>, number[], number[], number],
-];
-
-/** Blank fields become null and trailing ones are dropped. */
-function row(...fields: unknown[]): Packed {
-  const blank = (f: unknown) => f == null || (Array.isArray(f) && !f.length);
-  const out = fields.map((f) => (blank(f) ? null : f));
-  while (out.length && out.at(-1) === null) out.pop();
-  return out;
-}
-
-function packArtifact(a: ArtifactConfig): Packed {
-  return [
-    a.type ?? null,
-    (a.stats ?? []).map(packId),
-    (a.tricks ?? []).map(packId),
-    a.spell ? packId(a.spell) : null,
-  ];
-}
-
-function unpackArtifact([type, stats, tricks, spell]: PackedArtifact): ArtifactConfig {
-  return {
-    ...(type ? { type } : {}),
-    stats: (stats ?? []).map(unpackId),
-    tricks: (tricks ?? []).map(unpackId),
-    ...(spell != null ? { spell: unpackId(spell) } : {}),
-  };
-}
-
-function packItem(item: EquipmentRef | undefined): number | Packed | null {
-  if (!item) return null;
-  if (typeof item === "string") return packId(item);
-  const fields = row(
-    packId(item.id),
-    (item.properties ?? []).map(packId),
-    Object.entries(item.property_variants ?? {}).flatMap(([p, v]) => [packId(p), v]),
-    item.artifact ? packArtifact(item.artifact) : null,
-    item.rank,
-    item.shown ? packId(item.shown) : null,
-  );
-  return fields.length === 1 ? (fields[0] as number) : fields;
-}
-
-function unpackItem(packed: PackedItem): Equipment {
-  const [id, properties, variants, artifact, rank, shown] =
-    typeof packed === "number" ? [packed] : packed;
-  const item: Equipment = {
-    uid: crypto.randomUUID(),
-    id: unpackId(id),
-    properties: (properties ?? []).map(unpackId),
-  };
-  if (variants) {
-    item.property_variants = {};
-    for (let i = 0; i < variants.length; i += 2) {
-      item.property_variants[unpackId(variants[i]!)] = variants[i + 1]!;
+  bits(value: number, width: number) {
+    if (value >= 2 ** width) throw new Error(`Value cannot be shared: ${value}`);
+    for (let i = width - 1; i >= 0; i--) {
+      if (this.used % 8 === 0) this.bytes.push(0);
+      if (Math.floor(value / 2 ** i) % 2)
+        this.bytes[this.bytes.length - 1]! |= 128 >> (this.used % 8);
+      this.used++;
     }
   }
-  if (artifact) item.artifact = unpackArtifact(artifact);
-  if (rank != null) item.rank = rank;
-  if (shown != null) item.shown = unpackId(shown);
+
+  flag(value: boolean) {
+    this.bits(value ? 1 : 0, 1);
+  }
+
+  /** Elias gamma: small numbers take few bits, with no upper limit. `value` is at least 0. */
+  count(value: number) {
+    const coded = value + 1;
+    const width = Math.floor(Math.log2(coded));
+    this.bits(0, width);
+    this.bits(coded, width + 1);
+  }
+
+  /** The bits so far, then `text` on the next byte boundary. */
+  finish(text: Uint8Array): Uint8Array {
+    return Uint8Array.from([...this.bytes, ...text]);
+  }
+}
+
+class BitReader {
+  private used = 0;
+
+  constructor(private bytes: Uint8Array) {}
+
+  bits(width: number): number {
+    let value = 0;
+    for (let i = 0; i < width; i++) {
+      const byte = this.bytes[this.used >> 3];
+      if (byte === undefined) throw new Error("Share code ended early");
+      value = value * 2 + ((byte >> (7 - (this.used % 8))) & 1);
+      this.used++;
+    }
+    return value;
+  }
+
+  flag(): boolean {
+    return this.bits(1) === 1;
+  }
+
+  count(): number {
+    let width = 0;
+    while (!this.flag()) width++;
+    return 2 ** width + this.bits(width) - 1;
+  }
+
+  /** What follows the bits read so far, from the next byte boundary. */
+  rest(): Uint8Array {
+    return this.bytes.slice((this.used + 7) >> 3);
+  }
+}
+
+function writeId(out: BitWriter, id: string, kinds: readonly string[]) {
+  const [kind, number] = id.split(":");
+  const at = kinds.indexOf(kind!);
+  const bits = ID_BITS[kind!];
+  if (at < 0 || !bits || !/^\d+$/.test(number ?? "") || Number(number) >= 2 ** bits) {
+    throw new Error(`Id cannot be shared: ${id}`);
+  }
+  if (kinds.length > 1) out.bits(at, Math.ceil(Math.log2(kinds.length)));
+  out.bits(Number(number), bits);
+}
+
+function readId(input: BitReader, kinds: readonly string[]): string {
+  const at = kinds.length > 1 ? input.bits(Math.ceil(Math.log2(kinds.length))) : 0;
+  const kind = kinds[at];
+  if (!kind) throw new Error("Invalid shared kind");
+  return `${kind}:${input.bits(ID_BITS[kind]!)}`;
+}
+
+function writeArtifact(out: BitWriter, artifact: ArtifactConfig) {
+  out.bits(artifact.type ? ARTIFACT_TYPES.indexOf(artifact.type) + 1 : 0, 3);
+  for (const list of [artifact.stats ?? [], artifact.tricks ?? []]) {
+    out.bits(list.length, PROPERTY_COUNT_BITS);
+    for (const id of list) writeId(out, id, ["artifact_property"]);
+  }
+  out.flag(!!artifact.spell);
+  if (artifact.spell) writeId(out, artifact.spell, ["spell"]);
+}
+
+function readArtifact(input: BitReader): ArtifactConfig {
+  const type = ARTIFACT_TYPES[input.bits(3) - 1];
+  const list = () =>
+    Array.from({ length: input.bits(PROPERTY_COUNT_BITS) }, () =>
+      readId(input, ["artifact_property"]),
+    );
+  const stats = list();
+  const tricks = list();
+  return {
+    ...(type ? { type } : {}),
+    stats,
+    tricks,
+    ...(input.flag() ? { spell: readId(input, ["spell"]) } : {}),
+  };
+}
+
+/** What an item holds beyond its id, which depends on its kind. */
+function writeBody(out: BitWriter, ref: EquipmentRef) {
+  const item = typeof ref === "string" ? ({ id: ref } as Equipment) : ref;
+  const kind = item.id.split(":")[0];
+  if (kind === "spell") {
+    const properties = item.properties ?? [];
+    out.bits(properties.length, PROPERTY_COUNT_BITS);
+    for (const property of properties) {
+      writeId(out, property, ["enchantment"]);
+      const variant = item.property_variants?.[property];
+      out.flag(variant !== undefined);
+      if (variant !== undefined) out.bits(variant, VARIANT_BITS);
+    }
+  } else if (kind === "material" || kind === "artifact") {
+    out.flag(!!item.artifact);
+    if (item.artifact) writeArtifact(out, item.artifact);
+  } else if (kind === "relic") {
+    out.bits(item.rank ?? 0, RELIC_RANK_BITS);
+  }
+}
+
+function readBody(input: BitReader, id: string): Equipment {
+  const item: Equipment = { uid: crypto.randomUUID(), id, properties: [] };
+  const kind = id.split(":")[0];
+  if (kind === "spell") {
+    const count = input.bits(PROPERTY_COUNT_BITS);
+    for (let i = 0; i < count; i++) {
+      const property = readId(input, ["enchantment"]);
+      item.properties!.push(property);
+      if (input.flag()) (item.property_variants ??= {})[property] = input.bits(VARIANT_BITS);
+    }
+  } else if ((kind === "material" || kind === "artifact") && input.flag()) {
+    item.artifact = readArtifact(input);
+  } else if (kind === "relic") {
+    const rank = input.bits(RELIC_RANK_BITS);
+    if (rank) item.rank = rank;
+  }
   return item;
 }
 
-function packSlot(slot: Slot): Packed {
-  return row(
-    packItem(slot.base),
-    packItem(slot.fusion),
-    packItem(slot.artifact),
-    (slot.spells ?? []).map(packItem),
-    packItem(slot.relic),
-    (slot.nether ?? []).map(packItem),
-  );
+function writeItem(out: BitWriter, item: EquipmentRef, kinds: readonly string[]) {
+  writeId(out, itemId(item)!, kinds);
+  writeBody(out, item);
 }
 
-function unpackSlot([base, fusion, artifact, spells, relic, nether]: PackedSlot): Slot {
+function readItem(input: BitReader, kinds: readonly string[]): Equipment {
+  return readBody(input, readId(input, kinds));
+}
+
+const SINGLE_FIELDS = [
+  ["base", ["creature"]],
+  ["fusion", ["creature"]],
+  ["artifact", ["material", "artifact"]],
+  ["relic", ["relic"]],
+] as const;
+
+function writeSlot(out: BitWriter, slot: Slot) {
+  const spells = slot.spells ?? [];
+  const nether = slot.nether ?? [];
+  const filled = SINGLE_FIELDS.some(([field]) => slot[field]) || spells.length || nether.length;
+  out.flag(!!filled);
+  if (!filled) return;
+  for (const [field, kinds] of SINGLE_FIELDS) {
+    const item = slot[field];
+    out.flag(!!item);
+    if (item) writeItem(out, item, kinds);
+  }
+  out.bits(spells.length, GEM_COUNT_BITS);
+  for (const gem of spells) writeItem(out, gem, ["spell"]);
+  out.bits(nether.length, NETHER_COUNT_BITS);
+  for (const trait of nether) writeItem(out, trait, ["trait"]);
+}
+
+function readSlot(input: BitReader): Slot {
   const slot: Slot = {};
-  if (base != null) slot.base = unpackItem(base);
-  if (fusion != null) slot.fusion = unpackItem(fusion);
-  if (artifact != null) slot.artifact = unpackItem(artifact);
-  if (spells) slot.spells = spells.map(unpackItem);
-  if (relic != null) slot.relic = unpackItem(relic);
-  if (nether) slot.nether = nether.map(unpackItem);
+  if (!input.flag()) return slot;
+  for (const [field, kinds] of SINGLE_FIELDS) {
+    if (input.flag()) slot[field] = readItem(input, kinds);
+  }
+  const gems = input.bits(GEM_COUNT_BITS);
+  if (gems) slot.spells = Array.from({ length: gems }, () => readItem(input, ["spell"]));
+  const traits = input.bits(NETHER_COUNT_BITS);
+  if (traits) slot.nether = Array.from({ length: traits }, () => readItem(input, ["trait"]));
   return slot;
 }
 
-function pack(team: Team): Packed {
-  const { specialization, perks, anointments, ascended, all_ascended } = team.character;
-  return [
-    team.name,
-    team.notes,
-    team.slots.map(packSlot),
-    team.inventory.map(packItem),
-    [
-      specialization ? packId(specialization) : null,
-      Object.entries(perks).flatMap(([perk, rank]) => [packId(perk), rank]),
-      anointments.map(packId),
-      (ascended ? 1 : 0) + (all_ascended ? 2 : 0),
-    ],
-  ];
+/** Perks of one Specialization have close ids, so each is stored as the gap from the last. */
+function writeCharacter(out: BitWriter, character: Team["character"]) {
+  out.flag(!!character.specialization);
+  if (character.specialization) writeId(out, character.specialization, ["spec"]);
+  out.flag(character.ascended);
+  out.flag(character.all_ascended);
+  const perks = Object.entries(character.perks)
+    .map(([id, rank]) => [Number(id.split(":")[1]), rank] as const)
+    .sort(([a], [b]) => a - b);
+  out.count(perks.length);
+  let last = 0;
+  for (const [number, rank] of perks) {
+    out.count(number - last);
+    out.count(rank);
+    last = number;
+  }
+  out.count(character.anointments.length);
+  for (const id of character.anointments) writeId(out, id, ["perk"]);
 }
 
-function unpack([name, notes, slots, inventory, character]: PackedTeam): Team {
-  const [specialization, perks, anointments, flags] = character;
-  const ranks: Record<string, number> = {};
-  for (let i = 0; i < perks.length; i += 2) ranks[unpackId(perks[i]!)] = perks[i + 1]!;
-  return {
-    name,
-    notes,
-    slots: slots.map(unpackSlot),
-    inventory: inventory.map(unpackItem),
-    character: {
-      specialization: specialization == null ? null : unpackId(specialization),
-      perks: ranks,
-      anointments: anointments.map(unpackId),
-      ascended: !!(flags & 1),
-      all_ascended: !!(flags & 2),
-    },
-  };
+function readCharacter(input: BitReader): Team["character"] {
+  const specialization = input.flag() ? readId(input, ["spec"]) : null;
+  const ascended = input.flag();
+  const all_ascended = input.flag();
+  const perks: Record<string, number> = {};
+  const count = input.count();
+  let last = 0;
+  for (let i = 0; i < count; i++) {
+    last += input.count();
+    perks[`perk:${last}`] = input.count();
+  }
+  const anointments = Array.from({ length: input.count() }, () => readId(input, ["perk"]));
+  return { specialization, perks, anointments, ascended, all_ascended };
+}
+
+async function deflate(bytes: Uint8Array): Promise<Uint8Array> {
+  const stream = new Blob([bytes as BlobPart])
+    .stream()
+    .pipeThrough(new CompressionStream("deflate-raw"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+async function inflate(bytes: Uint8Array): Promise<Uint8Array> {
+  const stream = new Blob([bytes as BlobPart])
+    .stream()
+    .pipeThrough(new DecompressionStream("deflate-raw"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
 export async function encodeTeam(team: Team): Promise<string> {
-  const stream = new Blob([JSON.stringify(pack(team))])
-    .stream()
-    .pipeThrough(new CompressionStream("deflate-raw"));
-  const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+  const out = new BitWriter();
+  for (const slot of team.slots) writeSlot(out, slot);
+  writeCharacter(out, team.character);
+  out.count(team.inventory.length);
+  for (const item of team.inventory) {
+    writeItem(out, item, KINDS);
+    out.flag(!!item.shown);
+    if (item.shown) writeId(out, item.shown, KINDS);
+  }
+  const name = team.name === t("team.defaultName") ? "" : team.name;
+  const text = name || team.notes ? `${name}\0${team.notes}` : "";
+  const plain = new TextEncoder().encode(text);
+  const packed = text ? await deflate(plain) : plain;
+  const shrunk = packed.length < plain.length;
+  out.flag(shrunk);
+  const bytes = out.finish(shrunk ? packed : plain);
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -188,8 +293,17 @@ export async function encodeTeam(team: Team): Promise<string> {
 /** The team a code holds, not yet validated; throws when the code is damaged. */
 export async function decodeTeam(code: string): Promise<Team> {
   const binary = atob(code.replace(/-/g, "+").replace(/_/g, "/"));
-  const stream = new Blob([Uint8Array.from(binary, (c) => c.charCodeAt(0))])
-    .stream()
-    .pipeThrough(new DecompressionStream("deflate-raw"));
-  return unpack(JSON.parse(await new Response(stream).text()) as PackedTeam);
+  const input = new BitReader(Uint8Array.from(binary, (c) => c.charCodeAt(0)));
+  const slots = Array.from({ length: PARTY_SIZE }, () => readSlot(input));
+  const character = readCharacter(input);
+  const inventory = Array.from({ length: input.count() }, () => {
+    const item = readItem(input, KINDS);
+    if (input.flag()) item.shown = readId(input, KINDS);
+    return item;
+  });
+  const shrunk = input.flag();
+  const rest = input.rest();
+  const text = new TextDecoder().decode(shrunk ? await inflate(rest) : rest);
+  const [name, notes = ""] = text.split("\0");
+  return { name: name || newTeam().name, notes, slots, inventory, character };
 }

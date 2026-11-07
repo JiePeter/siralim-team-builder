@@ -48,12 +48,21 @@ describe("share links", () => {
   it("round-trip a full team through a short URL-safe code", async () => {
     const code = await encodeTeam(sharedTeam());
     expect(code).toMatch(/^[A-Za-z0-9_-]+$/);
-    expect(code.length).toBeLessThan(600);
+    expect(code.length).toBeLessThan(300);
     const decoded = await decodeTeam(code);
     expect(withoutUids(decoded)).toEqual(withoutUids(sharedTeam()));
     expect(new Set(decoded.slots.map((s) => s.base && (s.base as { uid: string }).uid)).size).toBe(
       6,
     );
+  });
+
+  it("round-trip an empty team, a blank Artifact and a Chinese note", async () => {
+    const team = newTeam();
+    team.notes = "这是一段备注".repeat(20);
+    team.slots[2] = { artifact: { uid: "", id: "artifact:0", properties: [] } };
+    const decoded = await decodeTeam(await encodeTeam(team));
+    expect(withoutUids(decoded)).toEqual(withoutUids(team));
+    expect((await encodeTeam(newTeam())).length).toBeLessThan(12);
   });
 
   it("open a team from a link followed in a running app, and only from a link", async () => {
