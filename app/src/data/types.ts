@@ -339,7 +339,8 @@ export interface GemProperty {
   id: string;
   name: string;
   game_property_ids: number[];
-  variants: { id: number; label: string; image?: string }[];
+  /** `class` names the class a Class Swap variant turns the Spell Gem into. */
+  variants: { id: number; label: string; image?: string; class?: string }[];
   image: string;
   routes: Route[];
 }

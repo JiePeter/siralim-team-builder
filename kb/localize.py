@@ -14,13 +14,35 @@ import shutil
 import sqlite3
 from collections import defaultdict
 from pathlib import Path
-from .current import SNAPSHOT, norm, text as english_text
+from .current import SNAPSHOT, SOURCE_NAMES, norm, text as english_text
 from .annotations import ANNOTATIONS, check_spans
 from .importer import DEFAULT_DB, ROOT
+from .inline_refs import NAME_END
+from .reference import REFERENCE
 
 LOCALES = {"zh-CN": "Chinese (Simplified)"}
 PER_RANK = {"zh-CN": "每阶"}
 RANK = {"zh-CN": "等级"}
+SPELL_MARKER = re.compile(r"\[icons,(\d+)\]\s*")
+# A description's own wording for a spell runs up to the next punctuation; a much longer run is prose.
+SPELL_LABEL = re.compile(r"[^\s，。、；：！？（）(),.:;!?{\[]+")
+SPELL_LABEL_SLACK = 2
+# Each named group is the kind whose translated name fills the template's parameter of that name.
+SOURCE_TEMPLATES = (
+    (r"(?P<race>.+) Master", "{race} Master"),
+    (
+        r"(?P<specialization>.+) Specialization & Starter",
+        "{specialization} Specialization & Starter",
+    ),
+    (r"(?P<specialization>.+) Specialization", "{specialization} Specialization"),
+    (r"(?P<specialization>.+) Starter", "{specialization} Starter"),
+    (r"(?P<creature>.+) Boss Fight", "{creature} Boss Fight"),
+)
+NETHER_BOSS = re.compile(r"Nether Boss \((.+), RD (\d+)\)")
+# The sheets spell these bosses differently from the game.
+NETHER_BOSS_TAGS = {"Aspects of Meraxis": "L_NBOSS_ASPECTS", "Xyrzyxs": "L_NBOSS_XYRXZYS"}
+EMBLEMS = re.compile(r"(.+) Emblems")
+SPECIALIZATION_DEPTH = re.compile(r"(\d+) \(1 for (.+)\)")
 
 
 def squash(text):
@@ -75,6 +97,11 @@ class Strings:
         value = self.local.get(tag, "")
         return value if value.strip() else None
 
+    def cell(self, english):
+        """The translation of an exact English cell, when every row with that cell agrees on one."""
+        found = {self.get(tag) for tag in self.by_english.get(norm(english), [])} - {None}
+        return found.pop() if len(found) == 1 else None
+
 
 class Renderer:
     """Turns raw localized text with `{TOKEN}` placeholders into display text."""
@@ -85,6 +112,9 @@ class Renderer:
         self.per_rank = PER_RANK[locale]
         self.english = json.loads((SNAPSHOT / "tokens.json").read_text(encoding="utf-8-sig"))
         self.cache = {}
+        self.phrases = json.loads(
+            (ROOT / f"data/localization/{locale}/messages.json").read_text(encoding="utf-8")
+        )
 
     def token(self, name):
         if name in self.cache:
@@ -110,8 +140,7 @@ class Renderer:
 
     def template(self, english, **params):
         """A phrase of the language that the game's own tables lack."""
-        phrases = json.loads((ROOT / f"data/localization/{self.locale}/messages.json").read_text(encoding="utf-8"))
-        return phrases[english].format(**params)
+        return self.phrases[english].format(**params)
 
     def raw(self, value):
         """Text as the game stores it, with line breaks restored."""
@@ -148,6 +177,11 @@ class Localizer:
         self.by_text = defaultdict(dict)
         self.raw_overrides = {}
         self.token_map = {}
+        self.artifact_texts = {}
+        self.spell_aliases = defaultdict(set)
+        self.gem_labels = {}
+        self.god_titles = {}
+        self.requirement_text = defaultdict(dict)
 
     def rename(self, key, name, description=None):
         kind, old = self.db.execute("SELECT kind,name FROM entity WHERE id=?", (key,)).fetchone()
@@ -265,6 +299,50 @@ class Localizer:
         for key, english in self.english.items():
             if key.split(":")[0] in ("spell", "relic"):
                 self.db.execute("INSERT OR IGNORE INTO entity_alias VALUES(?,?)", (key, english))
+        for key, labels in self.spell_aliases.items():
+            for label in labels:
+                self.db.execute("INSERT OR IGNORE INTO entity_alias VALUES(?,?)", (key, label))
+
+    def spell_labels(self):
+        """Descriptions may call a spell other than its table name.
+
+        Spell markers pair up in order with the English cell's, which names the spell they mark.
+        """
+        s = self.s
+        spells = defaultdict(set)
+        for key, game in self.game_rows("spell"):
+            spells[norm(game["name"])].add(key)
+        for key, alias in self.db.execute(
+            "SELECT a.entity_id,a.alias FROM entity_alias a JOIN entity e ON e.id=a.entity_id WHERE e.kind='spell'"
+        ).fetchall():
+            spells[norm(alias)].add(key)
+        named = re.compile(
+            "("
+            + "|".join(re.escape(n) for n in sorted(spells, key=len, reverse=True))
+            + ")"
+            + NAME_END,
+            re.I,
+        )
+        for tag, english in s.en.items():
+            local = s.get(tag)
+            if not local or "[icons," not in english:
+                continue
+            pairs = zip(SPELL_MARKER.finditer(english), SPELL_MARKER.finditer(local))
+            for marker, local_marker in pairs:
+                found = named.match(english, marker.end())
+                targets = spells[norm(found[1])] if found else ()
+                if len(targets) != 1:
+                    continue
+                key = next(iter(targets))
+                name = self.names.get(key, "")
+                rest = local[local_marker.end() :]
+                label = SPELL_LABEL.match(rest)
+                if (
+                    label
+                    and not rest.startswith(name)
+                    and len(label[0]) <= len(name) + SPELL_LABEL_SLACK
+                ):
+                    self.spell_aliases[key].add(label[0])
 
     def races(self):
         """A creature's race is stored by name, so its component rows follow the rename."""
@@ -292,7 +370,7 @@ class Localizer:
         s = self.s
         for key, game in self.game_rows("specialization"):
             name = self.by_name["specialization"].get(game["name"])
-            tag = s.tag("L_SPEC_DESC_", game["name"])
+            tag = s.tag("L_SPEC_DESC_", game["name"], game["description"][0])
             if name is None or tag is None:
                 continue
             style = s.get("L_SPEC_STYLE_" + tag[len("L_SPEC_DESC_") :])
@@ -365,6 +443,9 @@ class Localizer:
                     vocabulary[norm(s.en[tag])].append(tag)
                 elif s.file[tag] == "ui":
                     interface.setdefault(norm(english_text(s.en[tag])), []).append(tag)
+        self.artifact_texts = interface
+        mods = json.loads((REFERENCE / "artifact-mods.json").read_text(encoding="utf-8-sig"))
+        markup = {m["name"]: m["markup"] for m in mods}
         for key, name, description in self.db.execute(
             "SELECT id,name,description FROM entity WHERE kind='artifact_property'"
         ).fetchall():
@@ -372,6 +453,16 @@ class Localizer:
             texts = interface.get(norm(description), [])
             zh_name = s.get(names[0]) if len(names) == 1 else None
             raw = s.get(texts[0]) if len(texts) == 1 else None
+            if raw is None:
+                # The snapshot's status wording can differ from the game's; its markup keeps the token.
+                raw = next(
+                    (
+                        s.get(t)
+                        for t in s.by_english.get(norm(markup.get(name, "")), [])
+                        if t.startswith("L_ARTMOD_")
+                    ),
+                    None,
+                )
             extra = re.fullmatch(r"Creature has additional (.+)\.", description)
             if raw is None and extra:
                 stats = [s.get("L_ARTMOD_" + w.upper()) for w in re.split(r", (?:and )?| and ", extra[1])]
@@ -407,6 +498,9 @@ class Localizer:
         }
         head = self.r.text(self.s.get("L_ID_MATERIAL_TRAIT_SLOT"))
         socket = self.s.get("L_ID_MATERIAL_SOCKET_DESCRIPTION")
+        granted = {
+            key: game.get("trait") for key, game in self.game_rows("material") if game.get("trait")
+        }
         for key, description in self.db.execute(
             "SELECT id,description FROM entity WHERE kind='material' AND description<>''"
         ).fetchall():
@@ -415,26 +509,248 @@ class Localizer:
                 description,
                 re.S,
             )
-            if match and match[1] in trait and match[1] in trait_text:
-                self.set_description(key, f"{head}{trait[match[1]]}：\n{trait_text[match[1]]}")
-                continue
+            if match:
+                # The material's text may spell the trait differently from the trait's own name.
+                owner = f"trait:{granted[key]}" if key in granted else None
+                english = self.english.get(owner, match[1])
+                if english in trait and english in trait_text:
+                    self.set_description(key, f"{head}{trait[english]}：\n{trait_text[english]}")
+                    continue
             match = re.fullmatch(
-                r"Socket an Artifact's (Stat|Trick) Slot with this item to gain this property:\n\n(.+?):\n(.*?)(?:\n\nYou need (\d) of these materials to use them for Socketing\.)?",
+                r"Socket an Artifact's (Stat|Trick) Slot with this item to gain this property:\n\n(.+?)(?::\n(.*?))?(?:\n\nYou need (\d) of these materials to use them for Socketing\.)?",
                 description,
                 re.S,
             )
-            if match and match[2] in prop_name and match[2] in prop_text and slot[match[1]]:
-                body = f"{prop_name[match[2]]}：\n{prop_text[match[2]]}"
-                text = self.r.text(
-                    socket.replace("{1}", self.r.text(slot[match[1]])).replace("{2}", body)
-                )
-                if match[4]:
-                    amount = self.s.get(f"L_ID_MATERIAL_SOCKET_AMOUNT_{match[4]}")
-                    text += "\n\n" + self.r.text(amount)
-                self.set_description(key, text)
+            if not match or match[2] not in prop_name or not slot[match[1]]:
+                continue
+            body = prop_name[match[2]]
+            if match[3]:
+                detail = prop_text.get(match[2]) or self.artifact_text(match[3])
+                if not detail:
+                    continue
+                body = f"{body}：\n{detail}"
+            text = self.r.text(
+                socket.replace("{1}", self.r.text(slot[match[1]])).replace("{2}", body)
+            )
+            if match[4]:
+                amount = self.s.get(f"L_ID_MATERIAL_SOCKET_AMOUNT_{match[4]}")
+                text += "\n\n" + self.r.text(amount)
+            self.set_description(key, text)
+
+    def artifact_text(self, english):
+        """A property's effect as the game words it, for those the reference snapshot leaves blank."""
+        tags = self.artifact_texts.get(norm(english), [])
+        raw = self.s.get(tags[0]) if len(tags) == 1 else None
+        return self.r.text(raw) if raw else None
 
     def set_description(self, key, description):
         self.db.execute("UPDATE entity SET description=? WHERE id=?", (description, key))
+
+    def inscriptions(self):
+        """An inscription carries the name of the spell it unlocks."""
+        for key, spell in self.db.execute(
+            "SELECT g.src,g.dst FROM edge g JOIN entity e ON e.id=g.src WHERE g.rel='unlocks_spell' AND e.kind='inscription'"
+        ).fetchall():
+            if spell in self.names:
+                self.rename(key, self.names[spell])
+            else:
+                self.missing["inscription"].append(key)
+
+    def enchantments(self):
+        """Names come from the gemstone's text, which is also where the English names come from."""
+        s = self.s
+        labels = {norm(s.en[t].replace("{1}", "x")): t for t in s.en if t.startswith("L_SPELLMOD_")}
+        for key, name, attrs in self.db.execute(
+            "SELECT id,name,attrs FROM entity WHERE kind='enchantment'"
+        ).fetchall():
+            variants = json.loads(attrs)["variants"]
+            for variant in variants:
+                local = s.get(labels.get(norm(variant["label"]), ""))
+                if local:
+                    self.gem_labels[str(variant["id"])] = local.replace("{1}", "x")
+                else:
+                    self.missing["enchantment_variant"].append(variant["label"])
+            local = self.enchantment_name(key, name, variants)
+            if local:
+                self.rename(key, local)
+            else:
+                self.missing["enchantment"].append(name)
+
+    def enchantment_name(self, key, name, variants):
+        s = self.s
+        if name in self.r.phrases:
+            return self.r.template(name)
+        if len(variants) == 1 and variants[0]["label"] == name:
+            return self.gem_labels.get(str(variants[0]["id"]))
+        material = self.db.execute(
+            "SELECT src FROM edge WHERE dst=? AND rel='adds_property'", (key,)
+        ).fetchone()
+        tag = s.tag("L_IN_", self.english.get(material[0], ""))
+        raw = s.get("L_ID_" + tag[len("L_IN_") :]) if tag else None
+        if not raw:
+            return None
+        return self.r.raw(raw).split("\n\n")[-1].split("：")[0].strip()
+
+    def shops(self):
+        s = self.s
+        gods = self.by_name["god"]
+        places = self.game_sources()
+        for key, name in self.db.execute("SELECT id,name FROM entity WHERE kind='shop'").fetchall():
+            god = re.fullmatch(r"(.+) God Shop", name)
+            guild = re.fullmatch(r"(.+) Guild", name)
+            if god and god[1] in gods:
+                local = s.get("L_CREATURE_SOURCE_GODSHOP").replace("{1}", gods[god[1]])
+            elif guild:
+                local = s.get(s.tag("L_GUILD_", guild[1]) or "")
+            else:
+                local = places.get(norm(name))
+            if local:
+                self.rename(key, local)
+            else:
+                self.missing["shop"].append(name)
+
+    def game_sources(self):
+        """What the game's creature source list calls each place; one row can list several."""
+        s = self.s
+        places = {}
+        for tag in s.en:
+            local = s.get(tag) if tag.startswith("L_CREATURE_SOURCE_") else None
+            if local:
+                names = s.en[tag].split(", ")
+                parts = local.split("、")
+                if len(names) == len(parts):
+                    places.update(
+                        (norm(SOURCE_NAMES.get(n, n)), part) for n, part in zip(names, parts)
+                    )
+        return places
+
+    def acquisition_sources(self):
+        places = self.game_sources()
+        for key, name in self.db.execute(
+            "SELECT id,name FROM entity WHERE kind='acquisition_source'"
+        ).fetchall():
+            local = (
+                places.get(norm(name))
+                or self.r.phrases.get(name)
+                or self.s.cell(name)
+                or self.composed_source(name)
+            )
+            if local:
+                self.rename(key, local)
+            else:
+                self.missing["acquisition_source"].append(name)
+
+    def composed_source(self, name):
+        boss = NETHER_BOSS.fullmatch(name)
+        if boss:
+            tag = NETHER_BOSS_TAGS.get(boss[1]) or self.s.tag(
+                "L_NBOSS_", boss[1].replace(" & ", " and ")
+            )
+            local = self.s.get(tag or "")
+            template = "Nether Boss ({boss}, RD {depth})"
+            return self.r.template(template, boss=local, depth=boss[2]) if local else None
+        for pattern, template in SOURCE_TEMPLATES:
+            found = re.fullmatch(pattern, name)
+            if found:
+                params = {
+                    kind: self.by_name[kind].get(value) or self.s.cell(value)
+                    for kind, value in found.groupdict().items()
+                }
+                return self.r.template(template, **params) if all(params.values()) else None
+        return None
+
+    def titles(self):
+        s = self.s
+        for key, game in self.game_rows("god"):
+            title = game.get("title")
+            local = s.cell(title) or self.title_of_another(title)
+            if local:
+                self.god_titles[key] = local
+            else:
+                self.missing["god_title"].append(title)
+
+    def title_of_another(self, title):
+        """Some gods' titles appear only in the full name the game writes for another god."""
+        s = self.s
+        for tag, english in s.en.items():
+            if tag.endswith("_EXT") and english.endswith(", " + title):
+                name, full = s.get(tag[: -len("_EXT")]), s.get(tag)
+                if name and full and name in full:
+                    return full.replace(name, "").strip()
+        return None
+
+    def requirements(self):
+        """Route and offer facts name places and resources as words of their own."""
+        s = self.s
+        path = ROOT / f"data/localization/{self.locale}/interactions.json"
+        written = json.loads(path.read_text(encoding="utf-8"))
+        found = defaultdict(set)
+        for (body,) in self.db.execute("SELECT requirements FROM route").fetchall():
+            for field, value in json.loads(body).items():
+                found[field].add(value)
+        for (body,) in self.db.execute("SELECT cost FROM shop_offer").fetchall():
+            found["currency"].update(v for k, v in json.loads(body).items() if k == "currency")
+        for english in sorted(found["currency"]):
+            emblem = EMBLEMS.fullmatch(english)
+            tag = s.tag("L_IN_EMBLEM_", emblem[1]) if emblem else s.tag("L_IN_CURRENCY_", english)
+            self.requirement(("currency", english), s.get(tag or ""))
+        for english in sorted(found["interaction"]):
+            tag, part = written.get(english, ("", ""))
+            cell = re.search(part, self.r.text(s.get(tag) or "")) if tag else None
+            self.requirement(("interaction", english), cell[1] if cell else None)
+        for english in sorted(found["source_realm_depth"]):
+            depth = SPECIALIZATION_DEPTH.fullmatch(english)
+            if depth:
+                specialization = self.by_name["specialization"].get(depth[2])
+                template = "{depth} (1 for {specialization})"
+                self.requirement(
+                    ("source_realm_depth", english),
+                    self.r.template(template, depth=depth[1], specialization=specialization)
+                    if specialization
+                    else None,
+                )
+        for english in sorted(found["target"]):
+            self.requirement(("target", english), self.by_name["god"].get(english))
+
+    def requirement(self, place, local):
+        field, english = place
+        if local:
+            self.requirement_text[field][english] = local
+        else:
+            self.missing[field].append(english)
+
+    def translated(self, values):
+        return {k: self.requirement_text.get(k, {}).get(v, v) for k, v in values.items()}
+
+    def apply_requirements(self):
+        for table, column in (("route", "requirements"), ("shop_offer", "cost")):
+            for row_id, body in self.db.execute(f"SELECT id,{column} FROM {table}").fetchall():
+                self.db.execute(
+                    f"UPDATE {table} SET {column}=? WHERE id=?",
+                    (json.dumps(self.translated(json.loads(body)), ensure_ascii=False), row_id),
+                )
+
+    def apply_gem_labels(self):
+        for key, attrs in self.db.execute(
+            "SELECT id,attrs FROM entity WHERE kind='enchantment'"
+        ).fetchall():
+            variants = json.loads(attrs)["variants"]
+            for variant in variants:
+                variant["label"] = self.gem_labels.get(str(variant["id"]), variant["label"])
+            self.attrs(key, variants=variants)
+
+    def apply_god_titles(self):
+        for key, title in self.god_titles.items():
+            body = json.loads(
+                self.db.execute(
+                    "SELECT body FROM game_entity WHERE kind='god' AND entity_id=?", (key,)
+                ).fetchone()[0]
+            )
+            body["title"] = title
+            self.db.execute(
+                "UPDATE game_entity SET body=? WHERE kind='god' AND entity_id=?",
+                (json.dumps(body, ensure_ascii=False), key),
+            )
 
     def configuration(self):
         """Specialization, Perk and Artifact property definitions follow their entities."""
@@ -529,11 +845,22 @@ class Localizer:
         self.artifact_properties()
         self.enchantment_materials()
         self.material_descriptions()
+        self.inscriptions()
+        self.enchantments()
+        self.simple("heart", "L_PITEM_HEART_")
+        self.shops()
+        self.acquisition_sources()
+        self.titles()
+        self.requirements()
+        self.spell_labels()
 
     def finish(self):
         """What follows from the translated names and texts alone."""
         self.races()
         self.english_aliases()
+        self.apply_requirements()
+        self.apply_gem_labels()
+        self.apply_god_titles()
         self.configuration()
         self.mechanic_records()
         self.tokens()
@@ -589,8 +916,12 @@ def generate(locale, csv_dir, source=DEFAULT_DB):
     path.parent.mkdir(parents=True, exist_ok=True)
     result = {
         "entities": entities,
+        "gem_labels": localizer.gem_labels,
+        "god_titles": localizer.god_titles,
         "raw": raw,
         "raw_overrides": localizer.raw_overrides,
+        "requirements": localizer.requirement_text,
+        "spell_aliases": {k: sorted(v) for k, v in localizer.spell_aliases.items()},
         "tokens": tokens,
     }
     path.write_text(
@@ -614,6 +945,10 @@ def build(locale="zh-CN", source=DEFAULT_DB, output=None):
         localizer.set_raw(kind, key, text)
     localizer.raw_overrides = translations["raw_overrides"]
     localizer.token_map = translations["tokens"]
+    localizer.gem_labels = translations["gem_labels"]
+    localizer.god_titles = translations["god_titles"]
+    localizer.requirement_text = translations["requirements"]
+    localizer.spell_aliases = translations["spell_aliases"]
     localizer.finish()
     db.commit()
     db.close()

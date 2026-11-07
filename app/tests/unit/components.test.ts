@@ -1,11 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 import { createMemoryHistory, createRouter } from "vue-router";
-import type { SynergyItem } from "@/data";
+import type { GemProperty, SynergyItem } from "@/data";
 import EffectText from "@/components/EffectText.vue";
+import GemEditor from "@/components/GemEditor.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
 import SynergyStrip from "@/components/SynergyStrip.vue";
+import { routeView } from "@/components/presentation";
 import { candidates, cards, categories } from "@/components/synergy";
+import { useTeamStore } from "@/stores/team";
 
 vi.mock("@/data", async (original) => ({
   ...(await original<typeof import("@/data")>()),
@@ -63,6 +67,67 @@ describe("EffectText", () => {
     });
     expect(text.find("strong.inline-ref-current").text()).toBe("Seduction");
     expect(text.findAll("button.inline-ref").map((b) => b.text())).toEqual(["Weak"]);
+  });
+});
+
+describe("routeView", () => {
+  it("shows a God's own Emblems without its name, whatever language prices them", () => {
+    const route = { method: "purchase", requirements: { cost: 10, currency: "苏拉斯莉徽章" } };
+    expect(routeView(route, { godName: "苏拉斯莉" })?.facts).toEqual(["10 Emblems"]);
+    expect(routeView(route)?.facts).toEqual(["10 苏拉斯莉徽章"]);
+  });
+});
+
+describe("GemEditor", () => {
+  const property = (
+    id: string,
+    name: string,
+    variants: GemProperty["variants"],
+  ): GemProperty => ({
+    id,
+    name,
+    game_property_ids: variants.map((v) => v.id),
+    variants,
+    image: "",
+    routes: [],
+  });
+
+  function editor(properties: GemProperty[]) {
+    setActivePinia(createPinia());
+    useTeamStore().index = {
+      rules: { spell_gems: { properties: 3 }, potency_sources: [19, 21] },
+      catalog: { class_icons: { Chaos: "/chaos.png", Death: "/death.png" } },
+    } as never;
+    return mount(GemEditor, { props: { item: { id: "spell:1" } as never, properties } });
+  }
+
+  it("keeps one potency source, however the properties are named", async () => {
+    const gem = editor([
+      property("enchantment:16", "效能基于攻击", [{ id: 19, label: "x%效能基于攻击" }]),
+      property("enchantment:19", "效能基于防御", [{ id: 21, label: "x%效能基于防御" }]),
+    ]);
+    const [attack, defense] = gem.findAll("button.gem-option");
+    await attack!.trigger("click");
+    await defense!.trigger("click");
+    expect(gem.emitted("apply")!.at(-1)![0]).toEqual(["enchantment:19"]);
+  });
+
+  it("tells variants apart in a language without spaces and finds their class icons", async () => {
+    const gem = editor([
+      property("enchantment:17", "系别转换", [
+        { id: 10, label: "系别转换：混乱", class: "Chaos" },
+        { id: 11, label: "系别转换：死亡", class: "Death" },
+      ]),
+      property("enchantment:7", "行动后施放几率", [
+        { id: 24, label: "x%攻击后施放几率" },
+        { id: 25, label: "x%防御后施放几率" },
+      ]),
+    ]);
+    for (const option of gem.findAll("button.gem-option")) await option.trigger("click");
+    const [classes, casts] = gem.findAll(".gem-variants");
+    expect(classes!.findAll("button").map((b) => b.text())).toEqual(["Chaos", "Death"]);
+    expect(classes!.find("img").attributes("src")).toMatch(/chaos\.png$/);
+    expect(casts!.findAll("button").map((b) => b.text())).toEqual(["攻击", "防御"]);
   });
 });
 

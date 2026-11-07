@@ -32,6 +32,20 @@ class LocalizedJoinTests(unittest.TestCase):
         self.assertEqual(relics["god:0"], ["relic:0"])
         self.assertEqual(sum(1 for found in relics.values() if found), gods)
 
+    def test_a_heart_keeps_what_its_project_unlocks(self):
+        english = Knowledge().cards().project_outputs
+        hearts = [key for key in english if key.startswith("heart:")]
+        self.assertTrue(hearts)
+        for key in hearts:
+            self.assertEqual(self.kb.cards().project_outputs[key], english[key], key)
+
+    def test_a_description_links_a_spell_under_its_own_wording(self):
+        cards = self.kb.cards()
+        text = cards.entities["trait:1451"]["description"]
+        self.assertIn("盾爆术", text)
+        segments = cards.inline.segments("trait:1451", text)
+        self.assertIn(("spell:174", "盾爆术"), [(p.get("id"), p["text"]) for p in segments])
+
     def test_always_active_perks_follow_their_ids_in_another_sort_order(self):
         english = Knowledge().build_catalog()
         reordered = {**english, "perks": list(reversed(english["perks"]))}

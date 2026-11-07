@@ -81,6 +81,12 @@ def image(path):
     return "/assets/siralim/" + path if path in assets() else None
 
 
+def swapped_class(label):
+    """The class a Class Swap property turns its Spell Gem into, as the data names classes."""
+    found = re.fullmatch(r"Class Swap: (\w+)", label)
+    return {"class": found[1]} if found else {}
+
+
 def spelled(kind, name):
     """The community's spelling of a game name."""
     aliases = {
@@ -324,6 +330,7 @@ def load(db):
                     "id": gid,
                     "label": text(props[gid]["shortDescription"]),
                     "image": image(props[gid]["icon"]),
+                    **swapped_class(props[gid]["shortDescription"]),
                 }
                 for gid in r["spellProperties"]
             ],

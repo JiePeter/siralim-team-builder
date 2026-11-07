@@ -44,7 +44,7 @@ class Cards:
             )
         }
         for item in records("projectItems.json"):
-            key = self.by_kind_name.get(("heart", item["name"].casefold()))
+            key = game_ids.get(("heart", str(item["id"])))
             if not key:
                 continue
             for pid in item.get("projects", []):
@@ -126,7 +126,7 @@ class Cards:
         for routes in self.routes.values():
             for route in routes:
                 if route["requirements"].pop("inscription", None):
-                    route["via"] = "Inscription"
+                    route["via"] = _("Inscription")
                 for field in ("entity_id", "certainty", "row_id", "notes"):
                     route.pop(field, None)
                 for field in ("source_text", "item_type"):
@@ -282,7 +282,7 @@ class Cards:
     def via(self, material):
         """How a route names the chain step it goes through."""
         e = self.entities[material]
-        return "Inscription" if e["kind"] == "inscription" else e["name"]
+        return _("Inscription") if e["kind"] == "inscription" else e["name"]
 
     def sections(self, key):
         e = self.entities[key]
