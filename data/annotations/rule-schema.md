@@ -2,6 +2,17 @@
 
 Keep one record per line in these files.
 
+## Spans
+
+`spans` lists which words of `text` state each item: `{"path": "rules.0.actions.1", "text": "gives it to your creatures"}`.
+A path names a trigger, condition, action, `magnitude`, `chance` or `flags.stacks`. Quote `text`
+exactly, by reading the sentence. Leave an item out when the words do not state it separately.
+
+A span with `tag` marks a word by what it names instead: `action` (attack, cast, defend, provoke,
+dodge), `stat`, `race` or `class`. `attack` is a stat or an action depending on the sentence, so
+this is read, never matched. `nth` says which occurrence of those letters is meant, counting from 0
+and including matches inside longer words. A plural race adds its singular as `name`.
+
 ## Who does what
 
 - **`holder`**: the entity the effect is attached to: the trait's creature, the relic's bearer, the

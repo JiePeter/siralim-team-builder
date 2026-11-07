@@ -1,6 +1,8 @@
 """Concrete reference positions and conservative resolution."""
 
 import unittest
+from kb.annotations import check_spans
+from kb.inline_refs import with_roles
 from kb.knowledge import Knowledge
 
 
@@ -93,6 +95,72 @@ class InlineReferenceTests(unittest.TestCase):
         card = self.cards.card(key)
         self.assertTrue(card["description"])
         self.assertFalse(card["attrs"]["obtainable"])
+
+    def test_annotated_spans_mark_roles_without_splitting_references(self):
+        segments = with_roles(
+            [
+                {"text": "After this creature attacks, it deals 75% more damage and afflicts "},
+                {"text": "Burning", "id": "condition:1", "kind": "condition"},
+                {"text": "."},
+            ],
+            [
+                {"path": "rules.0.trigger", "text": "After this creature attacks,"},
+                {"path": "rules.0.actions.0", "text": "it deals 75% more damage"},
+                {"path": "rules.0.actions.0.magnitude", "text": "75% more"},
+                {"path": "rules.0.actions.1", "text": "afflicts Burning"},
+                {"path": "rules.1.trigger", "text": "not in the shown text"},
+            ],
+        )
+        self.assertEqual(
+            [(p["text"], p.get("role")) for p in segments],
+            [
+                ("After this creature attacks,", "trigger"),
+                (" ", None),
+                ("it deals ", "effect"),
+                ("75% more", "amount"),
+                (" damage", "effect"),
+                (" and ", None),
+                ("afflicts ", "effect"),
+                ("Burning", "effect"),
+                (".", None),
+            ],
+        )
+        self.assertEqual(segments[7]["id"], "condition:1")
+
+    def test_nth_tags_the_stat_after_the_action_it_is_spelled_inside(self):
+        segments = with_roles(
+            [{"text": "After this creature attacks, it steals the target's attack."}],
+            [
+                {"tag": "action", "text": "attacks"},
+                {"tag": "stat", "text": "attack", "nth": 1},
+            ],
+        )
+        self.assertEqual(
+            [(p["text"], p["tag"]) for p in segments if p.get("tag")],
+            [("attacks", "action"), ("attack", "stat")],
+        )
+
+    def test_span_that_is_not_a_quote_fails_the_import(self):
+        record = {
+            "id": "trait:x",
+            "text": "After this creature attacks, it heals.",
+            "rules": [{"trigger": {"event": "attack"}, "actions": []}],
+        }
+        check_spans(
+            {
+                **record,
+                "spans": [{"path": "rules.0.trigger", "text": "After this creature attacks,"}],
+            }
+        )
+        with self.assertRaises(ValueError):
+            check_spans(
+                {
+                    **record,
+                    "spans": [{"path": "rules.0.trigger", "text": "When this creature attacks,"}],
+                }
+            )
+        with self.assertRaises(IndexError):
+            check_spans({**record, "spans": [{"path": "rules.1.trigger", "text": "it heals"}]})
 
 
 if __name__ == "__main__":

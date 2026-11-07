@@ -126,6 +126,16 @@ def game_text(db, key, rank):
     return row and row[0]
 
 
+def check_spans(record):
+    """Each span quotes the record's text and names an item that exists in it."""
+    for span in record.get("spans", []):
+        item = record
+        for part in span["path"].split(".") if "path" in span else ():
+            item = item[int(part)] if isinstance(item, list) else item[part]
+        if record["text"].count(span["text"]) <= span.get("nth", 0):
+            raise ValueError(f"Span is not a quote of {record['id']}: {span['text']}")
+
+
 def load(db):
     """Attach each annotation to its component; a game update that changes the text fails here."""
     db.executescript("""CREATE TABLE mechanic_record(id INTEGER PRIMARY KEY,entity_id TEXT,reference_id TEXT,body TEXT,row_id TEXT,rank INTEGER DEFAULT 0);
@@ -140,6 +150,7 @@ def load(db):
             text = game_text(db, key, rank)
             if text is None or normalize(text) != normalize(record["text"]):
                 raise ValueError(f"Annotation does not match the game text: {key} rank {rank}")
+            check_spans(record)
             row = source + ":" + str(i)
             body = json.dumps(record, ensure_ascii=False)
             db.execute(

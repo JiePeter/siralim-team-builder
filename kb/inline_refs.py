@@ -6,12 +6,83 @@ import re
 from collections import defaultdict
 from .current import SNAPSHOT, norm, records
 
+# Later roles paint over earlier ones: an amount sits inside the effect that states it.
+SPAN_ROLES = ("effect", "condition", "trigger", "note", "amount")
+
+
+def locate(text, span):
+    """Where a span's quote sits, counting to its `nth` occurrence; -1 when the text lacks it."""
+    start = -1
+    for _ in range(span.get("nth", 0) + 1):
+        start = text.find(span["text"], start + 1)
+        if start < 0:
+            break
+    return start
+
+
+def span_role(span):
+    if "role" in span or "path" not in span:
+        return span.get("role")
+    parts = span["path"].split(".")
+    if parts[0] == "flags":
+        return "note"
+    if parts[-1] in ("magnitude", "chance"):
+        return "amount"
+    return {"trigger": "trigger", "conditions": "condition", "actions": "effect"}[parts[2]]
+
+
+def with_roles(segments, spans):
+    """Mark what annotated spans state. A span the shown text does not contain marks nothing."""
+    text = "".join(part["text"] for part in segments)
+    roles = [None] * len(text)
+    tags = [None] * len(text)
+    painted = [s for s in spans if span_role(s)]
+    for span in sorted(painted, key=lambda s: SPAN_ROLES.index(span_role(s))):
+        start = locate(text, span)
+        if start >= 0:
+            roles[start : start + len(span["text"])] = [span_role(span)] * len(span["text"])
+    for span in spans:
+        start = locate(text, span) if "tag" in span else -1
+        if start >= 0:
+            tags[start : start + len(span["text"])] = [(span["tag"], span.get("icon"))] * len(
+                span["text"]
+            )
+    result = []
+    offset = 0
+    for part in segments:
+        end = offset + len(part["text"])
+        if part.get("id"):
+            role = roles[offset]
+            result.append({**part, "role": role} if role else part)
+        else:
+            while offset < end:
+                stop = offset
+                while stop < end and (roles[stop], tags[stop]) == (roles[offset], tags[offset]):
+                    stop += 1
+                run = {"text": text[offset:stop]}
+                if roles[offset]:
+                    run["role"] = roles[offset]
+                if tags[offset]:
+                    run["tag"], icon = tags[offset]
+                    if icon:
+                        run["icon"] = icon
+                result.append(run)
+                offset = stop
+        offset = end
+    return result
+
 
 class InlineReferences:
     def __init__(self, db, entities):
         self.entities = entities
         self.raw = {}
         self.hints = defaultdict(set)
+        self.spans = {}
+        self.race_icons = {
+            norm(e["name"]): e["attrs"].get("image")
+            for e in entities.values()
+            if e["kind"] == "race"
+        }
         self.memo = {}
         self.parents = {
             dst: (src, int(entities[dst]["attrs"]["rank"]))
@@ -58,6 +129,7 @@ class InlineReferences:
             record = json.loads(body)
             rank = record.get("meta", {}).get("rank")
             owner = (key, int(rank) if rank else None)
+            self.spans[owner] = [self.tagged(span) for span in record.get("spans", [])]
             for rule in record.get("rules", []):
                 for action in rule.get("actions", []):
                     name = action.get("params", {}).get("spell")
@@ -72,6 +144,20 @@ class InlineReferences:
                                 r"(?<!\w)" + re.escape(candidate) + r"(?!\w)", name, re.I
                             ):
                                 self.hints[owner].update(ids)
+
+    def tagged(self, span):
+        """A race or class tag carries its game icon; a class names itself for its colour."""
+        tag = span.get("tag")
+        if tag == "class":
+            name = norm(span["text"])
+            return {
+                **span,
+                "tag": "class-" + name,
+                "icon": f"/assets/siralim/images/misc/class/{name}.png",
+            }
+        if tag == "race":
+            return {**span, "icon": self.race_icons.get(norm(span.get("name", span["text"])))}
+        return span
 
     def raw_parts(self, raw):
         refs = []
@@ -181,14 +267,19 @@ class InlineReferences:
                 result.append({"text": text[cursor:start]})
             if result and re.search(r"\bcasts?$", result[-1]["text"], re.I):
                 result[-1]["text"] += " "
-            result.append(
-                {"text": text[start:end], "id": target, "kind": self.entities[target]["kind"]}
-            )
+            entity = self.entities[target]
+            ref = {"text": text[start:end], "id": target, "kind": entity["kind"]}
+            if entity["kind"] == "condition":
+                ref.update(tag=entity["attrs"]["type"], icon=entity["attrs"].get("image"))
+            elif entity["kind"] == "spell":
+                ref["tag"] = "spell"
+            result.append(ref)
             cursor = end
         if cursor < len(text):
             result.append({"text": text[cursor:]})
         if not result:
             result = [{"text": text}]
+        result = with_roles(result, self.spans.get(owner, []))
         self.memo[cache_key] = result
         return result
 
