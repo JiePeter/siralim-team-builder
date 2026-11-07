@@ -17,6 +17,7 @@ import {
 import { buildEffects } from "@/domain/effects";
 import {
   avatarCheck,
+  AVATAR_RACE,
   gemNotices,
   NO_CARRIER,
   placementRefusal,
@@ -68,6 +69,7 @@ import { component, loadComponent } from "@/components/components";
 import { spriteOf } from "@/components/presentation";
 import { draggedSelection, dragged, useDragSource, type Selection } from "@/components/dragging";
 import { attempt, toast, toastError } from "@/components/toast";
+import { t } from "@/i18n";
 import { placementLabel, selected } from "@/components/tray";
 
 type Dialog =
@@ -164,20 +166,24 @@ const characterSummary = computed(() => {
   const at = index.value;
   if (!at) return "";
   const capacity = characterEffects(at, team.value.character).anointment_capacity;
-  return `${specializationName.value || "No Specialization"} · ${team.value.character.anointments.length}/${capacity}`;
+  return `${specializationName.value || t("build.noSpecialization")} · ${team.value.character.anointments.length}/${capacity}`;
 });
 const avatars = computed(() =>
   index.value
-    ? avatarCheck(index.value, team.value, (id) => component(id)?.attrs?.race === "Avatar")
+    ? avatarCheck(index.value, team.value, (id) => component(id)?.attrs?.race_id === AVATAR_RACE)
     : null,
 );
 const unstacked = computed(() => (index.value ? unstackedTraits(index.value, team.value) : []));
-const traitName = (trait: string) => component(trait)?.name ?? "A Trait";
+const traitName = (trait: string) => component(trait)?.name ?? t("build.aTrait");
 const NAMES_LISTED = 3;
 const nameList = (ids: string[]) => {
   const names = ids.map(traitName);
-  if (names.length <= NAMES_LISTED) return names.join(", ");
-  return `${names.slice(0, NAMES_LISTED).join(", ")} and ${names.length - NAMES_LISTED} more`;
+  const separator = t("build.nameSeparator");
+  if (names.length <= NAMES_LISTED) return names.join(separator);
+  return t("build.nameList", {
+    names: names.slice(0, NAMES_LISTED).join(separator),
+    count: names.length - NAMES_LISTED,
+  });
 };
 const replaced = computed(() =>
   index.value ? replacementNotices(index.value, toRaw(team.value)) : [],
@@ -188,16 +194,19 @@ const notices = computed<{ text: string; slots: number[] }[]>(() => [
     (text) => ({ text, slots: [] }),
   ),
   ...unstacked.value.map(({ trait, slots }) => ({
-    text: `${traitName(trait)} does not stack: only Slot ${slotIndex(slots[0]!)} counts`,
+    text: t("build.unstacked", { trait: traitName(trait), n: slotIndex(slots[0]!) }),
     slots: slots.slice(1),
   })),
   ...replaced.value.map(({ owner, listeners, certain }) => ({
-    text: `${traitName(owner)} ${certain ? "stops" : "can stop"} ${nameList(listeners)}`,
+    text: t(certain ? "build.replacedCertain" : "build.replacedPossible", {
+      owner: traitName(owner),
+      listeners: nameList(listeners),
+    }),
     slots: [],
   })),
   ...team.value.slots.flatMap((s, i) =>
     !s.base && (s.fusion || s.artifact || s.relic || s.spells?.length)
-      ? [{ text: `Slot ${slotIndex(i)}: no Primary`, slots: [i] }]
+      ? [{ text: t("build.noPrimary", { n: slotIndex(i) }), slots: [i] }]
       : [],
   ),
   ...(avatars.value?.notice ? [{ text: avatars.value.notice, slots: avatars.value.slots }] : []),
@@ -209,7 +218,10 @@ const notices = computed<{ text: string; slots: number[] }[]>(() => [
         index.value.rules.spell_gems,
       )
     : []
-  ).map(({ slot, message }) => ({ text: `Slot ${slotIndex(slot)}: ${message}`, slots: [slot] })),
+  ).map(({ slot, message }) => ({
+    text: t("build.slotNotice", { n: slotIndex(slot), message }),
+    slots: [slot],
+  })),
 ]);
 const noticesOpen = ref(false);
 const slotNotices = (i: number) => notices.value.filter((n) => n.slots.includes(i));
@@ -220,7 +232,7 @@ const repeats = computed(() =>
   index.value ? team.value.slots.map((s) => repeatedTraits(index.value!, s)) : [],
 );
 const repeatNotice = (trait: string) =>
-  `${component(trait)?.name ?? "This trait"} is already on this creature, so this copy has no effect`;
+  t("build.repeatNotice", { trait: component(trait)?.name ?? t("build.thisTrait") });
 function fieldWarning(at: number, field: SlotField) {
   return field === "base" && overAvatar(at) ? avatars.value!.notice : repeatWarning(at, field);
 }
@@ -232,7 +244,7 @@ function repeatWarning(at: number, field: SlotField) {
     slotTraits(index.value, team.value.slots[at]!).find((t) => t.field === field)?.trait;
   const shared = unstacked.value.find((u) => u.trait === trait && u.slots[0] !== at);
   return shared
-    ? `${traitName(shared.trait)} does not stack: only Slot ${slotIndex(shared.slots[0]!)} counts`
+    ? t("build.unstacked", { trait: traitName(shared.trait), n: slotIndex(shared.slots[0]!) })
     : null;
 }
 
@@ -301,7 +313,7 @@ function accepts(target: Position): boolean | null {
   return allowed(target) && (fits(target.field) || !!swapping(target));
 }
 function fieldHint(target: Position): string | null {
-  return swapping(target) && allowed(target) ? "Swap" : null;
+  return swapping(target) && allowed(target) ? t("build.swap") : null;
 }
 /** The field of a creature's slot that the item being placed goes to when dropped on its tile. */
 function tileField(slot: number): SlotField | null {
@@ -317,10 +329,10 @@ function tileField(slot: number): SlotField | null {
 /** What dropping on a tile does, shown over the tile while a drag is held over it. */
 function tileHint(i: number): string | null {
   if (!acceptsMember(i)) return null;
-  if (movingMember.value !== null) return "Swap";
+  if (movingMember.value !== null) return t("build.swap");
   const field = tileField(i);
-  if (field && swapping({ slot: i, field })) return "Swap";
-  return field === "fusion" ? "Fuse" : field && fieldLabels[field];
+  if (field && swapping({ slot: i, field })) return t("build.swap");
+  return field === "fusion" ? t("build.fuse") : field && fieldLabels[field];
 }
 /**
  * A tile takes another team slot to swap with, a creature as its Primary when it has none, and
@@ -356,7 +368,7 @@ const cells = computed(() =>
       (s.spells?.length ?? 0) +
       (s.nether?.length ?? 0);
     const first = s.fusion ?? s.artifact ?? s.relic ?? s.spells?.[0];
-    const label = base ? base.name : others ? `${others} ${others === 1 ? "item" : "items"}` : "";
+    const label = base ? base.name : others ? t("build.items", others) : "";
     return {
       index: i,
       label,
@@ -376,22 +388,27 @@ const dialogTitle = computed(() => {
     case "pool":
       return placementLabel(d.target);
     case "carrier":
-      return d.kind === "creature" ? "Select Creature" : "Select Material";
+      return d.kind === "creature" ? t("build.selectCreature") : t("build.selectMaterial");
     case "character":
       return placementLabel({ character: d.field, position: d.position });
     case "gem":
-      return "Spell Gem";
+      return t("build.spellGem");
     case "copy":
-      return "Copy to";
+      return t("build.copyTo");
     case "artifact":
-      return "Artifact";
+      return t("build.artifact");
     case "relic":
-      return "Relic";
+      return t("build.relic");
     case "perks":
-      return "Specialization";
+      return t("build.specialization");
   }
   return "";
 });
+const specializationKey = computed(
+  () =>
+    index.value?.catalog.specializations.find((s) => s.id === team.value.character.specialization)
+      ?.key ?? "",
+);
 const specializationName = computed(
   () =>
     index.value?.catalog.specializations.find((s) => s.id === team.value.character.specialization)
@@ -414,8 +431,7 @@ async function place(target: Position, selection: Selection | null = selected.va
     if (isListField(target.field) || !equipmentAt(target)) dialog.value = { type: "pool", target };
     return;
   }
-  if ("character" in selection || "member" in selection)
-    throw new Error("Only gear goes in a slot field");
+  if ("character" in selection || "member" in selection) throw new Error(t("build.onlyGear"));
   const moving =
     "uid" in selection
       ? team.value.inventory.find((i) => i.uid === selection.uid)?.id
@@ -434,7 +450,7 @@ async function place(target: Position, selection: Selection | null = selected.va
       return;
     }
     const item = equipmentAt(selection);
-    if (!item) throw new Error("Component has moved");
+    if (!item) throw new Error(t("build.componentMoved"));
     const data = await loadComponent(itemId(item)!);
     if (!fieldKinds(index.value!.rules.slot_kinds)[target.field].includes(data.kind)) {
       // A creature moving into an Artifact, or a material into a creature field, goes as its trait.
@@ -447,7 +463,7 @@ async function place(target: Position, selection: Selection | null = selected.va
     return;
   }
   const item = team.value.inventory.find((i) => i.uid === selection.uid);
-  if (!item) throw new Error("Component has moved");
+  if (!item) throw new Error(t("build.componentMoved"));
   const data = await loadComponent(item.id);
   if (data.kind !== "trait" || target.field === "nether") return install(item.uid, target, data.id);
   const kind =
@@ -476,7 +492,7 @@ async function placeCharacter(
     return;
   }
   if (!("uid" in selection)) {
-    if (!("character" in selection)) throw new Error("Select a Specialization or Anointment");
+    if (!("character" in selection)) throw new Error(t("build.selectCharacterPart"));
     selected.value = null;
     return;
   }
@@ -527,7 +543,7 @@ async function placeOnTile(target: number) {
   const selection = dragged.value ? dropped() : selected.value;
   if (!selection) return;
   if (!("member" in selection)) {
-    if (!field) throw new Error("This does not fit the creature in this slot");
+    if (!field) throw new Error(t("build.doesNotFit"));
     openSlot.value = target;
     // A Primary moving to an empty slot takes its whole slot with it.
     if ("slot" in selection && selection.field === "base" && field === "base") {
@@ -637,14 +653,16 @@ function copyTargets(at: Position) {
     const occupant = !isListField(at.field) && itemId(target[at.field]);
     const gems = at.field === "spells" ? (target.spells?.length ?? 0) : 0;
     const held = occupant
-      ? `Replaces ${occupant === BLANK_ARTIFACT ? "Artifact" : component(occupant)?.name}`
+      ? t("build.replaces", {
+          name: occupant === BLANK_ARTIFACT ? t("build.artifact") : component(occupant)?.name,
+        })
       : gems
-        ? `${gems} Spell ${gems === 1 ? "Gem" : "Gems"}`
+        ? t("build.spellGemCount", gems)
         : "";
     return {
       slot: i,
       data: component(itemId(target.base)!),
-      line: [`Slot ${slotIndex(i)}`, held].filter(Boolean).join(" · "),
+      line: [t("build.slot", { n: slotIndex(i) }), held].filter(Boolean).join(" · "),
       refused:
         id && index.value
           ? placementRefusal(index.value, team.value, { slot: i, field: at.field }, id)
@@ -658,7 +676,10 @@ async function copyGear(at: Position, slot: number, refused: string | null) {
   const undo = await attempt(() => store.copyTo(at, { slot, field: at.field }));
   if (!undo) return;
   dialog.value = null;
-  toast(`Copied to Slot ${slotIndex(slot)}`, { label: "Undo", run: () => attempt(undo) });
+  toast(t("build.copiedTo", { n: slotIndex(slot) }), {
+    label: t("build.undo"),
+    run: () => attempt(undo),
+  });
 }
 
 function applyGem(properties: string[], variants: Record<string, number>) {
@@ -683,22 +704,20 @@ async function share() {
     return;
   }
   await navigator.clipboard.writeText(url);
-  toast("Link copied");
+  toast(t("build.linkCopied"));
 }
 
 function clearSlot() {
   const i = openSlot.value;
-  if (confirm(`Send everything in Slot ${slotIndex(i)} to the tray?`))
-    attempt(() => store.clearSlot(i));
+  if (confirm(t("build.confirmClearSlot", { n: slotIndex(i) }))) attempt(() => store.clearSlot(i));
 }
 
 function clearCharacter() {
-  if (confirm("Send the Specialization and Anointments to the tray?"))
-    attempt(() => store.clearCharacter());
+  if (confirm(t("build.confirmClearCharacter"))) attempt(() => store.clearCharacter());
 }
 
 function removeTeam() {
-  if (confirm(`Delete “${team.value.name}” and its tray?`)) store.deleteTeam();
+  if (confirm(t("build.confirmDeleteTeam", { name: team.value.name }))) store.deleteTeam();
 }
 
 function exportTeam() {
@@ -721,9 +740,9 @@ onImportChosen(async (files) => {
   const file = files?.[0];
   if (!file) return;
   await attempt(async () => {
-    if (file.size > 100000) throw new Error("File exceeds 100KB");
+    if (file.size > 100000) throw new Error(t("build.fileTooLarge"));
     const imported: unknown = JSON.parse(await file.text());
-    if (confirm(`Replace everything in “${team.value.name}” with “${file.name}”?`))
+    if (confirm(t("build.confirmImport", { name: team.value.name, file: file.name })))
       await store.replace(imported);
   });
   resetImport();
@@ -756,11 +775,11 @@ const gemPosition = (position: number): Position => ({
 </script>
 
 <template>
-  <section class="team" aria-label="Build">
+  <section class="team" :aria-label="$t('build.title')">
     <div class="team-head">
       <input
         class="team-title"
-        aria-label="Team name"
+        :aria-label="$t('build.teamName')"
         maxlength="200"
         :value="team.name"
         @change="attempt(() => store.rename(($event.target as HTMLInputElement).value))"
@@ -768,15 +787,20 @@ const gemPosition = (position: number): Position => ({
       <button
         type="button"
         class="icon-button teams-key"
-        aria-label="Teams"
-        title="Teams"
+        :aria-label="$t('build.teams')"
+        :title="$t('build.teams')"
         aria-haspopup="menu"
         :aria-expanded="teamsOpen"
         :popovertarget="teamsMenu"
       >
         <i class="icon icon-down"></i>
       </button>
-      <FloatingMenu :id="teamsMenu" v-slot="{ close }" v-model:open="teamsOpen" label="Teams">
+      <FloatingMenu
+        :id="teamsMenu"
+        v-slot="{ close }"
+        v-model:open="teamsOpen"
+        :label="$t('build.teams')"
+      >
         <button
           v-for="(name, i) in store.teams"
           :key="i"
@@ -800,7 +824,7 @@ const gemPosition = (position: number): Position => ({
             store.createTeam();
           "
         >
-          <i class="icon icon-plus"></i>New team
+          <i class="icon icon-plus"></i>{{ $t("build.newTeam") }}
         </button>
         <button
           type="button"
@@ -810,10 +834,10 @@ const gemPosition = (position: number): Position => ({
             removeTeam();
           "
         >
-          <i class="icon icon-trash"></i>Delete team
+          <i class="icon icon-trash"></i>{{ $t("build.deleteTeam") }}
         </button>
       </FloatingMenu>
-      <div v-if="!phone" class="view-tabs" role="tablist" aria-label="View">
+      <div v-if="!phone" class="view-tabs" role="tablist" :aria-label="$t('build.view')">
         <button
           type="button"
           class="view-tab"
@@ -821,7 +845,7 @@ const gemPosition = (position: number): Position => ({
           :aria-selected="!slotOpen"
           @click="closeSlot"
         >
-          Traits
+          {{ $t("build.traits") }}
         </button>
         <button
           type="button"
@@ -830,7 +854,7 @@ const gemPosition = (position: number): Position => ({
           :aria-selected="slotOpen"
           @click="slotOpen = true"
         >
-          Slots
+          {{ $t("build.slots") }}
         </button>
       </div>
       <button
@@ -840,7 +864,11 @@ const gemPosition = (position: number): Position => ({
         :aria-expanded="noticesOpen"
         @click="noticesOpen = !noticesOpen"
       >
-        {{ notices.length === 1 ? "1 notice" : `${notices.length} notices` }}
+        {{
+          notices.length === 1
+            ? $t("build.noticeOne")
+            : $t("build.noticeMany", { count: notices.length })
+        }}
         <i :class="['icon', noticesOpen ? 'icon-up' : 'icon-down']"></i>
       </button>
       <DropZone
@@ -851,17 +879,17 @@ const gemPosition = (position: number): Position => ({
         <button
           type="button"
           class="character-key"
-          title="Character and Notes"
+          :title="$t('build.characterAndNotes')"
           @click="characterModal = true"
         >
-          <i class="icon icon-character"></i>Character
+          <i class="icon icon-character"></i>{{ $t("build.character") }}
         </button>
       </DropZone>
       <button
         type="button"
         class="icon-button share-key"
-        aria-label="Share link"
-        title="Share link"
+        :aria-label="$t('build.shareLink')"
+        :title="$t('build.shareLink')"
         :aria-haspopup="trayCount ? 'dialog' : undefined"
         :aria-expanded="trayCount ? sharing : undefined"
         :popovertarget="trayCount ? shareMenu : undefined"
@@ -875,9 +903,9 @@ const gemPosition = (position: number): Position => ({
         v-slot="{ close }"
         v-model:open="sharing"
         role="dialog"
-        label="Share link"
+        :label="$t('build.shareLink')"
       >
-        <label><input v-model="shareTray" type="checkbox" />Include tray</label>
+        <label><input v-model="shareTray" type="checkbox" />{{ $t("build.includeTray") }}</label>
         <button
           type="button"
           class="primary"
@@ -886,21 +914,26 @@ const gemPosition = (position: number): Position => ({
             attempt(share);
           "
         >
-          Share
+          {{ $t("build.share") }}
         </button>
       </FloatingMenu>
       <button
         type="button"
         class="icon-button more-key"
-        aria-label="More"
-        title="More"
+        :aria-label="$t('build.more')"
+        :title="$t('build.more')"
         aria-haspopup="menu"
         :aria-expanded="fileOpen"
         :popovertarget="fileMenu"
       >
         <i class="icon icon-more"></i>
       </button>
-      <FloatingMenu :id="fileMenu" v-slot="{ close }" v-model:open="fileOpen" label="More">
+      <FloatingMenu
+        :id="fileMenu"
+        v-slot="{ close }"
+        v-model:open="fileOpen"
+        :label="$t('build.more')"
+      >
         <button
           type="button"
           role="menuitemcheckbox"
@@ -910,7 +943,8 @@ const gemPosition = (position: number): Position => ({
             showNether = !showNether;
           "
         >
-          <span>Nether Stones</span><i v-if="showNether" class="icon icon-check menu-mark"></i>
+          <span>{{ $t("build.netherStones") }}</span
+          ><i v-if="showNether" class="icon icon-check menu-mark"></i>
         </button>
         <hr />
         <button
@@ -921,7 +955,7 @@ const gemPosition = (position: number): Position => ({
             exportTeam();
           "
         >
-          Export team
+          {{ $t("build.exportTeam") }}
         </button>
         <button
           type="button"
@@ -931,7 +965,7 @@ const gemPosition = (position: number): Position => ({
             chooseImport();
           "
         >
-          Import team
+          {{ $t("build.importTeam") }}
         </button>
       </FloatingMenu>
     </div>
@@ -942,7 +976,7 @@ const gemPosition = (position: number): Position => ({
     </div>
     <div :class="['slots', { 'traits-shown': showTraits, 'nether-shown': showNether }]">
       <div class="creature-slots">
-        <div class="slot-sheet" role="group" aria-label="Team slots">
+        <div class="slot-sheet" role="group" :aria-label="$t('build.teamSlots')">
           <div v-for="cell in cells" :key="cell.index" class="slot-column">
             <DropZone
               class="slot-drop"
@@ -967,7 +1001,9 @@ const gemPosition = (position: number): Position => ({
                 :aria-pressed="phone ? undefined : slotOpen && cell.index === openSlot"
                 :aria-label="
                   [
-                    `Slot ${slotIndex(cell.index)}${cell.label ? ': ' + cell.label : ''}`,
+                    cell.label
+                      ? $t('build.slotNamed', { n: slotIndex(cell.index), label: cell.label })
+                      : $t('build.slot', { n: slotIndex(cell.index) }),
                     ...cell.notices,
                   ].join('. ')
                 "
@@ -1044,7 +1080,7 @@ const gemPosition = (position: number): Position => ({
             class="character-entry"
             @click="router.push({ query: { page: 'character' } })"
           >
-            <strong>Character</strong>
+            <strong>{{ $t("build.character") }}</strong>
             <span>{{ characterSummary }}</span>
             <i class="icon icon-right"></i>
           </button>
@@ -1053,19 +1089,19 @@ const gemPosition = (position: number): Position => ({
           v-if="showSlot"
           :ref="(el) => (slotPage = phone ? (el as HTMLElement | null) : null)"
           :class="['slot', 'open-slot', { 'phone-page': phone }]"
-          :aria-label="`Slot ${openSlot + 1}`"
+          :aria-label="$t('build.slot', { n: openSlot + 1 })"
         >
           <h2>
             <button
               v-if="phone"
               type="button"
               class="page-back"
-              aria-label="Back to team"
+              :aria-label="$t('build.backToTeam')"
               @click="closeSlot"
             >
               <i class="icon icon-left"></i>
             </button>
-            <span class="slot-name">Slot {{ slotIndex(openSlot) }}</span>
+            <span class="slot-name">{{ $t("build.slot", { n: slotIndex(openSlot) }) }}</span>
             <span v-if="phone" class="slot-pips" aria-hidden="true">
               <i
                 v-for="cell in cells"
@@ -1077,8 +1113,8 @@ const gemPosition = (position: number): Position => ({
               v-if="!cells[openSlot]!.vacant"
               type="button"
               class="clear"
-              aria-label="Clear slot"
-              title="Clear slot"
+              :aria-label="$t('build.clearSlot')"
+              :title="$t('build.clearSlot')"
               @click="clearSlot"
             >
               <i class="icon icon-trash"></i>
@@ -1090,7 +1126,7 @@ const gemPosition = (position: number): Position => ({
             </ul>
           </div>
           <span v-if="swipeOffset" :class="['swipe-peek', swipeOffset < 0 ? 'right' : 'left']">
-            Slot {{ slotIndex(slotAfter(swipeOffset < 0 ? 1 : -1)) }}
+            {{ $t("build.slot", { n: slotIndex(slotAfter(swipeOffset < 0 ? 1 : -1)) }) }}
           </span>
           <div
             :key="openSlot"
@@ -1104,7 +1140,7 @@ const gemPosition = (position: number): Position => ({
                 :accepts="accepts({ slot: openSlot, field })"
                 @drop="attempt(() => place({ slot: openSlot, field }, dropped()))"
               >
-                <small>Nether</small>
+                <small>{{ $t("build.nether") }}</small>
                 <div
                   v-for="(trait, position) in slot.nether ?? []"
                   :key="asItem(trait).uid || position"
@@ -1121,8 +1157,8 @@ const gemPosition = (position: number): Position => ({
                       <button
                         type="button"
                         class="icon-button"
-                        aria-label="Back to tray: Nether"
-                        title="Back to tray"
+                        :aria-label="$t('build.backToTrayNamed', { item: $t('build.nether') })"
+                        :title="$t('build.backToTray')"
                         @click="attempt(() => store.unequip(netherAt(openSlot, position)))"
                       >
                         <i class="icon icon-undo"></i>
@@ -1136,7 +1172,7 @@ const gemPosition = (position: number): Position => ({
                   class="drop-target"
                   @click="attempt(() => place({ slot: openSlot, field }))"
                 >
-                  <i class="icon icon-plus"></i>Nether
+                  <i class="icon icon-plus"></i>{{ $t("build.nether") }}
                 </button>
               </DropZone>
               <EquipmentRow
@@ -1160,7 +1196,7 @@ const gemPosition = (position: number): Position => ({
               :accepts="accepts({ slot: openSlot, field: 'spells' })"
               @drop="attempt(() => place({ slot: openSlot, field: 'spells' }, dropped()))"
             >
-              <small>Spell Gems</small>
+              <small>{{ $t("build.spellGems") }}</small>
               <div
                 v-for="(gem, position) in slot.spells ?? []"
                 :key="asItem(gem).uid || position"
@@ -1182,8 +1218,8 @@ const gemPosition = (position: number): Position => ({
                       v-if="copySlots.length"
                       type="button"
                       class="icon-button"
-                      aria-label="Copy: Spell Gem"
-                      title="Copy"
+                      :aria-label="$t('build.copyNamed', { item: $t('build.spellGem') })"
+                      :title="$t('build.copy')"
                       @click="dialog = { type: 'copy', at: gemPosition(position) }"
                     >
                       <i class="icon icon-copy"></i>
@@ -1191,8 +1227,8 @@ const gemPosition = (position: number): Position => ({
                     <button
                       type="button"
                       class="icon-button"
-                      aria-label="Back to tray: Spell Gem"
-                      title="Back to tray"
+                      :aria-label="$t('build.backToTrayNamed', { item: $t('build.spellGem') })"
+                      :title="$t('build.backToTray')"
                       @click="attempt(() => store.unequip(gemPosition(position)))"
                     >
                       <i class="icon icon-undo"></i>
@@ -1205,7 +1241,7 @@ const gemPosition = (position: number): Position => ({
                 class="drop-target"
                 @click="attempt(() => place({ slot: openSlot, field: 'spells' }))"
               >
-                <i class="icon icon-plus"></i>Spell Gem
+                <i class="icon icon-plus"></i>{{ $t("build.spellGem") }}
               </button>
             </DropZone>
           </div>
@@ -1217,7 +1253,7 @@ const gemPosition = (position: number): Position => ({
       v-if="index"
       v-model:open="characterOpen"
       class="character-dialog"
-      title="Character"
+      :title="$t('build.character')"
       routed
     >
       <CharacterPanel
@@ -1231,11 +1267,11 @@ const gemPosition = (position: number): Position => ({
         @inspect="(id) => (preview = { uid: '', id })"
         @clear="clearCharacter"
       />
-      <section class="notes-panel" aria-label="Notes">
-        <h3>Notes</h3>
+      <section class="notes-panel" :aria-label="$t('build.notes')">
+        <h3>{{ $t("build.notes") }}</h3>
         <textarea
           ref="notesField"
-          aria-label="Team notes"
+          :aria-label="$t('build.teamNotes')"
           maxlength="10000"
           rows="6"
           :value="team.notes"
@@ -1268,7 +1304,7 @@ const gemPosition = (position: number): Position => ({
             class="choice choice-action"
             @click="configure(dialog.target)"
           >
-            <i class="icon icon-plus"></i>Configure an Artifact
+            <i class="icon icon-plus"></i>{{ $t("build.configureArtifact") }}
           </button>
         </FieldPicker>
       </div>
@@ -1280,7 +1316,9 @@ const gemPosition = (position: number): Position => ({
       <div v-else-if="dialog?.type === 'character' && index" class="choices">
         <FieldPicker
           :field="dialog.field"
-          :label="dialog.field === 'characterBase' ? 'Specialization' : 'Anointment'"
+          :label="
+            dialog.field === 'characterBase' ? $t('build.specialization') : $t('build.anointment')
+          "
           :team="team"
           :catalog="index.catalog"
           :kind-of="kindOf"
@@ -1328,13 +1366,14 @@ const gemPosition = (position: number): Position => ({
         v-else-if="dialog?.type === 'perks' && index"
         :character="team.character"
         :specialization="specializationName"
+        :royal="specializationKey === 'Royal'"
         :perks="index.perks"
         @apply="(character) => attempt(() => store.setCharacter(character))"
       />
     </ModalDialog>
     <PreviewDialog v-model:item="preview">
       <DialogFooter v-if="swapFrom">
-        <button type="button" class="primary" @click="startSwap">Swap</button>
+        <button type="button" class="primary" @click="startSwap">{{ $t("build.swap") }}</button>
       </DialogFooter>
     </PreviewDialog>
   </section>

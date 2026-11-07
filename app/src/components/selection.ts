@@ -1,6 +1,7 @@
 import { shallowRef } from "vue";
 import { catalog, type Catalog } from "@/data";
 import { memoRequest } from "@/data/memo";
+import { t } from "@/i18n";
 
 const catalogState = shallowRef<Catalog | null>(null);
 const request = memoRequest(() => catalog().then((value) => (catalogState.value = value)));
@@ -32,11 +33,11 @@ export function selectionId(data: Candidate, perks: Catalog | null): string {
 }
 
 export function selectionLabel(data: Candidate, perks: Catalog | null): string {
-  if (data.kind !== "perk") return "Add";
+  if (data.kind !== "perk") return t("tray.add.add");
   const perk = perks?.perks.find((p) => p.id === data.id);
   return perk?.anointment
-    ? "Add"
+    ? t("tray.add.add")
     : perk?.specialization
-      ? `${perk.specialization} Specialization`
-      : "Specialization";
+      ? t("tray.add.specializationOf", { name: perk.specialization })
+      : t("tray.add.specialization");
 }

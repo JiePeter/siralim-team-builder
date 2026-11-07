@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
 import { catalog, teamRules } from "@/data";
 import { toastError } from "@/components/toast";
+import { t } from "@/i18n";
 import {
   cloneInstance,
   copyEquipment,
@@ -55,10 +56,10 @@ export const BLANK_ARTIFACT = "artifact:0";
 
 export const useTeamStore = defineStore("team", () => {
   const team = useStorage<Team>(TEAM_KEY, newTeam(), undefined, {
-    onError: () => toastError("This browser cannot keep the team; export it to keep a copy"),
+    onError: () => toastError(t("app.team.storageFailed")),
   });
   const library = useStorage<Library>(TEAMS_KEY, { active: 0, teams: [] }, undefined, {
-    onError: () => toastError("This browser cannot keep the team; export it to keep a copy"),
+    onError: () => toastError(t("app.team.storageFailed")),
   });
   if (!library.value.teams[library.value.active]) {
     library.value = { active: 0, teams: [plain(team.value)] };
@@ -96,7 +97,7 @@ export const useTeamStore = defineStore("team", () => {
       previous,
     );
     if (excessTrait(checked, previous, next))
-      throw new TeamError(`The team and tray hold at most ${MAX_TRAIT_COPIES} of one Trait`);
+      throw new TeamError(t("app.team.traitLimit", { max: MAX_TRAIT_COPIES }));
     if (newRepeat(checked, previous, next)) throw new TeamError(REPEATED_TRAIT);
     team.value = next;
     return team.value;
@@ -147,8 +148,8 @@ export const useTeamStore = defineStore("team", () => {
   function createTeam() {
     const names = new Set(teams.value);
     let n = teams.value.length + 1;
-    while (names.has(`Team ${n}`)) n++;
-    addTeam({ ...newTeam(), name: `Team ${n}` });
+    while (names.has(t("app.team.name", { n }))) n++;
+    addTeam({ ...newTeam(), name: t("app.team.name", { n }) });
   }
 
   /** Delete the open team and its tray. */
@@ -174,8 +175,8 @@ export const useTeamStore = defineStore("team", () => {
     } catch (error) {
       toastError(
         error instanceof TeamError
-          ? `Shared team not opened: ${error.message}`
-          : "Shared team link is damaged",
+          ? t("app.team.sharedRejected", { reason: error.message })
+          : t("app.team.sharedDamaged"),
       );
       return false;
     }

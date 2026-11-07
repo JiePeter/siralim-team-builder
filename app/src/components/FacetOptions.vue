@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { t } from "@/i18n";
 import type { Option } from "@/domain/discovery";
 import { optionGroups } from "./filters";
 
-const props = withDefaults(
-  defineProps<{
-    options: Option[];
-    selected: string;
-    namespace: string;
-    all?: string;
-  }>(),
-  { all: "All" },
-);
+const props = defineProps<{
+  options: Option[];
+  selected: string;
+  namespace: string;
+  all?: string;
+}>();
 const groups = computed(() => optionGroups(props.options, props.selected, props.namespace));
 </script>
 
 <template>
-  <option value="">{{ all }}</option>
+  <option value="">{{ all ?? t("search.all") }}</option>
   <template v-for="(entry, index) in groups" :key="index">
     <optgroup v-if="entry.group" :label="entry.group">
       <option

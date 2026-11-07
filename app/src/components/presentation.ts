@@ -1,36 +1,41 @@
 import type { RouteLocationRaw } from "vue-router";
 import type { Attrs, Classification, Route } from "@/data";
+import { t } from "@/i18n";
 
-export const kindNames: Record<string, string> = {
-  condition: "Condition",
-  perk: "Perk",
-  specialization: "Specialization",
-  artifact: "Artifact",
-  artifact_property: "Artifact Properties",
-  creature: "Creature",
-  trait: "Trait",
-  material: "Material",
-  spell: "Spell Gem",
-  realm: "Realm",
-  god: "God",
-  shop: "Shop",
-  race: "Race",
-  class: "Class",
-  enchantment: "Spell Gem property",
-  relic: "Relic",
-  relic_effect: "Relic Rank effect",
-  card_set: "Card bonuses",
-  acquisition_source: "Special source",
-};
+const KINDS = [
+  "condition",
+  "perk",
+  "specialization",
+  "artifact",
+  "artifact_property",
+  "creature",
+  "trait",
+  "material",
+  "spell",
+  "realm",
+  "god",
+  "shop",
+  "race",
+  "class",
+  "enchantment",
+  "relic",
+  "relic_effect",
+  "card_set",
+  "acquisition_source",
+];
+
+export const kindNames: Record<string, string> = Object.fromEntries(
+  KINDS.map((kind) => [kind, t(`tray.kinds.${kind}`)]),
+);
 
 /** Team component kinds listed together, in display order. */
 export const kindGroups: { value: string; label: string; kinds: string[] }[] = [
-  { value: "creature", label: "Creatures", kinds: ["creature"] },
-  { value: "trait", label: "Traits", kinds: ["trait"] },
-  { value: "material", label: "Materials", kinds: ["material", "artifact"] },
-  { value: "spell", label: "Spell Gems", kinds: ["spell"] },
-  { value: "relic", label: "Relics", kinds: ["relic"] },
-  { value: "character", label: "Character", kinds: ["specialization", "perk"] },
+  { value: "creature", label: t("tray.groups.creature"), kinds: ["creature"] },
+  { value: "trait", label: t("tray.groups.trait"), kinds: ["trait"] },
+  { value: "material", label: t("tray.groups.material"), kinds: ["material", "artifact"] },
+  { value: "spell", label: t("tray.groups.spell"), kinds: ["spell"] },
+  { value: "relic", label: t("tray.groups.relic"), kinds: ["relic"] },
+  { value: "character", label: t("tray.groups.character"), kinds: ["specialization", "perk"] },
 ];
 
 /** The group a kind is listed under; empty for kinds outside every group. */
@@ -129,15 +134,18 @@ export function routeView(
     value !== undefined && value !== null && String(value).trim() !== "";
   // Only the current God's own Emblems inherit their owner from page context.
   const currency =
-    godName && req.currency === `${godName} Emblems` ? "Emblems" : String(req.currency ?? "");
+    godName && req.currency === `${godName} Emblems`
+      ? t("tray.route.emblems")
+      : String(req.currency ?? "");
   if (present(req.cost)) facts.push(`${req.cost} ${currency}`.trim());
-  if (present(req.favor_rank)) facts.push(`Favor ${req.favor_rank}`);
-  if (present(req.rank)) facts.push(`Rank ${req.rank}`);
-  if (req.project_required) facts.push("Project required");
+  if (present(req.favor_rank)) facts.push(t("tray.route.favor", { rank: req.favor_rank }));
+  if (present(req.rank)) facts.push(t("tray.route.rank", { rank: req.rank }));
+  if (req.project_required) facts.push(t("tray.route.projectRequired"));
   if (req.target) facts.push(String(req.target));
   if (method === "realm_encounter" || method === "realm_interaction") {
-    if (present(req.source_realm_depth)) facts.push(`RD ${req.source_realm_depth}`);
+    if (present(req.source_realm_depth))
+      facts.push(t("tray.route.realmDepth", { depth: req.source_realm_depth }));
     if (req.interaction) facts.push(String(req.interaction));
   }
-  return { title: place || "Source unknown", facts };
+  return { title: place || t("tray.route.sourceUnknown"), facts };
 }

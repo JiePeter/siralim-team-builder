@@ -1,0 +1,28 @@
+export default {
+  app: {
+    language: "Language",
+    brandSub: "Build Planner",
+    back: "Back",
+    synergies: "Synergies",
+    search: "Search",
+    build: "Build",
+    tray: "Tray",
+    trayCount: "Tray: {count}",
+    trayTitle: "Tray · {count}",
+    footer: "Unofficial fan tool",
+    about: "About",
+    disclaimer:
+      "Unofficial fan tool, not affiliated with or endorsed by Thylacine Studios. {game} names, text and images belong to {studio}.",
+    credits: "Credits",
+    licenses: "Licenses",
+    placing: "Placing {name}",
+    cancel: "Cancel",
+    team: {
+      storageFailed: "This browser cannot keep the team; export it to keep a copy",
+      traitLimit: "The team and tray hold at most {max} of one Trait",
+      name: "Team {n}",
+      sharedRejected: "Shared team not opened: {reason}",
+      sharedDamaged: "Shared team link is damaged",
+    },
+  },
+};

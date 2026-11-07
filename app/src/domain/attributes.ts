@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { compareText } from "./values";
 
 /** What a component is, as opposed to the mechanics its effects mention. */
@@ -5,15 +6,15 @@ export type AttributeName = "class" | "race" | "base";
 export type Attributes = Partial<Record<AttributeName, string>>;
 
 export const attributeLabels: Record<AttributeName, string> = {
-  class: "Class",
-  race: "Race",
-  base: "Specialization",
+  class: t("search.attributes.class"),
+  race: t("search.attributes.race"),
+  base: t("search.attributes.base"),
 };
 
 export const allAttributeLabels: Record<AttributeName, string> = {
-  class: "All classes",
-  race: "All races",
-  base: "All Specializations",
+  class: t("search.allAttributes.class"),
+  race: t("search.allAttributes.race"),
+  base: t("search.allAttributes.base"),
 };
 
 /** The attributes each component kind can be narrowed by, in display order. */

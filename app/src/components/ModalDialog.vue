@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, provide, ref, useId, watch } from "vue";
 import { useRoute } from "vue-router";
+import { t } from "@/i18n";
 import { DIALOG_ACTIONS, DIALOG_FOOTER } from "./dialog";
 
 const open = defineModel<boolean>("open", { required: true });
@@ -14,7 +15,7 @@ const props = withDefaults(
     /** The owner opens and closes the dialog with the route. */
     routed?: boolean;
   }>(),
-  { drawer: false, closeLabel: "Close", sheet: false, routed: false },
+  { drawer: false, closeLabel: t("editors.close"), sheet: false, routed: false },
 );
 const dialog = ref<HTMLDialogElement | null>(null);
 const foot = ref<HTMLElement | null>(null);

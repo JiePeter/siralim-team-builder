@@ -245,21 +245,23 @@ onMounted(() => {
       @focus="warm"
       @click="enter"
     >
-      Synergies<i class="icon icon-right"></i>
+      {{ $t("synergy.title") }}<i class="icon icon-right"></i>
     </button>
     <div v-else-if="phase === 'loading'" class="synergy-loading muted" role="status">
-      Loading synergies…
+      {{ $t("synergy.loading") }}
     </div>
-    <p v-else-if="phase === 'failed'" class="muted" role="status">Synergies could not be loaded.</p>
+    <p v-else-if="phase === 'failed'" class="muted" role="status">
+      {{ $t("synergy.failed") }}
+    </p>
     <template v-else>
       <div v-if="items.length" class="pairing-controls">
         <div class="pairing-heading">
-          <h2>Synergies</h2>
+          <h2>{{ $t("synergy.title") }}</h2>
           <div class="pairing-pages">
             <button
               type="button"
               class="icon-button"
-              aria-label="Scroll synergies left"
+              :aria-label="$t('synergy.scrollLeft')"
               :disabled="atStart"
               @click="move(-1)"
             >
@@ -268,13 +270,18 @@ onMounted(() => {
             <button
               type="button"
               class="icon-button"
-              aria-label="Scroll synergies right"
+              :aria-label="$t('synergy.scrollRight')"
               :disabled="atEnd"
               @click="move(1)"
             >
               <i class="icon icon-right"></i>
             </button>
-            <button type="button" class="icon-button" aria-label="Close synergies" @click="close">
+            <button
+              type="button"
+              class="icon-button"
+              :aria-label="$t('synergy.close')"
+              @click="close"
+            >
               <i class="icon icon-close"></i>
             </button>
           </div>
@@ -282,8 +289,8 @@ onMounted(() => {
         <div class="pairing-filter">
           <input
             type="search"
-            aria-label="Filter synergies"
-            placeholder="Name or effect"
+            :aria-label="$t('synergy.filter')"
+            :placeholder="$t('synergy.placeholder')"
             autocomplete="off"
             :value="keyword"
             @input="filter(($event.target as HTMLInputElement).value)"
@@ -292,13 +299,13 @@ onMounted(() => {
             v-if="keyword"
             type="button"
             class="icon-button"
-            aria-label="Clear synergy filter"
+            :aria-label="$t('synergy.clearFilter')"
             @click="filter('')"
           >
             <i class="icon icon-close"></i>
           </button>
         </div>
-        <div ref="kindStrip" class="pairing-kinds" role="group" aria-label="Synergy types">
+        <div ref="kindStrip" class="pairing-kinds" role="group" :aria-label="$t('synergy.types')">
           <button
             v-for="g in grouping.kinds"
             :key="g.value"
@@ -313,7 +320,7 @@ onMounted(() => {
           ref="mechanismStrip"
           class="pairing-mechanisms"
           role="group"
-          aria-label="Synergy relationships"
+          :aria-label="$t('synergy.relationships')"
         >
           <button
             v-for="g in grouping.mechanisms"
@@ -332,7 +339,7 @@ onMounted(() => {
         :data-empty="!visible.length"
         tabindex="0"
         role="region"
-        aria-label="Synergy results"
+        :aria-label="$t('synergy.results')"
         :style="
           resultHeight && !phone
             ? { minHeight: `min(${resultHeight}px, max(300px, min(65vh, 600px)))` }
@@ -342,7 +349,9 @@ onMounted(() => {
         @keydown="onKeydown"
       >
         <SynergyCard v-for="card in shown" :key="card.id" :card="card" :owner="owner" />
-        <p v-if="!visible.length" class="synergy-empty muted" role="status">No synergies found</p>
+        <p v-if="!visible.length" class="synergy-empty muted" role="status">
+          {{ $t("synergy.empty") }}
+        </p>
       </div>
     </template>
   </section>

@@ -2,6 +2,7 @@
 import { computed, nextTick, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useMediaQuery } from "@vueuse/core";
+import { t } from "@/i18n";
 import { useSearchStore } from "@/stores/search";
 import { blankCondition, type Condition } from "@/domain/discovery";
 import FacetOptions from "./FacetOptions.vue";
@@ -50,12 +51,12 @@ function clear() {
 </script>
 
 <template>
-  <section class="mechanism-filters" aria-label="Mechanic filters">
+  <section class="mechanism-filters" :aria-label="t('search.mechanic.filters')">
     <div v-show="!state.collapsed" ref="rows">
       <div v-for="(condition, index) in conditions" :key="index" class="mechanism-row">
         <select
           class="filter-category"
-          :aria-label="`Mechanic category ${index + 1}`"
+          :aria-label="t('search.mechanic.category', { n: index + 1 })"
           :value="condition.category"
           @change="update(condition, 'category', ($event.target as HTMLSelectElement).value)"
         >
@@ -63,14 +64,14 @@ function clear() {
             :options="facetRow(index).categories"
             :selected="condition.category"
             namespace="category"
-            all="All mechanics"
+            :all="t('search.mechanic.all')"
           />
         </select>
         <button
           v-if="conditions.length > 1"
           type="button"
           class="icon-button filter-remove"
-          :aria-label="`Remove filter ${index + 1}`"
+          :aria-label="t('search.mechanic.remove', { n: index + 1 })"
           @click="remove(index)"
         >
           <i class="icon icon-close"></i>
@@ -78,7 +79,7 @@ function clear() {
         <template v-if="condition.category">
           <select
             class="filter-relation"
-            :aria-label="`Mechanic interaction ${index + 1}`"
+            :aria-label="t('search.mechanic.interaction', { n: index + 1 })"
             :value="condition.relation"
             @change="update(condition, 'relation', ($event.target as HTMLSelectElement).value)"
           >
@@ -90,7 +91,7 @@ function clear() {
           </select>
           <select
             class="filter-value"
-            :aria-label="`Mechanic target ${index + 1}`"
+            :aria-label="t('search.mechanic.target', { n: index + 1 })"
             :value="condition.value"
             @change="update(condition, 'value', ($event.target as HTMLSelectElement).value)"
           >
@@ -105,19 +106,24 @@ function clear() {
     </div>
     <div class="mechanism-toolbar">
       <button v-if="state.canAdd" type="button" @click="add">
-        <i class="icon icon-plus"></i>Mechanic
+        <i class="icon icon-plus"></i>{{ t("search.mechanic.add") }}
       </button>
-      <select v-if="state.showScope" v-model="scope" aria-label="Match scope" @change="store.run()">
-        <option value="action">Same action</option>
-        <option value="rule">Same rule</option>
-        <option value="component">Whole component</option>
+      <select
+        v-if="state.showScope"
+        v-model="scope"
+        :aria-label="t('search.mechanic.scope')"
+        @change="store.run()"
+      >
+        <option value="action">{{ t("search.mechanic.action") }}</option>
+        <option value="rule">{{ t("search.mechanic.rule") }}</option>
+        <option value="component">{{ t("search.mechanic.component") }}</option>
       </select>
       <button
         v-if="state.showClear"
         type="button"
         class="clear"
-        aria-label="Clear mechanic filters"
-        title="Clear mechanic filters"
+        :aria-label="t('search.mechanic.clear')"
+        :title="t('search.mechanic.clear')"
         @click="clear"
       >
         <i class="icon icon-close"></i>

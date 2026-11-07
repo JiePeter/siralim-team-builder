@@ -226,6 +226,8 @@ export interface Catalog {
   specializations: {
     id: string;
     name: string;
+    /** The game's English name, which rules refer to in every language. */
+    key: string;
     description: string;
     game_id: number;
     image: string;

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useTeamStore } from "@/stores/team";
+import { t } from "@/i18n";
 import { artifactValueText } from "@/domain/artifact";
 import type { Equipment } from "@/domain/team";
 import ObjectSummary from "./ObjectSummary.vue";
-import { artifactEffects, artifactTrigger } from "./assembly";
+import { artifactEffects, artifactTrigger, artifactTypeName } from "./assembly";
 
 const props = withDefaults(defineProps<{ item: Equipment; full?: boolean }>(), { full: false });
 const store = useTeamStore();
@@ -34,13 +35,15 @@ const effects = computed(() =>
   configuration.value && catalog.value ? artifactEffects(configuration.value, catalog.value) : [],
 );
 
-const title = type;
+const title = computed(() => artifactTypeName(type.value));
 const summary = computed(() => {
   const config = configuration.value;
   if (!config) return "";
   const parts = [...values.value];
   if (config.spell)
-    parts.push(`${artifactTrigger[type.value]} · ${spellName(config.spell) || "Spell Slot"}`);
+    parts.push(
+      `${artifactTrigger[type.value]} · ${spellName(config.spell) || t("editors.artifact.spellSlot")}`,
+    );
   return parts.join(" · ");
 });
 </script>

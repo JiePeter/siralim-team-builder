@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { fieldLabels } from "@/domain/assembly";
+import { t } from "@/i18n";
 import type { CarriedField } from "@/domain/placement";
 import { asItem, itemId, type EquipmentRef } from "@/domain/team";
 import { BLANK_ARTIFACT } from "@/stores/team";
 import DropZone from "./DropZone.vue";
+import { artifactTypeName } from "./assembly";
 import EffectText from "./EffectText.vue";
 import { component } from "./components";
 import { useDragSource } from "./dragging";
@@ -23,7 +25,12 @@ const emit = defineEmits<{ place: []; drop: []; inspect: [] }>();
 
 const drag = useDragSource();
 const label = computed(() => fieldLabels[props.at.field]);
-const SHORT_LABELS = { base: "Pri", fusion: "Fus", artifact: "Art", nether: "Net" };
+const SHORT_LABELS = {
+  base: t("editors.shortLabels.base"),
+  fusion: t("editors.shortLabels.fusion"),
+  artifact: t("editors.shortLabels.artifact"),
+  nether: t("editors.shortLabels.nether"),
+};
 const page = computed(() => {
   const id = itemId(props.value);
   return id && id !== BLANK_ARTIFACT ? component(id) : undefined;
@@ -31,7 +38,10 @@ const page = computed(() => {
 const trait = computed(() => (page.value?.kind === "trait" ? page.value : page.value?.effects[0]));
 const carrier = computed(() => {
   if (!props.value) return "";
-  const type = props.at.field === "artifact" ? asItem(props.value).artifact?.type || "Sword" : "";
+  const type =
+    props.at.field === "artifact"
+      ? artifactTypeName(asItem(props.value).artifact?.type || "Sword")
+      : "";
   return [type, page.value?.name].filter(Boolean).join(" · ");
 });
 const picked = computed(() => {
@@ -75,7 +85,7 @@ const picked = computed(() => {
           />
         </p>
       </template>
-      <span v-else class="trait-name trait-none">No Trait</span>
+      <span v-else class="trait-name trait-none">{{ $t("editors.noTrait") }}</span>
     </div>
     <button v-else type="button" :class="['drop-target', { next }]" @click="emit('place')">
       <i class="icon icon-plus"></i>{{ label }}

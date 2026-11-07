@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 import type { Effect, ObjectSummary } from "@/data";
+import { className, t } from "@/i18n";
 import EffectText from "./EffectText.vue";
 import IdentityIcon from "./IdentityIcon.vue";
 import RouteCard from "./RouteCard.vue";
@@ -73,13 +74,16 @@ const shown = computed(() =>
 );
 const first = computed(() => effects.value.slice(0, shown.value));
 const rest = computed(() => effects.value.slice(shown.value));
-const moreLabel = computed(() =>
-  props.data.kind === "relic"
-    ? "ranks"
-    : props.data.kind === "specialization"
-      ? "Perks"
-      : "effects",
-);
+const moreLabel = computed(() => {
+  const kind =
+    props.data.kind === "relic"
+      ? "Ranks"
+      : props.data.kind === "specialization"
+        ? "Perks"
+        : "Effects";
+  const key = first.value.length ? `more${kind}` : kind.toLowerCase();
+  return t(`reference.${key}`, { count: rest.value.length });
+});
 const showFacts = computed(
   () => props.facts && ((props.data.facts || []).length || (spellGem.value && props.classIcon)),
 );
@@ -95,7 +99,7 @@ const effectContext = (e: SummaryEffect) => [...props.contextIds, props.data.id,
         v-if="spellGem && classIcon"
         :id="links ? data.attrs?.class_id : null"
         :src="data.attrs?.class_icon"
-        :label="data.attrs?.class || 'Spell'"
+        :label="className(data.attrs?.class ?? '') || t('reference.spell')"
       />{{ (data.facts || []).join(" · ") }}
     </div>
     <div
@@ -113,7 +117,7 @@ const effectContext = (e: SummaryEffect) => [...props.contextIds, props.data.id,
       </p>
     </div>
     <details v-if="rest.length" class="summary-more">
-      <summary>{{ rest.length }} {{ first.length ? "more " : "" }}{{ moreLabel }}</summary>
+      <summary>{{ moreLabel }}</summary>
       <div
         v-for="e in rest"
         :key="e.id + (e.label ?? '')"

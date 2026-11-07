@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 import type { ObjectPage } from "@/data";
+import { t } from "@/i18n";
 import ObjectLink from "./ObjectLink.vue";
 import ObjectRegion from "./ObjectRegion.vue";
 import ShopOffers from "./ShopOffers.vue";
@@ -22,8 +23,8 @@ const content = computed(
 const components = computed(() =>
   (
     [
-      ["godspawn", "Godspawn"],
-      ["ultimate_spells", "Ultimate Spell"],
+      ["godspawn", t("reference.godspawn")],
+      ["ultimate_spells", t("reference.ultimateSpell")],
     ] as const
   ).filter(([key]) => content.value[key]?.length),
 );
@@ -33,7 +34,7 @@ const components = computed(() =>
   <div class="god-overview">
     <span v-for="fact in data.facts" :key="fact" class="god-title">{{ fact }}</span>
     <div v-if="content.realms?.length" class="god-realm" data-god-section="realm">
-      <span>Realm</span>
+      <span>{{ t("reference.realm") }}</span>
       <ObjectLink v-for="realm in content.realms" :key="realm.id" :item="realm" />
     </div>
   </div>
@@ -56,7 +57,7 @@ const components = computed(() =>
     </section>
   </div>
   <section v-if="content.relics?.length" class="god-relic" data-god-section="relic">
-    <h2>Relic</h2>
+    <h2>{{ t("reference.relic") }}</h2>
     <ObjectRegion
       v-for="item in content.relics"
       :key="item.id"
@@ -78,11 +79,11 @@ const components = computed(() =>
           v-if="data.name && shop.name === `${data.name} God Shop`"
           class="link"
           :to="objectRoute(shop.id)"
-          >Shop</RouterLink
+          >{{ t("reference.shop") }}</RouterLink
         >
         <ObjectLink v-else :item="shop" />
       </h2>
-      <small>{{ shop.offers.length }} {{ shop.offers.length === 1 ? "Item" : "Items" }}</small>
+      <small>{{ t("reference.items", shop.offers.length) }}</small>
     </div>
     <ShopOffers :offers="shop.offers" :god-name="data.name" :context-ids="contextIds" />
   </section>

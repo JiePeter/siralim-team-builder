@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import {
   isListField,
   swapTraits,
@@ -96,6 +97,7 @@ export function excessTrait(index: TeamIndex, before: Team, after: Team): string
 }
 
 export const ARMY_OF_GODS = "perk:312";
+export const AVATAR_RACE = "race:87bbe879c7a5f5784a70";
 
 /**
  * Avatar creatures the party may hold: one, plus one per rank of Army of Gods; none while the
@@ -130,8 +132,8 @@ export function avatarCheck(
     slots.length <= limit
       ? null
       : limit === 0
-        ? "Deprived cannot use Avatar creatures"
-        : `Avatar creatures ${slots.length}/${limit}`;
+        ? t("placement.avatarDeprived")
+        : t("placement.avatarCount", { count: slots.length, limit });
   return { limit, slots, notice };
 }
 
@@ -171,9 +173,9 @@ export function repeatedTraits(
   });
 }
 
-export const REPEATED_TRAIT = "This creature already has this Trait";
-export const NETHER_FULL = `A Nether Stone holds at most ${NETHER_TRAITS} Traits`;
-export const NO_CARRIER = "This Trait has no compatible creature or material for this slot";
+export const REPEATED_TRAIT = t("placement.repeatedTrait");
+export const NETHER_FULL = t("placement.netherFull", { max: NETHER_TRAITS });
+export const NO_CARRIER = t("placement.noCarrier");
 
 export interface TraitSwap {
   a: TraitPosition;
@@ -360,7 +362,7 @@ export function gemNotices(
     if (gems.length > limits.most)
       notices.push({
         slot: i,
-        message: `${gems.length} Spell Gems, above the maximum of ${limits.most}`,
+        message: t("placement.gemsAboveMost", { count: gems.length, most: limits.most }),
       });
     const parent = slot.fusion && !blended ? slot.fusion : slot.base;
     const own = parent && classOf(itemId(parent)!);
@@ -372,7 +374,7 @@ export function gemNotices(
         .filter((gemClass): gemClass is string => !!gemClass && gemClass !== own),
     );
     for (const gemClass of other)
-      notices.push({ slot: i, message: `a ${gemClass} Spell Gem on a ${own} creature` });
+      notices.push({ slot: i, message: t("placement.gemOtherClass", { gemClass, own }) });
   });
   return notices;
 }

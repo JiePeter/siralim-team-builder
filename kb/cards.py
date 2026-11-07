@@ -3,6 +3,7 @@
 import json
 from collections import defaultdict
 from .current import records
+from .messages import _
 
 # Each of these serves exactly one component: an inscription its Spell Gem, a Godspawn Heart its
 # creature, a gemstone its Spell Gem property. They appear only as a step in that component's
@@ -190,7 +191,7 @@ class Cards:
                 self.ids(key, "rank_effect"),
                 key=lambda k: int(self.entities[k]["attrs"].get("rank", 0)),
             ):
-                effect(k, "Rank " + str(self.entities[k]["attrs"]["rank"]))
+                effect(k, _("Rank {n}", n=self.entities[k]["attrs"]["rank"]))
         elif kind == "specialization":
             for k in sorted(
                 self.perks[item["name"]],
@@ -202,9 +203,9 @@ class Cards:
                 p = self.entities[k]
                 effect(
                     k,
-                    "Ascension"
+                    _("Ascension")
                     if p["attrs"].get("ascension")
-                    else "Rank 1–" + str(p["attrs"].get("ranks", 1)),
+                    else _("Rank 1–{n}", n=p["attrs"].get("ranks", 1)),
                 )
         elif kind == "card_set":
             tiers = [n.strip() for n in str(attrs.get("tiers", "")).split("/") if n.strip()]
@@ -215,7 +216,7 @@ class Cards:
                         "id": key,
                         "name": item["name"],
                         "description": line,
-                        "label": tier + " Cards",
+                        "label": _("{tier} Cards", tier=tier),
                         "rank": None,
                     }
                     for tier, line in zip(tiers, lines)
@@ -226,17 +227,19 @@ class Cards:
             effect(key)
         if kind == "spell":
             if attrs.get("charges") is not None:
-                facts.append(str(attrs["charges"]) + " Charges")
+                facts.append(_("{n} Charges", n=attrs["charges"]))
             if attrs.get("manually_castable") is False:
-                facts.append("Automatic casts only")
+                facts.append(_("Automatic casts only"))
         if kind == "perk":
             if attrs.get("specialization"):
                 facts.append(attrs["specialization"])
             facts.append(
-                "Ascension" if attrs.get("ascension") else "Rank 1–" + str(attrs.get("ranks", 1))
+                _("Ascension")
+                if attrs.get("ascension")
+                else _("Rank 1–{n}", n=attrs.get("ranks", 1))
             )
             if attrs.get("anointment"):
-                facts.append("Anointment")
+                facts.append(_("Anointment"))
         if kind in ("realm", "god", "shop", "acquisition_source"):
             if kind == "god" and self.god_titles.get(key):
                 facts.append(self.god_titles[key])
@@ -249,8 +252,10 @@ class Cards:
             ]
             count = self.offer_counts.get(key, len(stock))
             if count:
-                noun = "Creature" if kind == "realm" else "Item"
-                facts.append(f"{count} {noun}{'' if count == 1 else 's'}")
+                if kind == "realm":
+                    facts.append(_("{n} Creature", n=count) if count == 1 else _("{n} Creatures", n=count))
+                else:
+                    facts.append(_("{n} Item", n=count) if count == 1 else _("{n} Items", n=count))
         classification = self.classification.get(key, {})
         for field in ("class", "race"):
             name = classification.get(field) or attrs.get(field)
@@ -291,23 +296,23 @@ class Cards:
             return items
 
         if kind == "spell":
-            for item in add("Cast by", self.spell_users[key]):
+            for item in add(_("Cast by"), self.spell_users[key]):
                 item["matched_rules"] = self.spell_hits[key, item["id"]]
 
         def unplaced(owner):
             return self.named_spells[owner] - self.inline.anchored(owner)
 
         if kind in ("trait", "relic", "perk"):
-            add("Spells", unplaced(key))
+            add(_("Spells"), unplaced(key))
         if kind in ("creature", "material"):
             traits = self.ids(key, "innate_trait" if kind == "creature" else "grants_trait")
-            add("Spells", {spell for trait in traits for spell in unplaced(trait)})
+            add(_("Spells"), {spell for trait in traits for spell in unplaced(trait)})
         if kind == "specialization":
-            add("Spells", {spell for perk in self.perks[e["name"]] for spell in unplaced(perk)})
+            add(_("Spells"), {spell for perk in self.perks[e["name"]] for spell in unplaced(perk)})
         if kind == "race":
-            add("Card bonuses", self.ids(key, "card_rewards"))
+            add(_("Card bonuses"), self.ids(key, "card_rewards"))
             add(
-                "Creatures",
+                _("Creatures"),
                 [
                     k
                     for k, c in self.classification.items()
@@ -315,9 +320,9 @@ class Cards:
                 ],
             )
         if kind == "card_set":
-            add("Race", self.ids(key, "card_rewards", True))
+            add(_("Race"), self.ids(key, "card_rewards", True))
         if kind == "class":
-            for t, title in [("creature", "Creatures"), ("spell", "Spell Gems")]:
+            for t, title in [("creature", _("Creatures")), ("spell", _("Spell Gems"))]:
                 add(
                     title,
                     [

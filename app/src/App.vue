@@ -2,6 +2,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
+import { I18nT } from "vue-i18n";
 import { useMediaQuery } from "@vueuse/core";
 import { isListField } from "@/domain/assembly";
 import { itemId } from "@/domain/team";
@@ -14,6 +15,9 @@ import { dismiss, toastAction, toastFailed, toastText } from "@/components/toast
 import { bursts, selected, trayOpen } from "@/components/tray";
 import { kindNames } from "@/components/presentation";
 import { assetUrl } from "@/data";
+import { LOCALES, locale, setLocale, t, type Locale } from "@/i18n";
+
+document.documentElement.lang = locale;
 
 const route = useRoute();
 const router = useRouter();
@@ -25,7 +29,7 @@ const phone = useMediaQuery("(max-width: 767px)");
 const searching = computed(() => route.name === "search" || route.name === "object");
 const bumped = ref(false);
 const pageTitle = computed(() => {
-  if (route.query.page === "synergy") return "Synergies";
+  if (route.query.page === "synergy") return t("app.synergies");
   const kind = String(route.params.id ?? "").split(":")[0]!;
   return kind === "spec" ? kindNames.specialization : kindNames[kind];
 });
@@ -107,7 +111,7 @@ const credits = [
     "Kleptichron · Structured Compendium",
   ],
   ["https://berated-bert.github.io/siralim-planner/", "BeratedBert · Siralim Planner"],
-  [assetUrl("third-party-notices.txt"), "Licenses"],
+  [assetUrl("third-party-notices.txt"), t("app.licenses")],
 ];
 </script>
 
@@ -115,24 +119,26 @@ const credits = [
   <header>
     <template v-if="phone && route.name === 'object'">
       <button type="button" class="header-back" @click="back">
-        <i class="icon icon-left"></i>Back
+        <i class="icon icon-left"></i>{{ t("app.back") }}
       </button>
       <strong class="header-title">{{ pageTitle }}</strong>
     </template>
-    <RouterLink v-else class="brand" to="/search">SIRALIM<span>Build Planner</span></RouterLink>
+    <RouterLink v-else class="brand" to="/search"
+      >SIRALIM<span>{{ t("app.brandSub") }}</span></RouterLink
+    >
     <nav aria-label="Main">
       <RouterLink to="/search" :class="{ active: searching }"
-        ><i class="icon icon-search"></i>Search</RouterLink
+        ><i class="icon icon-search"></i>{{ t("app.search") }}</RouterLink
       >
       <RouterLink to="/build" :class="{ active: route.name === 'build' }"
-        ><i class="icon icon-team"></i>Build</RouterLink
+        ><i class="icon icon-team"></i>{{ t("app.build") }}</RouterLink
       >
     </nav>
     <button
       v-if="!sidebar"
       type="button"
       class="tray-open"
-      :aria-label="`Tray: ${trayCount}`"
+      :aria-label="t('app.trayCount', { count: trayCount })"
       @click="trayOpen = true"
     >
       <i class="icon icon-tray"></i>
@@ -148,25 +154,35 @@ const credits = [
     <aside v-if="sidebar" class="tray-side"><PartsTray /></aside>
   </div>
   <footer>
-    Unofficial fan tool
-    <button type="button" class="about-link" @click="aboutOpen = true">About</button>
+    {{ t("app.footer") }}
+    <button type="button" class="about-link" @click="aboutOpen = true">{{ t("app.about") }}</button>
+    <select
+      class="language"
+      :aria-label="t('app.language')"
+      :value="locale"
+      @change="setLocale(($event.target as HTMLSelectElement).value as Locale)"
+    >
+      <option v-for="(name, code) in LOCALES" :key="code" :value="code">{{ name }}</option>
+    </select>
   </footer>
-  <ModalDialog v-model:open="aboutOpen" title="About" sheet>
+  <ModalDialog v-model:open="aboutOpen" :title="t('app.about')" sheet>
     <div class="choices about">
-      <p>
-        Unofficial fan tool, not affiliated with or endorsed by Thylacine Studios.
-        <a
-          href="https://store.steampowered.com/app/1289810/Siralim_Ultimate/"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Siralim Ultimate</a
-        >
-        names, text and images belong to
-        <a href="https://www.thylacinestudios.com/" target="_blank" rel="noopener noreferrer"
-          >Thylacine Studios</a
-        >.
-      </p>
-      <h3>Credits</h3>
+      <I18nT keypath="app.disclaimer" tag="p" scope="global">
+        <template #game>
+          <a
+            href="https://store.steampowered.com/app/1289810/Siralim_Ultimate/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Siralim Ultimate</a
+          >
+        </template>
+        <template #studio>
+          <a href="https://www.thylacinestudios.com/" target="_blank" rel="noopener noreferrer"
+            >Thylacine Studios</a
+          >
+        </template>
+      </I18nT>
+      <h3>{{ t("app.credits") }}</h3>
       <a
         v-for="[href, label] in credits"
         :key="href"
@@ -179,14 +195,20 @@ const credits = [
   </ModalDialog>
   <div v-if="!sidebar && placing" class="placing-bar">
     <span class="tray-placing"
-      >Placing <strong>{{ placing }}</strong></span
+      ><I18nT keypath="app.placing" tag="span" scope="global"
+        ><template #name
+          ><strong>{{ placing }}</strong></template
+        ></I18nT
+      ></span
     >
-    <button type="button" class="tray-cancel" @click="selected = null">Cancel</button>
+    <button type="button" class="tray-cancel" @click="selected = null">
+      {{ t("app.cancel") }}
+    </button>
   </div>
   <ModalDialog
     v-if="!sidebar"
     v-model:open="trayOpen"
-    :title="trayCount ? `Tray · ${trayCount}` : 'Tray'"
+    :title="trayCount ? t('app.trayTitle', { count: trayCount }) : t('app.tray')"
     drawer
     routed
   >
@@ -407,6 +429,15 @@ footer {
   text-decoration: underline;
   --key-line: transparent;
   text-underline-offset: 3px;
+}
+.language {
+  width: auto;
+  min-height: var(--control);
+  padding: 0 var(--space-8);
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--text);
+  font-size: var(--fs-12);
 }
 .about {
   display: grid;

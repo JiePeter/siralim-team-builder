@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { className } from "@/i18n";
 import IdentityIcon from "./IdentityIcon.vue";
 import type { Displayable } from "./presentation";
 
@@ -26,7 +27,7 @@ const attrs = computed(() => props.data.attrs ?? {});
         v-if="!omit.includes('class')"
         :id="attrs.class_id"
         :src="attrs.class_icon"
-        :label="classification.class ?? ''"
+        :label="className(classification.class ?? '')"
       />
       <IdentityIcon
         v-if="!omit.includes('race')"

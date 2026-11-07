@@ -4,6 +4,7 @@ import EffectText from "./EffectText.vue";
 import ObjectCell from "./ObjectCell.vue";
 import ObjectLink from "./ObjectLink.vue";
 import { computed } from "vue";
+import { t } from "@/i18n";
 import { useCatalog } from "./selection";
 import type { Card } from "./synergy";
 import { usePlacedText } from "./tray";
@@ -14,7 +15,7 @@ const catalog = useCatalog();
 const source = computed(() => {
   const { perk, rank } = props.card.source;
   if (perk) return catalog.value?.perks.find((p) => p.id === perk)?.name ?? "";
-  return rank ? `Rank ${rank}` : "";
+  return rank ? t("synergy.rank", { rank }) : "";
 });
 </script>
 
@@ -27,7 +28,7 @@ const source = computed(() => {
       </div>
     </template>
     <template #detail>
-      <small v-if="source" class="pairing-source">With {{ source }}</small>
+      <small v-if="source" class="pairing-source">{{ $t("synergy.with", { source }) }}</small>
       <p>
         <template v-for="(text, i) in card.effects" :key="i"
           ><template v-if="i">{{ "\n\n" }}</template

@@ -2,6 +2,7 @@ import type { CardFields } from "@/domain/discovery";
 import type { TeamRules } from "@/domain/team";
 import { facts } from "@/domain/facts";
 import { joinSegments } from "@/domain/values";
+import { locale } from "@/i18n";
 import { memoRequest } from "./memo";
 import type {
   Catalog,
@@ -21,7 +22,7 @@ export class DataNotFound extends Error {}
 
 const files = memoRequest((path: string, version?: string): Promise<unknown> => {
   // Pack files change only with the pack; the manifest is revalidated on every visit.
-  const url = `${import.meta.env.BASE_URL}data/${path}`;
+  const url = `${import.meta.env.BASE_URL}data/${locale === "en" ? "" : locale + "/"}${path}`;
   return (
     version ? fetch(`${url}?v=${encodeURIComponent(version)}`) : fetch(url, { cache: "no-cache" })
   ).then((response) => {

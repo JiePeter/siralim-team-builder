@@ -15,7 +15,7 @@ const emit = defineEmits<{ pick: [option: Carrier] }>();
         <div><ObjectLink :item="option" /></div>
       </div>
       <button type="button" @click="emit('pick', option)">
-        Use {{ kindNames[option.kind] || option.kind }}
+        {{ $t("tray.useKind", { kind: kindNames[option.kind] || option.kind }) }}
       </button>
     </div>
   </div>

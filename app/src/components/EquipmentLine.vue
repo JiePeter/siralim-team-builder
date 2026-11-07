@@ -36,7 +36,7 @@ const text = computed(
         ><strong>{{ name ?? data.name }}</strong
         ><small v-if="trait" class="equipment-trait">{{ trait.name }}</small></span
       >
-      <span v-else class="muted">Loading…</span>
+      <span v-else class="muted">{{ $t("editors.loading") }}</span>
       <small :title="text">{{ text }}</small>
     </span>
     <span class="equipment-actions" @click.stop>

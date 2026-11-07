@@ -1,6 +1,7 @@
 import { shallowRef } from "vue";
 import { gemProperties, joinSegments, type Catalog, type GemProperty } from "@/data";
 import { artifactValueText } from "@/domain/artifact";
+import { t } from "@/i18n";
 import type { CharacterField, SlotField } from "@/domain/assembly";
 import {
   isCharacterPart,
@@ -40,13 +41,15 @@ export const fieldKind: Record<PickerField, string> = {
 };
 
 /** When an Artifact casts its Spell Slot gem, with the game's fixed chance. */
-export const artifactTrigger: Record<string, string> = {
-  Sword: "25% on attack",
-  Staff: "25% on cast",
-  Helmet: "50% on provoke",
-  Shield: "50% on defend",
-  Boots: "15% at start of turn",
-};
+const ARTIFACT_TYPES = ["Sword", "Staff", "Helmet", "Shield", "Boots"];
+
+export const artifactTrigger: Record<string, string> = Object.fromEntries(
+  ARTIFACT_TYPES.map((type) => [type, t(`editors.artifact.triggers.${type}`)]),
+);
+
+/** The name an Artifact type is shown under. */
+export const artifactTypeName = (type: string): string =>
+  ARTIFACT_TYPES.includes(type) ? t(`editors.artifact.types.${type}`) : type;
 
 /** Blend: "your Fused creatures' classes change to match that of their primary parent". */
 export const BLEND = "trait:899";
@@ -113,7 +116,7 @@ export function useGemProperties() {
 export function propertyLabel(list: GemProperty[], item: Equipment, id: string): string {
   const property = list.find((p) => p.id === id);
   const variant = property?.variants.find((v) => v.id === item.property_variants?.[id]);
-  return variant?.label || property?.name || "Properties";
+  return variant?.label || property?.name || t("editors.properties");
 }
 
 export interface ArtifactEffect {

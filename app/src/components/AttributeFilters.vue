@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core";
 import { assetUrl, catalog } from "@/data";
+import { className, t } from "@/i18n";
 import {
   OTHER,
   allAttributeLabels,
@@ -27,8 +28,9 @@ const icon = (name: AttributeName, value: string) => {
   return path ? assetUrl(path) : null;
 };
 
-function label(option: { value: string; count: number }) {
-  const name = option.value === OTHER ? "Other" : option.value;
+function label(option: { value: string; count: number }, attribute: AttributeName) {
+  const shown = attribute === "class" ? className(option.value) : option.value;
+  const name = option.value === OTHER ? t("search.other") : shown;
   return props.counts ? `${name} · ${option.count}` : name;
 }
 </script>
@@ -48,7 +50,7 @@ function label(option: { value: string; count: number }) {
           v-if="icon(facet.name, option.value)"
           :src="icon(facet.name, option.value)!"
           alt=""
-        />{{ label(option) }}
+        />{{ label(option, facet.name) }}
       </option>
     </select>
   </div>

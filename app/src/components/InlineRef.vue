@@ -13,6 +13,7 @@ import { computed, nextTick, onBeforeUnmount, ref, useId } from "vue";
 import { RouterLink } from "vue-router";
 import { useEventListener } from "@vueuse/core";
 import { object, type ObjectPage } from "@/data";
+import { className, t } from "@/i18n";
 import GameSprite from "./GameSprite.vue";
 import IdentityIcon from "./IdentityIcon.vue";
 import { objectRoute } from "./presentation";
@@ -31,10 +32,14 @@ let ignoreFocus = false;
 
 const kindLabel = computed(() =>
   data.value?.kind === "condition"
-    ? ({ buff: "Buff", debuff: "Debuff", minion: "Minion" } as Record<string, string>)[
-        String(data.value.attrs?.type)
-      ] || "Condition"
-    : "Spell Gem",
+    ? (
+        {
+          buff: t("reference.kinds.buff"),
+          debuff: t("reference.kinds.debuff"),
+          minion: t("reference.kinds.minion"),
+        } as Record<string, string>
+      )[String(data.value.attrs?.type)] || t("reference.kinds.condition")
+    : t("reference.kinds.spellGem"),
 );
 
 function place() {
@@ -196,11 +201,13 @@ onBeforeUnmount(() => {
           <small>{{ kindLabel }}</small>
           <strong :id="titleId"><GameSprite :data="data" />{{ data.name }}</strong>
         </div>
-        <strong v-else :id="titleId">{{ failure ? "Preview unavailable" : "Loading…" }}</strong>
+        <strong v-else :id="titleId">{{
+          failure ? t("reference.previewUnavailable") : t("reference.loading")
+        }}</strong>
         <button
           type="button"
           class="icon-button"
-          aria-label="Close preview"
+          :aria-label="t('reference.closePreview')"
           @click="close({ restoreFocus: true })"
         >
           <i class="icon icon-close"></i>
@@ -208,14 +215,15 @@ onBeforeUnmount(() => {
       </div>
       <template v-if="data?.id === id">
         <div v-if="data.kind === 'spell'" class="reference-popover-facts">
-          <IdentityIcon :src="data.attrs?.class_icon" :label="data.attrs?.class || 'Spell'" />{{
-            data.facts.join(" · ")
-          }}
+          <IdentityIcon
+            :src="data.attrs?.class_icon"
+            :label="className(data.attrs?.class ?? '') || t('reference.spell')"
+          />{{ data.facts.join(" · ") }}
         </div>
         <p>{{ data.description }}</p>
-        <RouterLink class="link reference-open" :to="objectRoute(data.id)" @click="close()"
-          >Open</RouterLink
-        >
+        <RouterLink class="link reference-open" :to="objectRoute(data.id)" @click="close()">{{
+          t("reference.open")
+        }}</RouterLink>
       </template>
       <p v-else-if="failure">{{ failure }}</p>
     </div>

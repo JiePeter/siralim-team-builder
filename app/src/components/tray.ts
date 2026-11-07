@@ -4,6 +4,7 @@ import { MAX_TRAIT_COPIES, whereIs, type Placement, type Whereabouts } from "@/d
 import { entityOf, type Equipment, type Team } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
 import { fieldLabels } from "@/domain/assembly";
+import { t } from "@/i18n";
 import type { Selection } from "./dragging";
 import { selectionId, useCatalog, type Candidate } from "./selection";
 
@@ -35,8 +36,10 @@ export function burst(event: MouseEvent) {
 
 export function placementLabel(at: Placement): string {
   if ("character" in at)
-    return at.character === "characterBase" ? "Specialization" : `Anointment ${at.position + 1}`;
-  return `Slot ${at.slot + 1} · ${fieldLabels[at.field]}`;
+    return at.character === "characterBase"
+      ? t("tray.placement.specialization")
+      : t("tray.placement.anointment", { position: at.position + 1 });
+  return t("tray.placement.slot", { slot: at.slot + 1, field: fieldLabels[at.field] });
 }
 
 /** Tray items that are the same instance apart from their uid and added form share one line. */
@@ -45,7 +48,7 @@ export const lineKey = (item: Equipment) => JSON.stringify({ ...item, uid: "", s
 /** How many of a component the team and tray hold together, e.g. "Added ×2"; empty for none. */
 export function whereText(where: Whereabouts): string {
   const count = where.placed.length + where.tray.length;
-  return count > 1 ? `Added ×${count}` : count ? "Added" : "";
+  return count > 1 ? t("tray.addedCount", { count }) : count ? t("tray.added") : "";
 }
 
 export interface Intent {

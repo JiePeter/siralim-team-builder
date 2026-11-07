@@ -3,6 +3,7 @@ import { computed, reactive, ref } from "vue";
 import { assetUrl, type GemProperty } from "@/data";
 import type { Equipment } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
+import { t } from "@/i18n";
 import EffectText from "./EffectText.vue";
 import GameSprite from "./GameSprite.vue";
 import IdentityLine from "./IdentityLine.vue";
@@ -69,7 +70,7 @@ function toggle(p: GemProperty) {
     const rival = setsPotency(p) && chosen.value.find((id) => setsPotency(property(id)));
     if (rival) chosen.value = chosen.value.filter((id) => id !== rival);
     else if (chosen.value.length >= most) {
-      toastError(`A Spell Gem can have at most ${most} properties`);
+      toastError(t("editors.gemLimit", { max: most }));
       return;
     }
     chosen.value = [...chosen.value, p.id];
@@ -90,7 +91,7 @@ function chooseVariant(p: GemProperty, id: number) {
     <p v-if="spell?.description" class="gem-description">
       <EffectText :text="spell.description" :segments="spell.segments" :context-ids="[spell.id]" />
     </p>
-    <div class="gem-count">Properties</div>
+    <div class="gem-count">{{ $t("editors.properties") }}</div>
     <div v-for="p in shown" :key="p.id" :class="['gem-entry', { chosen: isChosen(p) }]">
       <button
         type="button"

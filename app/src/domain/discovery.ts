@@ -15,6 +15,7 @@ import {
   type AttributeFacet,
   type Attributes,
 } from "./attributes";
+import { t } from "@/i18n";
 import { compareText, fold, get, isDict, prefixed, unique, words } from "./values";
 
 export type Scope = "action" | "rule" | "component";
@@ -279,7 +280,18 @@ export function withCard<T extends DiscoveryItem>(item: T, card: CardFields) {
   };
 }
 
-const GROUP_ORDER: Record<string, number> = { Category: 0, Buff: 1, Debuff: 2, General: 3 };
+const GROUPS = {
+  category: t("search.groups.category"),
+  buff: t("search.groups.buff"),
+  debuff: t("search.groups.debuff"),
+  general: t("search.groups.general"),
+};
+const GROUP_ORDER: Record<string, number> = {
+  [GROUPS.category]: 0,
+  [GROUPS.buff]: 1,
+  [GROUPS.debuff]: 2,
+  [GROUPS.general]: 3,
+};
 
 function options(
   index: DiscoveryIndex,
@@ -297,12 +309,12 @@ function options(
     if (category === "status" && !relations) {
       const kind = Object.hasOwn(status_kinds, value) ? status_kinds[value] : undefined;
       group = value.startsWith("@")
-        ? "Category"
+        ? GROUPS.category
         : kind === "buff"
-          ? "Buff"
+          ? GROUPS.buff
           : kind === "debuff"
-            ? "Debuff"
-            : "General";
+            ? GROUPS.debuff
+            : GROUPS.general;
     }
     const table = relations ? labels.relations[category] : labels.values[category];
     const label = table && Object.hasOwn(table, value) ? table[value]! : value;

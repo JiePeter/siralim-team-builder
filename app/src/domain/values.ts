@@ -33,9 +33,9 @@ export function fold(text: string): string {
   return text.replaceAll("’", "'").toLowerCase();
 }
 
-/** re.findall(r"[^\W_]+", text): runs of letters and digits. */
+/** Runs of letters and digits; every Han character is a word of its own. */
 export function words(text: string): string[] {
-  return text.match(/[\p{L}\p{N}]+/gu) ?? [];
+  return text.match(/\p{Script=Han}|(?:(?!\p{Script=Han})[\p{L}\p{N}])+/gu) ?? [];
 }
 
 /** Every term begins some word of `have`; true without terms. */

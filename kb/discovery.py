@@ -4,6 +4,7 @@ import json
 import sqlite3
 from .annotations import event_key, named_statuses, trigger_id, trigger_label
 from .facts import STAT_AMOUNT, STAT_SET, event, listened
+from .messages import _, name as local_name
 
 CATEGORIES = {
     "status": "Status",
@@ -450,5 +451,9 @@ class Discovery:
         if category == "trigger":
             return trigger_label(value)
         if category == "action":
-            return ACTION_LABELS.get(value, value)
-        return VALUE_LABELS.get(value, value)
+            return _(ACTION_LABELS.get(value, value))
+        if value in VALUE_LABELS:
+            return _(VALUE_LABELS[value])
+        if category == "status":
+            return local_name("condition", value)
+        return _(value)

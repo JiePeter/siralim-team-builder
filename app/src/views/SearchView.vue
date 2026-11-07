@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useDebounceFn } from "@vueuse/core";
+import { t } from "@/i18n";
 import { useSearchStore } from "@/stores/search";
 import AddButton from "@/components/AddButton.vue";
 import AttributeFilters from "@/components/AttributeFilters.vue";
@@ -40,8 +41,10 @@ const addableKinds = new Set([
 ]);
 const detail = computed(() => route.name === "object");
 const count = computed(() => {
-  const found = `${total.value} ${total.value === 1 ? "result" : "results"}`;
-  return total.value > items.value.length ? `${found} · showing ${items.value.length}` : found;
+  const found = t("search.results", total.value);
+  return total.value > items.value.length
+    ? t("search.showing", { found, shown: items.value.length })
+    : found;
 });
 const typed = useDebounceFn(() => store.run(), 180);
 
@@ -65,13 +68,13 @@ onMounted(() => {
 <template>
   <div :class="['explore', detail ? 'pane-detail' : 'pane-list', { browsing: !narrowed }]">
     <aside class="search-panel">
-      <label for="search">Search</label>
+      <label for="search">{{ t("search.label") }}</label>
       <div class="search-row">
         <input
           id="search"
           ref="input"
           v-model="q"
-          placeholder="Traits, creatures, materials, spells, or effects"
+          :placeholder="t('search.placeholder')"
           autocomplete="off"
           @input="typed"
         />
@@ -79,8 +82,10 @@ onMounted(() => {
           type="button"
           :class="['filter-toggle', { active: activeFilters }]"
           :aria-expanded="filtersShown"
-          :aria-label="activeFilters ? `Filters: ${activeFilters}` : 'Filters'"
-          title="Filters"
+          :aria-label="
+            activeFilters ? t('search.filtersCount', { count: activeFilters }) : t('search.filters')
+          "
+          :title="t('search.filters')"
           @click="filtersShown = !filtersShown"
         >
           <i class="icon icon-filter"></i
@@ -88,9 +93,14 @@ onMounted(() => {
         </button>
       </div>
       <div :class="['search-filters', { open: filtersShown }]">
-        <label for="kind">Type</label>
+        <label for="kind">{{ t("search.type") }}</label>
         <select id="kind" v-model="kind" @change="changeKind">
-          <FacetOptions :options="facets.kinds" :selected="kind" namespace="kind" all="All types" />
+          <FacetOptions
+            :options="facets.kinds"
+            :selected="kind"
+            namespace="kind"
+            :all="t('search.allTypes')"
+          />
         </select>
         <AttributeFilters
           v-if="facets.attributes.length"
@@ -138,7 +148,7 @@ onMounted(() => {
             </template>
           </ObjectCell>
         </template>
-        <p v-else class="empty">No matches</p>
+        <p v-else class="empty">{{ t("search.noMatches") }}</p>
       </div>
     </aside>
     <section class="workspace">

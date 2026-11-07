@@ -163,7 +163,9 @@ describe("picker pool", () => {
 
   it("offers Anointments only from Perks that can be anointed", () => {
     const definitions = {
-      specializations: [{ id: "spec", name: "Spec", description: "", game_id: 0, image: "" }],
+      specializations: [
+        { id: "spec", name: "Spec", key: "Spec", description: "", game_id: 0, image: "" },
+      ],
       perks: [
         { id: "yes", anointment: true },
         { id: "no", anointment: false },

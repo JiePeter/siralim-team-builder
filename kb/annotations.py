@@ -9,6 +9,7 @@ import hashlib
 import json
 
 from .importer import ROOT
+from .messages import _
 
 ANNOTATIONS = ROOT / "data/annotations"
 KINDS = ("traits", "spells", "perks", "relics")
@@ -79,12 +80,12 @@ def trigger_id(trigger):
 
 def trigger_label(value):
     """Label for a `trigger_id`."""
-    key, _, timing = value.partition("@")
+    key, _separator, timing = value.partition("@")
     if not timing:
-        return NON_EVENT.get(key, key)
+        return _(NON_EVENT.get(key, key))
     if key in PHASES:
-        return PHASES[key].get(timing, key)
-    return TIMINGS[timing] + " " + EVENTS.get(key, key)
+        return _(PHASES[key].get(timing, key))
+    return _("{timing} {event}", timing=_(TIMINGS[timing]), event=_(EVENTS.get(key, key)))
 
 
 def reacts(trigger):

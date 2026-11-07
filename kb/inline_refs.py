@@ -110,7 +110,12 @@ class InlineReferences:
         self.condition_names = {
             norm(e["name"]): k for k, e in entities.items() if e["kind"] == "condition"
         }
-        self.tokens = json.loads((SNAPSHOT / "tokens.json").read_text(encoding="utf-8-sig"))
+        meta = dict(db.execute("SELECT key,value FROM meta"))
+        self.tokens = (
+            json.loads(meta["tokens"])
+            if "tokens" in meta
+            else json.loads((SNAPSHOT / "tokens.json").read_text(encoding="utf-8-sig"))
+        )
         for key, body in db.execute(
             "SELECT entity_id,body FROM game_entity WHERE kind IN ('trait','spell','perk','condition')"
         ):
@@ -125,6 +130,9 @@ class InlineReferences:
             if key:
                 for i, text in enumerate(god.get("relicBonuses", []), 1):
                     self.raw[key, i * 10] = text
+        for owner, raw in json.loads(meta.get("raw_overrides", "{}")).items():
+            key, rank = owner.split("|")
+            self.raw[key, int(rank)] = raw
         for key, body in db.execute("SELECT entity_id,body FROM mechanic_record"):
             record = json.loads(body)
             rank = record.get("meta", {}).get("rank")
@@ -149,7 +157,7 @@ class InlineReferences:
         """A race or class tag carries its game icon; a class names itself for its colour."""
         tag = span.get("tag")
         if tag == "class":
-            name = norm(span["text"])
+            name = norm(span.get("name", span["text"]))
             return {
                 **span,
                 "tag": "class-" + name,

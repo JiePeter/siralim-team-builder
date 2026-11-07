@@ -4,8 +4,10 @@ import type { ObjectPage } from "@/data";
 import { fieldLabels, type Position } from "@/domain/assembly";
 import { asItem, itemId, type EquipmentRef } from "@/domain/team";
 import { BLANK_ARTIFACT } from "@/stores/team";
+import { t } from "@/i18n";
 import DropZone from "./DropZone.vue";
 import EquipmentLine from "./EquipmentLine.vue";
+import { artifactTypeName } from "./assembly";
 import { component } from "./components";
 import { useDragSource } from "./dragging";
 import { selected } from "./tray";
@@ -33,7 +35,9 @@ const emit = defineEmits<{
 const drag = useDragSource();
 const label = computed(() => fieldLabels[props.at.field]);
 const blank = computed(() => itemId(props.value) === BLANK_ARTIFACT);
-const artifactType = computed(() => (props.value && asItem(props.value).artifact?.type) || "Sword");
+const artifactType = computed(() =>
+  artifactTypeName((props.value && asItem(props.value).artifact?.type) || "Sword"),
+);
 const data = computed(() =>
   blank.value
     ? ({
@@ -51,7 +55,7 @@ const name = computed(() =>
     ? `${artifactType.value} · ${data.value.name}`
     : undefined,
 );
-const line = computed(() => (blank.value ? "No Trait" : null));
+const line = computed(() => (blank.value ? t("editors.noTrait") : null));
 const corner = computed(() =>
   props.at.field === "relic" && props.value ? String(asItem(props.value).rank || 1) : "",
 );
@@ -78,8 +82,8 @@ const corner = computed(() =>
             v-if="at.field === 'artifact' && copyable"
             type="button"
             class="icon-button"
-            :aria-label="`Copy: ${label}`"
-            title="Copy"
+            :aria-label="$t('editors.copyField', { field: label })"
+            :title="$t('editors.copy')"
             @click="emit('copy')"
           >
             <i class="icon icon-copy"></i>
@@ -87,8 +91,8 @@ const corner = computed(() =>
           <button
             type="button"
             class="icon-button"
-            :aria-label="`Back to tray: ${label}`"
-            title="Back to tray"
+            :aria-label="$t('editors.backToTrayField', { field: label })"
+            :title="$t('editors.backToTray')"
             @click="emit('remove')"
           >
             <i class="icon icon-undo"></i>

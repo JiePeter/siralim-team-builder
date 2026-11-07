@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useEventListener, useTimeoutFn } from "@vueuse/core";
 import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
+import { t } from "@/i18n";
 import { MAX_TRAIT_COPIES, placedParts, whereIs } from "@/domain/placement";
 import { asItem, asTrait, type Equipment, type Team } from "@/domain/team";
 import DropZone from "./DropZone.vue";
@@ -79,7 +80,7 @@ const groups = computed(() => {
       label,
       lines: all.filter((line) => kindGroup(line.kind) === value),
     })),
-    { value: "other", label: "Other", lines: all.filter((line) => !kindGroup(line.kind)) },
+    { value: "other", label: t("tray.other"), lines: all.filter((line) => !kindGroup(line.kind)) },
   ].filter((group) => group.lines.length);
 });
 
@@ -97,7 +98,7 @@ const traitName = (line: Line) => {
   const data = component(line.shown);
   return data && ["creature", "material"].includes(data.kind) ? data.effects[0]?.name : undefined;
 };
-const trashLabel = "Clear tray";
+const trashLabel = t("tray.clear");
 const atLimit = (line: Line) => {
   const where = whereIs(team.value, line.item.id, entity);
   return (
@@ -126,7 +127,8 @@ async function remove(line: Line) {
   const label = name(line);
   arming.value = null;
   const undo = await attempt(() => store.removeFromTray(line.uids[0]!));
-  if (undo) toast(`${label} removed`, { label: "Undo", run: () => attempt(undo) });
+  if (undo)
+    toast(t("tray.removed", { name: label }), { label: t("tray.undo"), run: () => attempt(undo) });
 }
 
 function choose(line: Line) {
@@ -150,7 +152,7 @@ function received() {
 }
 
 function clear() {
-  if (confirm(`Remove every component from “${team.value.name}” and its tray?`))
+  if (confirm(t("tray.confirmClear", { team: team.value.name })))
     attempt(() => store.clearWorkspace());
 }
 
@@ -162,9 +164,9 @@ watch(flashed, async (uid) => {
 </script>
 
 <template>
-  <section class="parts-tray" aria-label="Tray">
+  <section class="parts-tray" :aria-label="$t('tray.title')">
     <h2 v-if="!sheet" class="tray-head">
-      Tray
+      {{ $t("tray.title") }}
       <button
         v-if="groups.length"
         type="button"
@@ -208,7 +210,7 @@ watch(flashed, async (uid) => {
               <button
                 type="button"
                 class="tray-look"
-                :aria-label="`Look up ${name(line)}`"
+                :aria-label="$t('tray.lookUp', { name: name(line) })"
                 @click="preview = line.item"
               ></button>
             </template>
@@ -224,12 +226,16 @@ watch(flashed, async (uid) => {
             </template>
             <template #detail>
               <small v-if="traitName(line) || line.item.rank" class="tray-trait">
-                <template v-if="line.item.rank">Rank {{ line.item.rank }}</template
+                <template v-if="line.item.rank">{{
+                  $t("tray.rank", { rank: line.item.rank })
+                }}</template
                 >{{ traitName(line) }}
               </small>
-              <small v-if="line.placed" class="tray-in-build"
-                >In build<template v-if="line.placed > 1"> ×{{ line.placed }}</template></small
-              >
+              <small v-if="line.placed" class="tray-in-build">{{
+                line.placed > 1
+                  ? $t("tray.inBuildCount", { count: line.placed })
+                  : $t("tray.inBuild")
+              }}</small>
               <PropertyPills :item="line.item" />
             </template>
             <template #aside>
@@ -238,8 +244,8 @@ watch(flashed, async (uid) => {
                   v-if="building"
                   type="button"
                   class="icon-button tray-eye"
-                  :aria-label="`Look up ${name(line)}`"
-                  :title="`Look up ${name(line)}`"
+                  :aria-label="$t('tray.lookUp', { name: name(line) })"
+                  :title="$t('tray.lookUp', { name: name(line) })"
                   @click="preview = line.item"
                 >
                   <i class="icon icon-eye"></i>
@@ -250,13 +256,17 @@ watch(flashed, async (uid) => {
                   class="tray-remove"
                   @click="remove(line)"
                 >
-                  Remove
+                  {{ $t("tray.remove") }}
                 </button>
                 <span v-else-if="line.uids.length" class="stepper">
                   <button
                     type="button"
                     class="icon-button"
-                    :aria-label="`Remove ${line.uids.length > 1 ? 'one ' : ''}${name(line)}`"
+                    :aria-label="
+                      $t(line.uids.length > 1 ? 'tray.removeOne' : 'tray.removeNamed', {
+                        name: name(line),
+                      })
+                    "
                     @click="decrease(line)"
                   >
                     <i :class="['icon', line.uids.length > 1 ? 'icon-minus' : 'icon-trash']"></i>
@@ -266,7 +276,7 @@ watch(flashed, async (uid) => {
                     <button
                       type="button"
                       class="icon-button"
-                      :aria-label="`Add one ${name(line)}`"
+                      :aria-label="$t('tray.addOne', { name: name(line) })"
                       :aria-disabled="atLimit(line) || undefined"
                       @click="attempt(() => store.copyPoolItem(line.uids[0]!))"
                     >
@@ -279,8 +289,10 @@ watch(flashed, async (uid) => {
           </ObjectCell>
         </section>
         <div v-if="!groups.length" class="tray-empty">
-          <p class="muted">Tray is empty</p>
-          <RouterLink v-if="sheet" class="link" to="/search">Search components</RouterLink>
+          <p class="muted">{{ $t("tray.empty") }}</p>
+          <RouterLink v-if="sheet" class="link" to="/search">{{
+            $t("tray.searchComponents")
+          }}</RouterLink>
         </div>
       </div>
     </DropZone>
@@ -290,7 +302,7 @@ watch(flashed, async (uid) => {
       class="primary tray-next"
       @click="router.push({ name: 'build' })"
     >
-      Go to Build
+      {{ $t("tray.goToBuild") }}
     </button>
     <PreviewDialog v-model:item="preview" />
   </section>

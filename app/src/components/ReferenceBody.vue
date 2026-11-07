@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 import type { ObjectPage, ObjectSummary as Summary } from "@/data";
+import { className, t } from "@/i18n";
 import { useTeamStore } from "@/stores/team";
 import AddButton from "./AddButton.vue";
 import EffectText from "./EffectText.vue";
@@ -44,11 +45,11 @@ const ownRoutes = computed(() => (props.data.routes || []).filter((r) => routeVi
 const stats = computed(() =>
   (
     [
-      ["health", "Health"],
-      ["attack", "Attack"],
-      ["intelligence", "Intelligence"],
-      ["defense", "Defense"],
-      ["speed", "Speed"],
+      ["health", t("reference.stats.health")],
+      ["attack", t("reference.stats.attack")],
+      ["intelligence", t("reference.stats.intelligence")],
+      ["defense", t("reference.stats.defense")],
+      ["speed", t("reference.stats.speed")],
     ] as const
   )
     .filter(([key]) => props.data.attrs?.stats?.[key] !== undefined)
@@ -74,7 +75,7 @@ const relicRanks = computed(() =>
 const realmGroups = computed(() => {
   const groups = new Map<string, Summary[]>();
   for (const c of props.data.creatures || []) {
-    const label = String(c.routes[0]?.requirements?.interaction || "Encounters");
+    const label = String(c.routes[0]?.requirements?.interaction || t("reference.encounters"));
     if (!groups.has(label)) groups.set(label, []);
     groups.get(label)!.push(c);
   }
@@ -92,7 +93,11 @@ const ownSummary = computed(
   <template v-if="data.kind === 'creature'">
     <nav
       class="family-switcher"
-      :aria-label="`${data.classification?.[0]?.race || 'Race'} creatures`"
+      :aria-label="
+        t('reference.raceCreatures', {
+          race: data.classification?.[0]?.race || t('reference.race'),
+        })
+      "
     >
       <ObjectCell
         v-for="member in data.family"
@@ -108,13 +113,13 @@ const ownSummary = computed(
   </template>
 
   <template v-if="data.kind === 'creature' || data.kind === 'material'">
-    <section v-for="(t, position) in data.traits" :key="t.id" class="reference-trait">
-      <RouterLink class="link" :to="objectRoute(t.id)">{{ t.name }}</RouterLink>
+    <section v-for="(trait, position) in data.traits" :key="trait.id" class="reference-trait">
+      <RouterLink class="link" :to="objectRoute(trait.id)">{{ trait.name }}</RouterLink>
       <p>
         <EffectText
-          :text="t.description"
-          :segments="t.segments"
-          :context-ids="[...contextIds, t.id]"
+          :text="trait.description"
+          :segments="trait.segments"
+          :context-ids="[...contextIds, trait.id]"
         />
       </p>
       <slot v-if="position === 0" name="trait" />
@@ -130,12 +135,12 @@ const ownSummary = computed(
         </div>
       </dl>
       <div v-if="ownRoutes.length" class="creature-origins">
-        <h3>Found in</h3>
+        <h3>{{ t("reference.foundIn") }}</h3>
         <RouteCard v-for="route in ownRoutes" :key="route.id" :route="route" />
       </div>
     </div>
     <section v-if="data.materials.length">
-      <h2>Trait material</h2>
+      <h2>{{ t("reference.traitMaterial") }}</h2>
       <ObjectRegion
         v-for="item in data.materials"
         :key="item.id"
@@ -154,7 +159,7 @@ const ownSummary = computed(
     />
     <div v-if="data.creatures.length || ownRoutes.length" class="material-acquisition">
       <section v-if="data.creatures.length">
-        <h2>Creatures</h2>
+        <h2>{{ t("reference.creatures") }}</h2>
         <ObjectRegion
           v-for="item in data.creatures"
           :key="item.id"
@@ -163,11 +168,11 @@ const ownSummary = computed(
         />
       </section>
       <section v-if="shopRoutes.length">
-        <h2>Shops</h2>
+        <h2>{{ t("reference.shops") }}</h2>
         <RouteCard v-for="route in shopRoutes" :key="route.id" :route="route" />
       </section>
       <section v-if="otherRoutes.length">
-        <h2>Other sources</h2>
+        <h2>{{ t("reference.otherSources") }}</h2>
         <RouteCard v-for="route in otherRoutes" :key="route.id" :route="route" />
       </section>
     </div>
@@ -181,7 +186,9 @@ const ownSummary = computed(
   </template>
 
   <template v-else-if="data.kind === 'relic'">
-    <p v-if="targetRank" class="muted">Build target · Rank {{ targetRank }}</p>
+    <p v-if="targetRank" class="muted">
+      {{ t("reference.buildTarget", { rank: targetRank }) }}
+    </p>
     <div class="rank-list">
       <section
         v-for="r in relicRanks"
@@ -190,7 +197,7 @@ const ownSummary = computed(
         :data-rank="r.rank"
         :data-focus-hit="ranks.has(Number(r.rank)) || undefined"
       >
-        <strong>Rank {{ r.rank }}</strong>
+        <strong>{{ t("reference.rank", { rank: r.rank }) }}</strong>
         <p><EffectText :text="r.description" :segments="r.segments" :context-ids="contextIds" /></p>
       </section>
     </div>
@@ -209,7 +216,11 @@ const ownSummary = computed(
           <div class="perk-title">
             <strong><GameSprite :data="p" />{{ p.attrs.short_name || p.name }}</strong>
             <div class="muted">
-              {{ p.attrs.ascension ? "Ascension" : `Rank 0–${p.attrs.ranks}` }}
+              {{
+                p.attrs.ascension
+                  ? t("reference.ascension")
+                  : t("reference.rankRange", { ranks: p.attrs.ranks })
+              }}
               <template v-if="p.attrs.anointment && placed(perkItem(p))">
                 · <span class="perk-added">{{ placed(perkItem(p)) }}</span>
               </template>
@@ -239,9 +250,9 @@ const ownSummary = computed(
           <IdentityLine :data="c">
             <ObjectLink :item="c" />
             <template v-if="c.routes[0]?.requirements?.source_realm_depth" #meta>
-              <small class="realm-depth"
-                >RD {{ c.routes[0].requirements.source_realm_depth }}</small
-              >
+              <small class="realm-depth">{{
+                t("reference.realmDepth", { depth: c.routes[0].requirements.source_realm_depth })
+              }}</small>
             </template>
           </IdentityLine>
           <ObjectSummary :data="c" :context-ids="contextIds" />
@@ -266,10 +277,12 @@ const ownSummary = computed(
     />
     <ObjectSummary v-if="ownSummary" :data="data" :context-ids="contextIds" />
     <div v-if="data.kind === 'spell'" class="spell-facts">
-      <IdentityIcon :src="data.attrs.class_icon" :label="data.attrs.class || 'Spell'" />
-      {{ data.attrs.charges ?? "—" }} Charges{{
-        data.attrs.manually_castable === false ? " · Automatic casts only" : ""
-      }}
+      <IdentityIcon
+        :src="data.attrs.class_icon"
+        :label="className(data.attrs.class ?? '') || t('reference.spell')"
+      />
+      {{ t("reference.charges", { charges: data.attrs.charges ?? "—" })
+      }}{{ data.attrs.manually_castable === false ? ` · ${t("reference.automaticOnly")}` : "" }}
     </div>
     <ObjectRegion v-for="item in data.products" :key="item.id" :item="item" v-bind="rowOptions" />
     <RouteCard v-for="route in ownRoutes" :key="route.id" :route="route" />

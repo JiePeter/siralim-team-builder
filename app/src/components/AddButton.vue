@@ -3,6 +3,7 @@ import { computed, ref, toRef, useId } from "vue";
 import { useRouter } from "vue-router";
 import { useMediaQuery } from "@vueuse/core";
 import { useTeamStore } from "@/stores/team";
+import { t } from "@/i18n";
 import FloatingMenu from "./FloatingMenu.vue";
 import { perkBase, selectionLabel, useCatalog, type Candidate } from "./selection";
 import { attempt, toast } from "./toast";
@@ -22,7 +23,7 @@ const sidebar = useMediaQuery("(min-width: 1100px)");
 const { intent, where, full, text } = usePlacement(toRef(props, "item"));
 const busy = ref(false);
 
-const name = computed(() => props.item.name ?? "Component");
+const name = computed(() => props.item.name ?? t("tray.add.component"));
 const label = computed(() => selectionLabel(props.item, catalog.value));
 /** A one-per-team component already in the team offers its location instead of Add. */
 const placedOnly = computed(() => intent.value.unique && text.value !== "");
@@ -62,7 +63,7 @@ async function add(event: MouseEvent, id: string, added: string) {
   busy.value = false;
   if (!undo) return;
   flash(store.team.inventory.at(-1)!.uid);
-  toast(`${added} added to tray`, { label: "Undo", run: () => attempt(undo) });
+  toast(t("tray.add.added", { name: added }), { label: t("tray.undo"), run: () => attempt(undo) });
 }
 </script>
 
@@ -72,7 +73,7 @@ async function add(event: MouseEvent, id: string, added: string) {
       v-if="placedOnly"
       type="button"
       :class="['added-mark', { 'quick-key': quick }]"
-      :aria-label="`${name}: ${text}`"
+      :aria-label="$t('tray.add.placed', { name, text })"
       @click="jump"
     >
       <i class="icon icon-check"></i><template v-if="!quick">{{ text }}</template>
@@ -81,14 +82,23 @@ async function add(event: MouseEvent, id: string, added: string) {
       <span v-if="text && !quick" class="added-mark"
         ><i class="icon icon-check"></i>{{ text }}</span
       >
-      <span v-if="ownBase" class="own-perk" :aria-label="`Comes with ${ownBase}`">Included</span>
+      <span
+        v-if="ownBase"
+        class="own-perk"
+        :aria-label="$t('tray.add.comesWith', { name: ownBase })"
+        >{{ $t("tray.add.included") }}</span
+      >
       <button
         v-else
         type="button"
         :class="['add-button', { primary, 'quick-key': quick }]"
         :aria-busy="busy || undefined"
         :aria-disabled="full || undefined"
-        :aria-label="label === 'Add' ? `Add ${name}` : `${label}: ${name}`"
+        :aria-label="
+          label === $t('tray.add.add')
+            ? $t('tray.add.addNamed', { name })
+            : $t('tray.add.labelled', { label, name })
+        "
         :aria-haspopup="base ? 'menu' : undefined"
         :aria-expanded="base ? choosing : undefined"
         :popovertarget="base ? baseMenu : undefined"
@@ -101,7 +111,7 @@ async function add(event: MouseEvent, id: string, added: string) {
         :id="baseMenu"
         v-slot="{ close }"
         v-model:open="choosing"
-        :label="`Add ${name} as`"
+        :label="$t('tray.add.addAs', { name })"
       >
         <button
           type="button"
@@ -111,7 +121,7 @@ async function add(event: MouseEvent, id: string, added: string) {
             add($event, intent.id, name);
           "
         >
-          Anointment
+          {{ $t("tray.add.anointment") }}
         </button>
         <button
           type="button"
@@ -121,7 +131,7 @@ async function add(event: MouseEvent, id: string, added: string) {
             add($event, base!.id, base!.name);
           "
         >
-          {{ base.name }} Specialization
+          {{ $t("tray.add.specializationOf", { name: base.name }) }}
         </button>
       </FloatingMenu>
     </template>

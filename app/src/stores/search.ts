@@ -5,6 +5,7 @@ import { cards, discovery, type SearchDocument } from "@/data";
 import { memoRequest } from "@/data/memo";
 import type { Attributes } from "@/domain/attributes";
 import { toastError } from "@/components/toast";
+import { t } from "@/i18n";
 import {
   blankCondition,
   discoveryIndex,
@@ -97,7 +98,7 @@ export const useSearchStore = defineStore("search", () => {
     } catch (error) {
       if (current !== version) return;
       console.error(error);
-      toastError("Search data could not be loaded. Reload the page to try again.");
+      toastError(t("search.loadFailed"));
     }
   }
 

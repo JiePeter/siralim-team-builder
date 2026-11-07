@@ -1,17 +1,22 @@
 import type { Segment, SynergyItem } from "@/data";
 import { ranks } from "@/domain/facts";
+import { t } from "@/i18n";
 import { compareText, fold, matchesText, words } from "@/domain/values";
 import { kindGroup, kindGroups, type Hit } from "./presentation";
 
-export const pairingMechanisms: Record<string, string> = {
-  "Event chain": "Trigger chains",
-  "Status condition": "Status interactions",
-  "Action modifier": "Extra actions",
-  "Event count": "Counted events",
-  Amplification: "Damage amplification",
-  "Minion support": "Minion support",
-  "Scope overlap": "Shared triggers",
+const MECHANISMS = {
+  "Event chain": "eventChain",
+  "Status condition": "statusCondition",
+  "Action modifier": "actionModifier",
+  "Event count": "eventCount",
+  Amplification: "amplification",
+  "Minion support": "minionSupport",
+  "Scope overlap": "scopeOverlap",
 };
+
+export const pairingMechanisms: Record<string, string> = Object.fromEntries(
+  Object.entries(MECHANISMS).map(([relation, key]) => [relation, t(`synergy.mechanisms.${key}`)]),
+);
 
 /** One object that pairs with the owner, with every rule path that connects them. */
 export interface Candidate {
@@ -120,7 +125,7 @@ export function categories(items: Candidate[], kind: string | null, mechanism: s
   const chosenKind = kinds.some((g) => g.value === kind) ? kind : (kinds[0]?.value ?? null);
   const typed = available.filter((item) => kindGroup(item.kind) === chosenKind);
   const mechanisms: Group[] = [
-    { value: "", label: "All", count: typed.length },
+    { value: "", label: t("synergy.all"), count: typed.length },
     ...Object.entries(pairingMechanisms)
       .map(([value, label]) => ({
         value,

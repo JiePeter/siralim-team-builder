@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { t } from "@/i18n";
 import type { CharacterDefinitions, CharacterField, SlotField } from "./assembly";
 import type { Catalog, Segment } from "@/data/types";
 import {
@@ -180,6 +181,8 @@ export interface TeamIndex {
   rules: RuleFacts;
   kinds: Map<string, string>;
   specializations: Map<string, string>;
+  /** specialization name → the game's English name */
+  specializationKeys: Map<string, string>;
   perks: Perk[];
   perksById: Map<string, Perk>;
   artifactProperties: Map<string, string>;
@@ -256,6 +259,7 @@ export function teamIndex(catalog: Catalog, rules: TeamRules): TeamIndex {
     rules: facts,
     kinds,
     specializations: new Map(catalog.specializations.map((s) => [s.id, s.name])),
+    specializationKeys: new Map(catalog.specializations.map((s) => [s.name, s.key])),
     perks,
     perksById: new Map(perks.map((p) => [p.id, p])),
     artifactProperties: new Map(catalog.artifact_properties.map((p) => [p.id, p.slot])),
@@ -330,6 +334,7 @@ export interface CharacterEffect extends Perk {
 export interface CharacterEffects {
   effects: CharacterEffect[];
   anointment_capacity: number;
+  /** The game's English name of the base. */
   specialization: string | null;
 }
 
@@ -337,6 +342,7 @@ export interface CharacterEffects {
 export function characterEffects(index: TeamIndex, value: unknown): CharacterEffects {
   const character = isDict(value) ? value : {};
   const spec = index.specializations.get(character.specialization as string) ?? null;
+  const key = spec === null ? null : (index.specializationKeys.get(spec) ?? spec);
   const perks = get(character, "perks", {});
   const ranks = isDict(perks) ? perks : {};
   const anointments = get(character, "anointments", []) as unknown[];
@@ -348,14 +354,15 @@ export function characterEffects(index: TeamIndex, value: unknown): CharacterEff
     if (native && perk.ascension && truthy(character.ascended)) rank = perk.ranks;
     if (always) rank = perk.ranks;
     const anointed = anointments.includes(perk.id);
-    const ignored = spec === "Pariah" && perk.specialization === "Druid" && anointed;
+    const ignored =
+      key === "Pariah" && index.specializationKeys.get(perk.specialization) === "Druid" && anointed;
     if (truthy(rank) || anointed) {
       effects.push({
         ...perk,
         rank: truthy(rank) ? rank : perk.ranks,
         mode: truthy(rank) ? "Specialization" : "Anointment",
         active: !ignored,
-        inactive_reason: ignored ? "Pariah: Druid Anointments are inactive" : "",
+        inactive_reason: ignored ? t("team.pariahInactive") : "",
       });
     }
   }
@@ -366,7 +373,7 @@ export function characterEffects(index: TeamIndex, value: unknown): CharacterEff
       (id) => effects.some((e) => e.id === id && e.active),
       truthy(character.all_ascended),
     ),
-    specialization: spec,
+    specialization: key,
   };
 }
 
@@ -382,16 +389,16 @@ export function isCharacterPart(
 }
 
 export function validateCharacter(index: TeamIndex, value: unknown): Character {
-  if (!v.is(CharacterShape, value)) fail("Invalid character configuration");
+  if (!v.is(CharacterShape, value)) fail(t("team.invalidCharacter"));
   const spec = get(value, "specialization");
   const specName = index.specializations.get(spec as string);
   if (truthy(spec) && !isCharacterPart(index.catalog, spec as string, "characterBase"))
-    fail("Specialization not found");
+    fail(t("team.specializationNotFound"));
   for (const flag of ["ascended", "all_ascended"]) {
-    if (!v.is(Flag, get(value, flag, false))) fail("Invalid Ascension flag");
+    if (!v.is(Flag, get(value, flag, false))) fail(t("team.invalidAscensionFlag"));
   }
   const ranks = get(value, "perks", {});
-  if (!isDict(ranks)) fail("Invalid Perk rank");
+  if (!isDict(ranks)) fail(t("team.invalidPerkRank"));
   for (const [key, rank] of Object.entries(ranks)) {
     const perk = index.perksById.get(key);
     if (
@@ -402,7 +409,7 @@ export function validateCharacter(index: TeamIndex, value: unknown): Character {
       rank < 0 ||
       rank > perk.ranks
     ) {
-      fail("Perk rank or specialization does not match");
+      fail(t("team.perkMismatch"));
     }
   }
   const anointments = get(value, "anointments", []);
@@ -411,24 +418,24 @@ export function validateCharacter(index: TeamIndex, value: unknown): Character {
     !anointments.every((a) => typeof a === "string") ||
     new Set(anointments).size !== anointments.length
   ) {
-    fail("Anointment duplicate or invalid");
+    fail(t("team.anointmentInvalid"));
   }
   for (const key of anointments as string[]) {
     if (!isCharacterPart(index.catalog, key, "characterAnointment")) {
-      fail("This Perk cannot be used as an Anointment");
+      fail(t("team.notAnointment"));
     }
   }
   if (anointments.length > characterEffects(index, value).anointment_capacity) {
-    fail("Anointment Count exceeds character capacity");
+    fail(t("team.anointmentCapacity"));
   }
   return value as unknown as Character;
 }
 
 export function validateArtifact(index: TeamIndex, value: unknown): void {
-  if (!v.is(ArtifactShape, value)) fail("Invalid Artifact configuration");
+  if (!v.is(ArtifactShape, value)) fail(t("team.invalidArtifact"));
   const type = get(value, "type", "Sword");
   if (typeof type !== "string" || !Object.hasOwn(index.catalog.artifact_primary, type)) {
-    fail("Invalid Artifact type");
+    fail(t("team.invalidArtifactType"));
   }
   for (const [field, kind] of [
     ["stats", "stat"],
@@ -437,16 +444,16 @@ export function validateArtifact(index: TeamIndex, value: unknown): void {
     const entries = get(value, field, []);
     const slots = index.rules.artifact_slots;
     if (!Array.isArray(entries) || entries.length > slots[field]) {
-      fail(`An Artifact holds at most ${slots.stats} Stats and ${slots.tricks} Tricks`);
+      fail(t("team.artifactCapacity", { stats: slots.stats, tricks: slots.tricks }));
     }
     for (const entry of entries) {
-      if (typeof entry !== "string") fail("Invalid Artifact property");
-      if (index.artifactProperties.get(entry) !== kind) fail("Property type does not match");
+      if (typeof entry !== "string") fail(t("team.invalidArtifactProperty"));
+      if (index.artifactProperties.get(entry) !== kind) fail(t("team.propertyTypeMismatch"));
     }
   }
   const spell = get(value, "spell");
   if (truthy(spell) && index.kinds.get(spell as string) !== "spell") {
-    fail("The Spell Slot takes a Spell Gem");
+    fail(t("team.spellSlotGem"));
   }
 }
 
@@ -475,7 +482,7 @@ function signature(item: Dict): string {
  * Throws TeamError with the message to show.
  */
 export function validateTeam(index: TeamIndex, input: unknown, previous?: unknown): Team {
-  if (!isDict(input) || !(previous == null || isDict(previous))) fail("Invalid team");
+  if (!isDict(input) || !(previous == null || isDict(previous))) fail(t("team.invalidTeam"));
   const plan = input;
   const held = new Set<string>();
   if (previous) {
@@ -488,14 +495,14 @@ export function validateTeam(index: TeamIndex, input: unknown, previous?: unknow
     }
   }
   const slots = plan.slots;
-  if (!Array.isArray(slots) || slots.length !== PARTY_SIZE) fail("A team must contain six slots");
+  if (!Array.isArray(slots) || slots.length !== PARTY_SIZE) fail(t("team.sixSlots"));
   const seen = new Set<string>();
 
   function component(key: unknown, kinds?: string[]): string {
-    if (typeof key !== "string") fail("Invalid component");
+    if (typeof key !== "string") fail(t("team.invalidComponent"));
     const kind = index.kinds.get(key);
     if (!kind || (kinds && !kinds.includes(kind))) {
-      fail("Component type is incompatible with this slot");
+      fail(t("team.componentIncompatible"));
     }
     return kind;
   }
@@ -505,80 +512,79 @@ export function validateTeam(index: TeamIndex, input: unknown, previous?: unknow
       component(value, kinds);
       return;
     }
-    if (!v.is(EquipmentShape, value)) fail("Invalid equipment");
+    if (!v.is(EquipmentShape, value)) fail(t("team.invalidEquipment"));
     const kind = component(value.id, kinds);
     const uid = value.uid;
-    if (!v.is(Uid, uid) || seen.has(uid)) fail("Invalid or duplicate equipment instance");
+    if (!v.is(Uid, uid) || seen.has(uid)) fail(t("team.duplicateEquipment"));
     seen.add(uid);
     if (
       Object.hasOwn(value, "shown") &&
       entityOf(index, value.shown as string) !== entityOf(index, value.id as string)
     ) {
-      fail("Invalid equipment");
+      fail(t("team.invalidEquipment"));
     }
     const properties = get(value, "properties", []);
     if (!Array.isArray(properties) || new Set(properties).size !== properties.length) {
-      fail("Invalid properties");
+      fail(t("team.invalidProperties"));
     }
-    if (properties.length && kind !== "spell") fail("Properties require a Spell Gem");
+    if (properties.length && kind !== "spell") fail(t("team.propertiesNeedGem"));
     for (const key of properties) component(key, ["enchantment"]);
     const variants = get(value, "property_variants", {});
     if (!isDict(variants) || Object.keys(variants).some((k) => !properties.includes(k))) {
-      fail("Invalid property variant");
+      fail(t("team.invalidVariant"));
     }
     if ((properties.length || truthy(variants)) && !held.has(signature(value))) {
       const most = index.rules.spell_gems.properties;
-      if (properties.length > most) fail(`A Spell Gem can have at most ${most} properties`);
+      if (properties.length > most) fail(t("team.gemPropertyMost", { most }));
       const compatible = index.rules.property_compatibility[value.id as string];
       const selected: number[] = [];
       for (const key of properties as string[]) {
         const choices = index.rules.property_choices[key] ?? [];
         if (!choices.length) continue;
         const id = get(variants, key, choices.length === 1 ? choices[0] : null);
-        if (!isInt(id) || !choices.includes(id)) fail("Choose the specific property variant");
+        if (!isInt(id) || !choices.includes(id)) fail(t("team.chooseVariant"));
         if (compatible && !compatible.includes(id)) {
-          fail("Property is incompatible with this Spell");
+          fail(t("team.propertyIncompatible"));
         }
         selected.push(id);
       }
       if (unique(selected).filter((id) => index.rules.potency_sources.includes(id)).length > 1) {
-        fail("Choose only one alternative potency stat");
+        fail(t("team.chooseOnePotency"));
       }
     }
     if (Object.hasOwn(value, "artifact")) {
-      if (kind !== "material" && kind !== "artifact") fail("Requires an Artifact");
+      if (kind !== "material" && kind !== "artifact") fail(t("team.requiresArtifact"));
       validateArtifact(index, value.artifact);
     }
     if (Object.hasOwn(value, "rank") && (kind !== "relic" || !v.is(RelicRank, value.rank))) {
-      fail("Invalid Relic rank");
+      fail(t("team.invalidRelicRank"));
     }
   }
 
   for (const slot of slots) {
-    if (!v.is(SlotShape, slot)) fail("Invalid slot");
+    if (!v.is(SlotShape, slot)) fail(t("team.invalidSlot"));
     for (const field of ["base", "fusion", "artifact", "relic"] as const) {
       if (truthy(slot[field])) instance(slot[field], index.rules.slot_kinds[field]);
     }
     const nether = get(slot, "nether", []);
-    if (!Array.isArray(nether) || nether.length > NETHER_TRAITS) fail("Invalid Nether Stone");
+    if (!Array.isArray(nether) || nether.length > NETHER_TRAITS) fail(t("team.invalidNether"));
     for (const trait of nether) instance(trait, ["trait"]);
     const spells = get(slot, "spells", []);
-    if (!Array.isArray(spells)) fail("Invalid Spell list");
+    if (!Array.isArray(spells)) fail(t("team.invalidSpellList"));
     for (const gem of spells) instance(gem, index.rules.slot_kinds.spells);
     const spellIds = spells.map((gem) => itemId(gem as EquipmentRef));
-    if (new Set(spellIds).size !== spellIds.length)
-      fail("A creature cannot equip the same Spell Gem twice");
+    if (new Set(spellIds).size !== spellIds.length) fail(t("team.duplicateGem"));
   }
   const items = plan.inventory;
-  if (!Array.isArray(items) || items.length > 500) fail("Invalid selection");
+  if (!Array.isArray(items) || items.length > 500) fail(t("team.invalidSelection"));
   for (const item of items) {
-    if (!isDict(item)) fail("Invalid selection item");
+    if (!isDict(item)) fail(t("team.invalidSelectionItem"));
     instance(item);
   }
   const relics = (slots as Dict[])
     .filter((s) => truthy(s.relic))
     .map((s) => (typeof s.relic === "string" ? s.relic : (s.relic as Dict).id));
-  if (new Set(relics).size !== relics.length) fail("The same Relic cannot be equipped twice");
+  if (new Set(relics).size !== relics.length) fail(t("team.duplicateRelic"));
   const character = validateCharacter(index, plan.character);
   return {
     character,

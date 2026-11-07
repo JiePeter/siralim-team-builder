@@ -1,4 +1,5 @@
 // Independent equipment instances: moving consumes a pool item; copying clones its configuration.
+import { t } from "@/i18n";
 import {
   isCharacterPart,
   itemId,
@@ -13,12 +14,12 @@ export type ListField = "spells" | "nether";
 export type CharacterField = "characterBase" | "characterAnointment";
 
 export const fieldLabels: Record<SlotField, string> = {
-  base: "Primary",
-  fusion: "Fusion",
-  artifact: "Artifact",
-  nether: "Nether",
-  relic: "Relic",
-  spells: "Spell Gem",
+  base: t("team.field.base"),
+  fusion: t("team.field.fusion"),
+  artifact: t("team.field.artifact"),
+  nether: t("team.field.nether"),
+  relic: t("team.field.relic"),
+  spells: t("team.field.spells"),
 };
 
 export const isListField = (field: SlotField): field is ListField =>
@@ -66,7 +67,7 @@ export function fullRanks(perks: CharacterDefinitions["perks"]): Record<string, 
 
 function poolIndex(value: Team, uid: string): number {
   const index = value.inventory.findIndex((i) => i.uid === uid);
-  if (index < 0) throw new Error("Component has moved");
+  if (index < 0) throw new Error(t("team.componentMoved"));
   return index;
 }
 
@@ -82,8 +83,8 @@ export function installInstance(
   const index = poolIndex(next, uid);
   const item = next.inventory[index]!;
   const slot = next.slots[slotIndex];
-  if (!slot) throw new Error("Invalid slot");
-  if (!isListField(field) && slot[field]) throw new Error("This slot is occupied");
+  if (!slot) throw new Error(t("team.invalidSlot"));
+  if (!isListField(field) && slot[field]) throw new Error(t("team.slotOccupied"));
   const installed: Equipment = { ...item, id: resolvedId };
   if (field === "relic") installed.rank ??= 1;
   if (isListField(field)) (slot[field] ??= []).push(installed);
@@ -101,7 +102,7 @@ export function equipmentAt(value: Team, slot: number, field: SlotField, index =
 export function returnEquipment(value: Team, slot: number, field: SlotField, index = 0): Team {
   const next = structuredClone(value);
   const item = equipmentAt(next, slot, field, index);
-  if (!item) throw new Error("Equipment not found");
+  if (!item) throw new Error(t("team.equipmentNotFound"));
   next.inventory.push(typeof item === "string" ? newInstance(item) : item);
   if (isListField(field)) next.slots[slot]![field]!.splice(index, 1);
   else delete next.slots[slot]![field];
@@ -123,7 +124,7 @@ export function copyEquipment(value: Team, slot: number, field: SlotField, index
   const next = structuredClone(value);
   const item = equipmentAt(next, slot, field, index);
   if (!item || !["artifact", "spells"].includes(field))
-    throw new Error("Select a Spell Gem or an Artifact");
+    throw new Error(t("team.selectGemOrArtifact"));
   next.inventory.push(cloneInstance(item));
   return next;
 }
@@ -180,7 +181,7 @@ export function swapTraits(
   const next = { ...value, slots: value.slots.map((slot) => ({ ...slot })) };
   const first = next.slots[a.slot]?.[a.field];
   const second = next.slots[b.slot]?.[b.field];
-  if (!first || !second) throw new Error("Component has moved");
+  if (!first || !second) throw new Error(t("team.componentMoved"));
   const carrying = (item: EquipmentRef, field: TraitField, other: EquipmentRef) => {
     if (!carriers) return other;
     const id = field === "artifact" ? carriers.material : carriers.creature;
@@ -208,13 +209,11 @@ export function installCharacterPart(
   const c = next.character;
   if (!isCharacterPart(definitions, item.id, field))
     throw new Error(
-      field === "characterBase"
-        ? "Select a Specialization"
-        : "This Perk cannot be used as an Anointment",
+      field === "characterBase" ? t("team.selectSpecialization") : t("team.notAnointment"),
     );
   if (field === "characterBase") {
     const spec = definitions.specializations.find((s) => s.id === item.id)!;
-    if (c.specialization === item.id) throw new Error("This Specialization is already selected");
+    if (c.specialization === item.id) throw new Error(t("team.specializationSelected"));
     if (c.specialization) next.inventory.push(newInstance(c.specialization));
     c.specialization = item.id;
     c.perks = fullRanks(definitions.perks.filter((p) => p.specialization === spec.name));
@@ -225,7 +224,7 @@ export function installCharacterPart(
       next.inventory.push(newInstance(c.anointments[position]!));
       c.anointments[position] = item.id;
     } else c.anointments.push(item.id);
-  } else throw new Error("Invalid character slot");
+  } else throw new Error(t("team.invalidCharacterSlot"));
   next.inventory.splice(index, 1);
   return next;
 }
@@ -246,6 +245,6 @@ export function returnCharacterPart(value: Team, field: CharacterField, position
       next.inventory.push(newInstance(id));
       c.anointments.splice(position, 1);
     }
-  } else throw new Error("Invalid character slot");
+  } else throw new Error(t("team.invalidCharacterSlot"));
   return next;
 }

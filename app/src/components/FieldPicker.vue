@@ -112,8 +112,8 @@ function choose(value: string) {
       <ListboxFilter
         v-model="q"
         auto-focus
-        :aria-label="`Search ${label}`"
-        placeholder="Name, trait or effect"
+        :aria-label="$t('tray.picker.search', { label })"
+        :placeholder="$t('tray.picker.placeholder')"
       />
     </div>
     <AttributeFilters
@@ -124,7 +124,7 @@ function choose(value: string) {
     />
     <ListboxContent class="picker-list">
       <ListboxGroup v-if="inTray.length">
-        <ListboxGroupLabel class="picker-label">In tray</ListboxGroupLabel>
+        <ListboxGroupLabel class="picker-label">{{ $t("tray.picker.inTray") }}</ListboxGroupLabel>
         <ListboxItem
           v-for="{ item, count } in inTray"
           :key="item.uid"
@@ -133,12 +133,13 @@ function choose(value: string) {
         >
           <GameSprite :data="component(displayed(item))" />
           <span class="picker-name">{{ component(displayed(item))?.name ?? "" }}</span>
-          <span class="added-mark">In tray ×{{ count }}</span>
+          <span class="added-mark">{{ $t("tray.picker.inTrayCount", { count }) }}</span>
         </ListboxItem>
       </ListboxGroup>
       <ListboxGroup v-if="more.length">
         <ListboxGroupLabel class="picker-label"
-          >More matches <span class="picker-count">{{ more.length }}</span></ListboxGroupLabel
+          >{{ $t("tray.picker.moreMatches") }}
+          <span class="picker-count">{{ more.length }}</span></ListboxGroupLabel
         >
         <ListboxItem
           v-for="item in more.slice(0, shown)"
@@ -161,16 +162,19 @@ function choose(value: string) {
       class="choice choice-action"
       @click="shown += PAGE"
     >
-      <i class="icon icon-down"></i>Show {{ Math.min(PAGE, more.length - shown) }} more
+      <i class="icon icon-down"></i
+      >{{ $t("tray.picker.showMore", { count: Math.min(PAGE, more.length - shown) }) }}
     </button>
-    <p v-if="found && !inTray.length && !more.length" class="empty">No {{ label }} matches</p>
+    <p v-if="found && !inTray.length && !more.length" class="empty">
+      {{ $t("tray.picker.noMatches", { label }) }}
+    </p>
     <button
       v-if="found"
       type="button"
       class="choice choice-action"
       @click="emit('search', q, attributes)"
     >
-      <i class="icon icon-search"></i>Open in Search
+      <i class="icon icon-search"></i>{{ $t("tray.picker.openInSearch") }}
     </button>
     <slot />
   </ListboxRoot>

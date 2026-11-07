@@ -42,14 +42,14 @@ const perk = (position: number) => {
 </script>
 
 <template>
-  <section class="slot character-slot" aria-label="Character">
+  <section class="slot character-slot" :aria-label="$t('editors.character')">
     <Teleport defer :to="`#${dialogActions}`">
       <button
         v-if="character.specialization || character.anointments.length"
         type="button"
         class="clear"
-        aria-label="Clear Character"
-        title="Clear Character"
+        :aria-label="$t('editors.clearCharacter')"
+        :title="$t('editors.clearCharacter')"
         @click="emit('clear')"
       >
         <i class="icon icon-trash"></i>
@@ -60,7 +60,7 @@ const perk = (position: number) => {
       :accepts="accepts('characterBase')"
       @drop="emit('drop', 'characterBase', 0)"
     >
-      <small>Specialization</small>
+      <small>{{ $t("editors.specialization") }}</small>
       <div
         v-if="specialization"
         class="equipped"
@@ -75,8 +75,8 @@ const perk = (position: number) => {
             <button
               type="button"
               class="icon-button"
-              aria-label="Back to tray: Specialization"
-              title="Back to tray"
+              :aria-label="$t('editors.backToTrayField', { field: $t('editors.specialization') })"
+              :title="$t('editors.backToTray')"
               @click="emit('remove', 'characterBase', 0)"
             >
               <i class="icon icon-undo"></i>
@@ -88,14 +88,14 @@ const perk = (position: number) => {
         v-else
         type="button"
         class="drop-target"
-        aria-label="Specialization"
+        :aria-label="$t('editors.specialization')"
         @click="emit('place', 'characterBase', 0)"
       >
-        <i class="icon icon-plus"></i>Specialization
+        <i class="icon icon-plus"></i>{{ $t("editors.specialization") }}
       </button>
     </DropZone>
     <div class="character-slot-heading">
-      <small>Anointments</small
+      <small>{{ $t("editors.anointments") }}</small
       ><small class="number">{{ character.anointments.length }}/{{ capacity }}</small>
     </div>
     <DropZone
@@ -120,8 +120,12 @@ const perk = (position: number) => {
             <button
               type="button"
               class="icon-button"
-              :aria-label="`Back to tray: Anointment ${position}`"
-              title="Back to tray"
+              :aria-label="
+                $t('editors.backToTrayField', {
+                  field: $t('editors.anointment', { position }),
+                })
+              "
+              :title="$t('editors.backToTray')"
               @click="emit('remove', 'characterAnointment', position - 1)"
             >
               <i class="icon icon-undo"></i>
@@ -133,7 +137,7 @@ const perk = (position: number) => {
         v-else
         type="button"
         class="drop-target"
-        :aria-label="`Anointment ${position}`"
+        :aria-label="$t('editors.anointment', { position })"
         @click="emit('place', 'characterAnointment', position - 1)"
       >
         <i class="icon icon-plus"></i>{{ position }}

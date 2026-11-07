@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
+import { t } from "@/i18n";
 import { useSearchStore } from "@/stores/search";
 import ObjectCell from "@/components/ObjectCell.vue";
 import { kindNames } from "@/components/presentation";
@@ -16,7 +17,11 @@ function browse(value: string) {
 
 <template>
   <div class="search-empty">
-    <nav v-if="!narrowed && facets.kinds.length" class="kind-sheet" aria-label="Browse by type">
+    <nav
+      v-if="!narrowed && facets.kinds.length"
+      class="kind-sheet"
+      :aria-label="t('search.browseByType')"
+    >
       <ObjectCell
         v-for="option in facets.kinds"
         :key="option.value"

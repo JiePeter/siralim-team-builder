@@ -4,11 +4,12 @@ import type { Catalog } from "@/data";
 import { artifactValueText } from "@/domain/artifact";
 import type { ArtifactConfig, Equipment, Team } from "@/domain/team";
 import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
+import { t } from "@/i18n";
 import FieldPicker from "./FieldPicker.vue";
 import GameSprite from "./GameSprite.vue";
 import ModalDialog from "./ModalDialog.vue";
 import ObjectSummary from "./ObjectSummary.vue";
-import { artifactEffects, artifactTrigger, shownAs } from "./assembly";
+import { artifactEffects, artifactTrigger, artifactTypeName, shownAs } from "./assembly";
 import { component } from "./components";
 import { attempt } from "./toast";
 
@@ -55,12 +56,12 @@ const valueOf = (id: string) => {
 const groups = [
   {
     field: "stats" as const,
-    title: "Stat",
+    title: t("editors.artifact.stat"),
     options: props.catalog.artifact_properties.filter((p) => p.slot === "stat"),
   },
   {
     field: "tricks" as const,
-    title: "Trick",
+    title: t("editors.artifact.trick"),
     options: props.catalog.artifact_properties.filter((p) => p.slot === "trick"),
   },
 ];
@@ -114,34 +115,44 @@ watch(config, save, { deep: true });
           <GameSprite :data="trait" />
           <strong>{{ trait.name }}</strong>
         </button>
-        <button type="button" class="icon-button" aria-label="Change Trait" @click="picking = true">
+        <button
+          type="button"
+          class="icon-button"
+          :aria-label="$t('editors.artifact.changeTrait')"
+          @click="picking = true"
+        >
           <i class="icon icon-replace"></i>
         </button>
-        <button type="button" class="icon-button" aria-label="Remove Trait" @click="clearTrait">
+        <button
+          type="button"
+          class="icon-button"
+          :aria-label="$t('editors.artifact.removeTrait')"
+          @click="clearTrait"
+        >
           <i class="icon icon-trash"></i>
         </button>
       </template>
       <button v-else type="button" class="drop-target" @click="picking = true">
-        <i class="icon icon-plus"></i>Trait
+        <i class="icon icon-plus"></i>{{ $t("editors.trait") }}
       </button>
     </div>
     <ObjectSummary v-if="trait" :data="trait" :limit="1" :links="false" :facts="false" />
 
-    <div class="artifact-types" role="group" aria-label="Type">
+    <div class="artifact-types" role="group" :aria-label="$t('editors.artifact.type')">
       <button
-        v-for="t in types"
-        :key="t"
+        v-for="type in types"
+        :key="type"
         type="button"
-        :aria-pressed="config.type === t"
-        @click="config.type = t"
+        :aria-pressed="config.type === type"
+        @click="config.type = type"
       >
-        {{ t }}
+        {{ artifactTypeName(type) }}
       </button>
     </div>
 
     <div class="artifact-rows">
       <div v-if="primary" class="artifact-row">
-        <span class="row-label">Primary</span>
+        <span class="row-label">{{ $t("editors.artifact.primary") }}</span>
         <span class="row-fixed">{{ primary.stat }}</span>
         <span class="number">{{ artifactValueText(primary) }}</span>
       </div>
@@ -153,7 +164,7 @@ watch(config, save, { deep: true });
         >
           <span class="row-label">{{ group.title }} {{ index + 1 }}</span>
           <select v-model="config[group.field][index]">
-            <option value="">None</option>
+            <option value="">{{ $t("editors.none") }}</option>
             <option v-for="p in group.options" :key="p.id" :value="p.id">{{ p.name }}</option>
           </select>
           <span class="number">{{ id ? valueOf(id) : "" }}</span>
@@ -162,7 +173,7 @@ watch(config, save, { deep: true });
       <label class="artifact-row">
         <span class="row-label">{{ artifactTrigger[config.type] }}</span>
         <select v-model="config.spell">
-          <option :value="null">None</option>
+          <option :value="null">{{ $t("editors.none") }}</option>
           <option v-for="s in catalog.spells" :key="s.id" :value="s.id">{{ s.name }}</option>
         </select>
         <span></span>
@@ -173,11 +184,11 @@ watch(config, save, { deep: true });
       :data="{ id: 'artifact:configuration', kind: 'artifact', name: '', effects }"
     />
 
-    <ModalDialog v-model:open="picking" title="Artifact · Trait">
+    <ModalDialog v-model:open="picking" :title="$t('editors.artifact.dialogTitle')">
       <div class="choices">
         <FieldPicker
           field="artifactTrait"
-          label="Trait"
+          :label="$t('editors.trait')"
           :team="team"
           :catalog="catalog"
           :kind-of="kindOf"

@@ -9,7 +9,12 @@ import IdentityLine from "./IdentityLine.vue";
 import ObjectLink from "./ObjectLink.vue";
 import { component } from "./components";
 
-const props = defineProps<{ character: Character; specialization: string; perks: Perk[] }>();
+const props = defineProps<{
+  character: Character;
+  specialization: string;
+  royal: boolean;
+  perks: Perk[];
+}>();
 const emit = defineEmits<{ apply: [character: Character] }>();
 
 const draft = reactive(structuredClone(toRaw(props.character)));
@@ -37,28 +42,33 @@ watch(draft, () => emit("apply", structuredClone(toRaw(draft))), { deep: true })
   <div class="choices">
     <IdentityLine v-if="page" :data="page"><ObjectLink :item="page" /></IdentityLine>
     <div class="character-flags">
-      <label><input v-model="draft.ascended" type="checkbox" />Include Ascension</label>
-      <label v-if="specialization === 'Royal'"
-        ><input v-model="draft.all_ascended" type="checkbox" />All-specialization Ascension
-        bonus</label
+      <label
+        ><input v-model="draft.ascended" type="checkbox" />{{
+          $t("editors.perks.includeAscension")
+        }}</label
       >
-      <button type="button" @click="maxRanks">Max Perk ranks</button>
+      <label v-if="royal"
+        ><input v-model="draft.all_ascended" type="checkbox" />{{
+          $t("editors.perks.allAscended")
+        }}</label
+      >
+      <button type="button" @click="maxRanks">{{ $t("editors.perks.maxRanks") }}</button>
     </div>
     <input
       v-model="filter"
       class="perk-search"
-      aria-label="Search Perks"
-      placeholder="Name or effect"
+      :aria-label="$t('editors.perks.search')"
+      :placeholder="$t('editors.perks.placeholder')"
     />
     <div v-for="p in shown" :key="p.id" class="perk-option">
       <div class="section-head">
         <strong><GameSprite :data="p" />{{ p.name }}</strong>
-        <span v-if="p.ascension">Ascension</span>
+        <span v-if="p.ascension">{{ $t("editors.perks.ascension") }}</span>
         <span v-else class="stepper perk-rank">
           <button
             type="button"
             class="icon-button"
-            :aria-label="`Lower ${p.name} Rank`"
+            :aria-label="$t('editors.perks.lowerRank', { name: p.name })"
             :disabled="rank(p) <= 0"
             @click="draft.perks[p.id] = rank(p) - 1"
           >
@@ -68,7 +78,7 @@ watch(draft, () => emit("apply", structuredClone(toRaw(draft))), { deep: true })
           <button
             type="button"
             class="icon-button"
-            :aria-label="`Raise ${p.name} Rank`"
+            :aria-label="$t('editors.perks.raiseRank', { name: p.name })"
             :disabled="rank(p) >= p.ranks"
             @click="draft.perks[p.id] = rank(p) + 1"
           >

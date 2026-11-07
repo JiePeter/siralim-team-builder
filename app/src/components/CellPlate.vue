@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { assetUrl } from "@/data";
+import { className } from "@/i18n";
 import { classOf, frameOf, spriteOf, type Displayable } from "./presentation";
 
 const props = withDefaults(
@@ -70,7 +71,7 @@ const badges = computed(() => {
   const source = props.classFrom ?? props.data;
   const sourceClass = classOf(source);
   return [
-    { at: "class", src: source.attrs?.class_icon, label: sourceClass },
+    { at: "class", src: source.attrs?.class_icon, label: className(sourceClass) },
     { at: "race", src: attrs.race_icon, label: identity?.race ?? attrs.race ?? "" },
   ].filter((b): b is { at: string; src: string; label: string } => !!b.src);
 });

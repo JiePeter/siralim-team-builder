@@ -3,6 +3,7 @@ import { computed, nextTick, onWatcherCleanup, ref, shallowRef, watch } from "vu
 import { useMediaQuery } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { DataNotFound, object, type ObjectPage } from "@/data";
+import { t } from "@/i18n";
 import { prefetch, whenIdle } from "@/prefetch";
 import { pageSettled } from "@/router";
 import AddButton from "@/components/AddButton.vue";
@@ -135,9 +136,11 @@ watch([page, synergyReady, () => route.fullPath], async ([data, ready]) => {
       </ReferenceBody>
     </div>
   </article>
-  <p v-else-if="error instanceof DataNotFound" class="notice">Object not found.</p>
-  <p v-else-if="error" class="notice">This object could not be loaded.</p>
-  <div v-else class="object-page"><div class="loading">Loading…</div></div>
+  <p v-else-if="error instanceof DataNotFound" class="notice">{{ t("search.objectNotFound") }}</p>
+  <p v-else-if="error" class="notice">{{ t("search.objectFailed") }}</p>
+  <div v-else class="object-page">
+    <div class="loading">{{ t("search.loading") }}</div>
+  </div>
 </template>
 
 <style scoped>

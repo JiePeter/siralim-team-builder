@@ -9,6 +9,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 from .facts import render
+from .messages import _, use as use_messages
 from .importer import ROOT, DEFAULT_DB
 from .knowledge import Knowledge, database
 from .discovery import (
@@ -207,21 +208,29 @@ def anointment_capacity(perks):
     return {"base": BASE_ANOINTMENTS, "perks": bonuses}
 
 
-def compact_catalog(catalog, formulas=None):
+def compact_catalog(catalog, formulas=None, original=None):
+    """`original` is the catalog in the game's English; a localized catalog reads rules from it."""
     properties, primary = formulas or artifact_formulas()
+    original = original or catalog
     result = dict(catalog)
-    result["anointments"] = anointment_capacity(catalog["perks"])
+    result["anointments"] = anointment_capacity(original["perks"])
     for group in ("perks", "artifact_properties", "spells"):
         result[group] = [segments_only(item) for item in catalog[group]]
     result["perks"] = [
         {**perk, "always_active": True} if ALWAYS_ACTIVE in source["description"].lower() else perk
-        for perk, source in zip(result["perks"], catalog["perks"])
+        for perk, source in zip(result["perks"], original["perks"])
     ]
-    missing = [p["name"] for p in catalog["artifact_properties"] if p["name"] not in properties]
+    english = {p["id"]: p["name"] for p in original["artifact_properties"]}
+    missing = [name for name in english.values() if name not in properties]
     if missing:
         raise ValueError("No Artifact formula for " + ", ".join(missing))
     result["artifact_properties"] = [
-        {**item, "formula": properties[item["name"]]} for item in result["artifact_properties"]
+        {**item, "formula": properties[english[item["id"]]]}
+        for item in result["artifact_properties"]
+    ]
+    keys = {s["id"]: s["name"] for s in original["specializations"]}
+    result["specializations"] = [
+        {**s, "key": keys.get(s["id"], s["name"])} for s in result["specializations"]
     ]
     result["artifact_primary"] = primary
     result["relics"] = [
@@ -409,7 +418,7 @@ def discovery_pack(found):
         if [d["unit"] for d in group["descriptors"]] != group["action"]:
             raise ValueError("Descriptor order differs from action units for " + root)
     labels = defaultdict(dict)
-    for category, _, value in features:
+    for category, _relation, value in features:
         labels[category][value] = found.label(category, value)
     return {
         "features": features,
@@ -418,13 +427,16 @@ def discovery_pack(found):
         "attributes": found.attributes,
         "status_kinds": found.status_kinds,
         "labels": {
-            "categories": CATEGORIES,
-            "relations": RELATIONS,
-            "types": TYPE_LABELS,
+            "categories": {k: _(v) for k, v in CATEGORIES.items()},
+            "relations": {
+                category: {k: _(v) for k, v in relations.items()}
+                for category, relations in RELATIONS.items()
+            },
+            "types": {k: _(v) for k, v in TYPE_LABELS.items()},
             "values": labels,
             "unoffered_relations": sorted(UNOFFERED_RELATIONS),
             "unoffered_values": sorted(UNOFFERED_VALUES),
-            "value_aliases": [[c, v, alias] for (c, v), alias in VALUE_ALIASES.items()],
+            "value_aliases": [[c, v, _(alias)] for (c, v), alias in VALUE_ALIASES.items()],
         },
     }
 
@@ -590,6 +602,7 @@ def export(out, knowledge, objects=None, owners=None, state=None, log=lambda lin
 
     with database(knowledge.path) as db:
         meta = dict(db.execute("SELECT key,value FROM meta"))
+        use_messages(meta.get("locale", "en"), json.loads(meta.get("names", "{}")))
         if objects is None:
             objects = [r[0] for r in db.execute("SELECT id FROM entity ORDER BY id")]
         carriers = [
@@ -598,7 +611,12 @@ def export(out, knowledge, objects=None, owners=None, state=None, log=lambda lin
                 "SELECT DISTINCT src FROM edge WHERE rel IN ('innate_trait','grants_trait') ORDER BY src"
             )
         ]
-        rules = team_rules(db, knowledge.mechanics().replacements())
+        if meta.get("localized"):
+            # The rules are derived from the game's English text.
+            with database(DEFAULT_DB) as english:
+                rules = team_rules(english, Knowledge(DEFAULT_DB).mechanics().replacements())
+        else:
+            rules = team_rules(db, knowledge.mechanics().replacements())
     manifest = {
         "game_version": meta["game_version"],
         "objects": {},
@@ -606,7 +624,8 @@ def export(out, knowledge, objects=None, owners=None, state=None, log=lambda lin
     }
 
     catalog = knowledge.build_catalog()
-    write("catalog.json", compact_catalog(catalog))
+    original = Knowledge(DEFAULT_DB).build_catalog() if meta.get("localized") else None
+    write("catalog.json", compact_catalog(catalog, original=original))
     write("team-rules.json", rules)
     write("gem-properties.json", knowledge.gem_properties())
 
