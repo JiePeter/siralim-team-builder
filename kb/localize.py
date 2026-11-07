@@ -142,6 +142,7 @@ class Localizer:
         self.r = renderer
         self.rank = RANK[locale]
         self.names = {}
+        self.english = {}
         self.missing = defaultdict(list)
         self.by_name = defaultdict(dict)
         self.by_text = defaultdict(dict)
@@ -153,6 +154,7 @@ class Localizer:
         if name is not None:
             self.db.execute("UPDATE entity SET name=? WHERE id=?", (name, key))
             self.names[key] = name
+            self.english.setdefault(key, old)
             self.by_name[kind].setdefault(old, name)
             if description is not None:
                 self.by_text[kind].setdefault(old, description)
@@ -257,6 +259,12 @@ class Localizer:
         self.db.execute(
             "UPDATE entity SET attrs=? WHERE id=?", (json.dumps(attrs, ensure_ascii=False), key)
         )
+
+    def english_aliases(self):
+        """Rules name the spells they cast and gods their relics by the game's English names."""
+        for key, english in self.english.items():
+            if key.split(":")[0] in ("spell", "relic"):
+                self.db.execute("INSERT OR IGNORE INTO entity_alias VALUES(?,?)", (key, english))
 
     def races(self):
         """A creature's race is stored by name, so its component rows follow the rename."""
@@ -525,6 +533,7 @@ class Localizer:
     def finish(self):
         """What follows from the translated names and texts alone."""
         self.races()
+        self.english_aliases()
         self.configuration()
         self.mechanic_records()
         self.tokens()

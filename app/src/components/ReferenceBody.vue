@@ -298,7 +298,7 @@ const ownSummary = computed(
         :key="item.id"
         :item="item as Summary"
         v-bind="rowOptions"
-        :matched-only="section.title === 'Cast by'"
+        :matched-only="!!item.matched_rules"
       />
     </section>
   </template>

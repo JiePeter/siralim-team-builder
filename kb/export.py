@@ -10,6 +10,7 @@ from collections import defaultdict
 from pathlib import Path
 from .facts import render
 from .messages import _, use as use_messages
+from .planner import planner_pack
 from .importer import ROOT, DEFAULT_DB
 from .knowledge import Knowledge, database
 from .discovery import (
@@ -216,9 +217,12 @@ def compact_catalog(catalog, formulas=None, original=None):
     result["anointments"] = anointment_capacity(original["perks"])
     for group in ("perks", "artifact_properties", "spells"):
         result[group] = [segments_only(item) for item in catalog[group]]
+    always_active = {
+        p["id"] for p in original["perks"] if ALWAYS_ACTIVE in p["description"].lower()
+    }
     result["perks"] = [
-        {**perk, "always_active": True} if ALWAYS_ACTIVE in source["description"].lower() else perk
-        for perk, source in zip(result["perks"], original["perks"])
+        {**perk, "always_active": True} if perk["id"] in always_active else perk
+        for perk in result["perks"]
     ]
     english = {p["id"]: p["name"] for p in original["artifact_properties"]}
     missing = [name for name in english.values() if name not in properties]
@@ -627,6 +631,8 @@ def export(out, knowledge, objects=None, owners=None, state=None, log=lambda lin
     original = Knowledge(DEFAULT_DB).build_catalog() if meta.get("localized") else None
     write("catalog.json", compact_catalog(catalog, original=original))
     write("team-rules.json", rules)
+    with database(DEFAULT_DB) as english:
+        write("planner.json", planner_pack(english))
     write("gem-properties.json", knowledge.gem_properties())
 
     engine = knowledge.mechanics()

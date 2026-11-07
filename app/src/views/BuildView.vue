@@ -707,6 +707,18 @@ async function share() {
   toast(t("build.linkCopied"));
 }
 
+async function copyPlannerLink() {
+  await navigator.clipboard.writeText(await store.plannerLink());
+  toast(t("build.linkCopied"));
+}
+
+async function importPlanner() {
+  const text = prompt(t("build.plannerPrompt"));
+  if (!text) return;
+  const dropped = await store.importPlannerLink(text);
+  if (dropped) toast(t("build.plannerDropped", { n: dropped }));
+}
+
 function clearSlot() {
   const i = openSlot.value;
   if (confirm(t("build.confirmClearSlot", { n: slotIndex(i) }))) attempt(() => store.clearSlot(i));
@@ -966,6 +978,27 @@ const gemPosition = (position: number): Position => ({
           "
         >
           {{ $t("build.importTeam") }}
+        </button>
+        <hr />
+        <button
+          type="button"
+          role="menuitem"
+          @click="
+            close();
+            attempt(copyPlannerLink);
+          "
+        >
+          {{ $t("build.copyPlannerLink") }}
+        </button>
+        <button
+          type="button"
+          role="menuitem"
+          @click="
+            close();
+            attempt(importPlanner);
+          "
+        >
+          {{ $t("build.importPlannerLink") }}
         </button>
       </FloatingMenu>
     </div>

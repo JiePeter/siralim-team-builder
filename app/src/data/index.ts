@@ -1,4 +1,5 @@
 import type { CardFields } from "@/domain/discovery";
+import type { PlannerPack } from "@/domain/planner";
 import type { TeamRules } from "@/domain/team";
 import { facts } from "@/domain/facts";
 import { joinSegments } from "@/domain/values";
@@ -126,6 +127,10 @@ export function catalog(): Promise<Catalog> {
 
 export function teamRules(): Promise<TeamRules> {
   return packFile<TeamRules>("team-rules.json");
+}
+
+export function plannerPack(): Promise<PlannerPack> {
+  return packFile<PlannerPack>("planner.json");
 }
 
 export function gemProperties(): Promise<GemProperty[]> {

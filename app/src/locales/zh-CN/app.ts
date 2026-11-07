@@ -1,5 +1,6 @@
 export default {
   app: {
+    mainNav: "主导航",
     language: "语言",
     brandSub: "组建规划器",
     back: "返回",

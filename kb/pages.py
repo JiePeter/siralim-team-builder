@@ -40,11 +40,13 @@ class PageTables:
         for key, body in db.execute("SELECT entity_id,body FROM game_entity WHERE kind='god'"):
             # The export's relicName and icon group use a different index
             # order. The deity's full relic title is independently stable.
+            title = "%, " + json.loads(body).get("relicTitle", "")
             self.god_relics[key] = [
                 r[0]
                 for r in db.execute(
-                    "SELECT id FROM entity WHERE kind='relic' AND name LIKE ?",
-                    ("%, " + json.loads(body).get("relicTitle", ""),),
+                    "SELECT DISTINCT e.id FROM entity e LEFT JOIN entity_alias a ON a.entity_id=e.id"
+                    " WHERE e.kind='relic' AND (e.name LIKE ? OR a.alias LIKE ?)",
+                    (title, title),
                 )
             ]
         self.perks = defaultdict(list)

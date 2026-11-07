@@ -1,7 +1,8 @@
 import { computed, shallowRef } from "vue";
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
-import { catalog, teamRules } from "@/data";
+import { catalog, plannerPack, teamRules } from "@/data";
+import { linkFromTeam, teamFromLink } from "@/domain/planner";
 import { toastError } from "@/components/toast";
 import { t } from "@/i18n";
 import {
@@ -27,6 +28,7 @@ import {
 } from "@/domain/placement";
 import { encodeTeam, decodeTeam } from "@/domain/share";
 import {
+  characterEffects,
   itemId,
   newTeam,
   teamIndex,
@@ -108,7 +110,7 @@ export const useTeamStore = defineStore("team", () => {
     const before = plain(team.value);
     const after = JSON.stringify(await change(update));
     return () => {
-      if (JSON.stringify(team.value) !== after) throw new Error("The team has changed since");
+      if (JSON.stringify(team.value) !== after) throw new Error(t("team.changedSince"));
       team.value = before;
     };
   }
@@ -129,7 +131,7 @@ export const useTeamStore = defineStore("team", () => {
   /** Make team `i` of `teams` the open one, with its own tray. */
   function show(teams: Team[], i: number) {
     const target = teams[i];
-    if (!target) throw new Error("Team not found");
+    if (!target) throw new Error(t("team.notFound"));
     team.value = plain(target);
     library.value = { active: i, teams };
   }
@@ -182,6 +184,21 @@ export const useTeamStore = defineStore("team", () => {
     }
     addTeam(incoming);
     return true;
+  }
+
+  /** Open a Siralim Planner link as a new team; resolves to the parts it could not place. */
+  async function importPlannerLink(text: string): Promise<number> {
+    const [pack, checked] = await Promise.all([plannerPack(), rules()]);
+    const { team: incoming, dropped } = teamFromLink(pack, text);
+    const capacity = characterEffects(checked, incoming.character).anointment_capacity;
+    const anointments = incoming.character.anointments;
+    incoming.character.anointments = anointments.slice(0, capacity);
+    addTeam(trayTraits(checked, validateTeam(checked, incoming, incoming)));
+    return dropped + Math.max(0, anointments.length - capacity);
+  }
+
+  async function plannerLink(): Promise<string> {
+    return linkFromTeam(await plannerPack(), team.value);
   }
 
   /** Put a component in the tray; resolves to the undo. */
@@ -274,7 +291,7 @@ export const useTeamStore = defineStore("team", () => {
   async function copyPoolItem(uid: string): Promise<string> {
     const next = await change((draft) => {
       const item = draft.inventory.find((i) => i.uid === uid);
-      if (!item) throw new Error("Component has moved");
+      if (!item) throw new Error(t("team.componentMoved"));
       draft.inventory.push(cloneInstance(item));
     });
     return next.inventory.at(-1)!.uid;
@@ -323,7 +340,7 @@ export const useTeamStore = defineStore("team", () => {
       const before = itemId(previous);
       if (taken) {
         const index = next.inventory.findIndex((i) => i.uid === taken);
-        if (index < 0) throw new Error("Component has moved");
+        if (index < 0) throw new Error(t("team.componentMoved"));
         next.inventory.splice(index, 1);
       }
       if (before && before !== item.id && before !== BLANK_ARTIFACT) {
@@ -382,6 +399,8 @@ export const useTeamStore = defineStore("team", () => {
     trayCount,
     rules,
     shareUrl,
+    importPlannerLink,
+    plannerLink,
     receive,
     addToTray,
     removeFromTray,

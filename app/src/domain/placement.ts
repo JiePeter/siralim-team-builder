@@ -1,4 +1,4 @@
-import { t } from "@/i18n";
+import { className, t } from "@/i18n";
 import {
   isListField,
   swapTraits,
@@ -374,7 +374,13 @@ export function gemNotices(
         .filter((gemClass): gemClass is string => !!gemClass && gemClass !== own),
     );
     for (const gemClass of other)
-      notices.push({ slot: i, message: t("placement.gemOtherClass", { gemClass, own }) });
+      notices.push({
+        slot: i,
+        message: t("placement.gemOtherClass", {
+          gemClass: className(gemClass),
+          own: className(own),
+        }),
+      });
   });
   return notices;
 }

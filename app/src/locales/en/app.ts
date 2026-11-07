@@ -1,6 +1,7 @@
 export default {
   app: {
     language: "Language",
+    mainNav: "Main",
     brandSub: "Build Planner",
     back: "Back",
     synergies: "Synergies",

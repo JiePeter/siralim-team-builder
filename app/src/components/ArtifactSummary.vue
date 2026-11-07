@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useTeamStore } from "@/stores/team";
-import { t } from "@/i18n";
+import { statName, t } from "@/i18n";
 import { artifactValueText } from "@/domain/artifact";
 import type { Equipment } from "@/domain/team";
 import ObjectSummary from "./ObjectSummary.vue";
@@ -23,7 +23,7 @@ const values = computed(() => {
   if (!config || !data) return [];
   const primary = data.artifact_primary[type.value];
   return [
-    ...(primary ? [`${primary.stat} ${artifactValueText(primary)}`] : []),
+    ...(primary ? [`${statName(primary.stat)} ${artifactValueText(primary)}`] : []),
     ...[...(config.stats ?? []), ...(config.tricks ?? [])].map((id) => {
       const property = data.artifact_properties.find((p) => p.id === id);
       return property ? `${property.name} ${artifactValueText(property.formula)}` : id;

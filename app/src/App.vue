@@ -126,7 +126,7 @@ const credits = [
     <RouterLink v-else class="brand" to="/search"
       >SIRALIM<span>{{ t("app.brandSub") }}</span></RouterLink
     >
-    <nav aria-label="Main">
+    <nav :aria-label="t('app.mainNav')">
       <RouterLink to="/search" :class="{ active: searching }"
         ><i class="icon icon-search"></i>{{ t("app.search") }}</RouterLink
       >

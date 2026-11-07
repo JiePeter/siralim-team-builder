@@ -25,7 +25,7 @@ function chosen(): Locale | null {
 }
 
 function detect(): Locale {
-  return (navigator.languages ?? [navigator.language]).some((l) => /^zh/i.test(l)) ? "zh-CN" : "en";
+  return /^zh/i.test(navigator.languages?.[0] ?? navigator.language) ? "zh-CN" : "en";
 }
 
 export const locale: Locale = chosen() ?? detect();
@@ -50,6 +50,12 @@ export const i18n = createI18n<[Messages], Locale, false>({
 /** A class's name in the page language; the data names classes in English. */
 export function className(name: string): string {
   return i18n.global.te(`classes.${name}`) ? i18n.global.t(`classes.${name}`) : name;
+}
+
+/** A stat's name in the page language; the data names stats in English. */
+export function statName(name: string): string {
+  const key = `reference.stats.${name.toLowerCase()}`;
+  return i18n.global.te(key) ? i18n.global.t(key) : name;
 }
 
 /** For code outside components; the locale never changes without a reload. */

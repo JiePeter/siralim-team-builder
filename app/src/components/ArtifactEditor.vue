@@ -4,7 +4,7 @@ import type { Catalog } from "@/data";
 import { artifactValueText } from "@/domain/artifact";
 import type { ArtifactConfig, Equipment, Team } from "@/domain/team";
 import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
-import { t } from "@/i18n";
+import { statName, t } from "@/i18n";
 import FieldPicker from "./FieldPicker.vue";
 import GameSprite from "./GameSprite.vue";
 import ModalDialog from "./ModalDialog.vue";
@@ -153,7 +153,7 @@ watch(config, save, { deep: true });
     <div class="artifact-rows">
       <div v-if="primary" class="artifact-row">
         <span class="row-label">{{ $t("editors.artifact.primary") }}</span>
-        <span class="row-fixed">{{ primary.stat }}</span>
+        <span class="row-fixed">{{ statName(primary.stat) }}</span>
         <span class="number">{{ artifactValueText(primary) }}</span>
       </div>
       <template v-for="group in groups" :key="group.field">

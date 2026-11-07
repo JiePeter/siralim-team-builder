@@ -23,7 +23,8 @@ su-build-calc by misterwtheface-oss. Artifact property formulas.
 https://github.com/misterwtheface-oss/su-build-calc
 
 REFERENCE
-Siralim Planner by BeratedBert. Consulted as a reference; none of its code or data is included.
+Siralim Planner by BeratedBert. Consulted as a reference; none of its code is included. Its link
+format and short codes are used to read and write its links.
 https://github.com/berated-bert/siralim-planner
 
 FONTS

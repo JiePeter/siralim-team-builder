@@ -90,7 +90,7 @@ export const NETHER_TRAITS = 3;
 
 export function newTeam(): Team {
   return {
-    name: "My Team",
+    name: t("team.defaultName"),
     slots: Array.from({ length: PARTY_SIZE }, () => ({})),
     notes: "",
     inventory: [],
@@ -588,7 +588,7 @@ export function validateTeam(index: TeamIndex, input: unknown, previous?: unknow
   const character = validateCharacter(index, plan.character);
   return {
     character,
-    name: slicePoints(pyStr(get(plan, "name", "My Team")), 200),
+    name: slicePoints(pyStr(get(plan, "name", t("team.defaultName"))), 200),
     notes: slicePoints(pyStr(get(plan, "notes", "")), 10000),
     slots: slots as Slot[],
     inventory: items as Equipment[],

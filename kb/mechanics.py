@@ -392,6 +392,10 @@ class Engine:
             for rule in record["rules"]:
                 node["rules"].append(Rule(key, rule, record, row))
             self.byname[(kind, name.casefold())] = key
+        if db.execute("SELECT 1 FROM sqlite_master WHERE name='entity_alias'").fetchone():
+            for key, alias in db.execute("SELECT entity_id,alias FROM entity_alias"):
+                if key in self.nodes:
+                    self.byname.setdefault((self.nodes[key]["kind"], alias.casefold()), key)
         self.triggers = defaultdict(set)
         self.counters = defaultdict(set)
         self.statuses = defaultdict(set)
