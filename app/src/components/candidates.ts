@@ -1,5 +1,4 @@
-import type { Catalog, DiscoveryMember } from "@/data";
-import type { ClassName } from "@/data/types";
+import { cards, type Catalog, type DiscoveryMember } from "@/data";
 import {
   applicable,
   attributeFacets,
@@ -7,7 +6,15 @@ import {
   type AttributeFacet,
   type Attributes,
 } from "@/domain/attributes";
-import { memberWith, rankGroups, textMatches } from "@/domain/discovery";
+import {
+  groupsMeeting,
+  memberWith,
+  rankGroups,
+  textMatches,
+  type CardFields,
+  type Condition,
+  type Scope,
+} from "@/domain/discovery";
 import { memoRequest } from "@/data/memo";
 import { discoveryPack, scatteredIds, textIds } from "@/stores/search";
 import { compareText } from "@/domain/values";
@@ -16,14 +23,16 @@ import { fieldKind, type PickerField } from "./assembly";
 export interface Candidate extends DiscoveryMember {
   /** The trait a creature or material carries, or the base an Anointment comes from. */
   detail: string;
-  /** A Spell Gem's class, which picks its sprite. */
-  classification?: { class: ClassName }[];
+  effects: CardFields["effects"];
+  facts: CardFields["facts"];
+  attrs: CardFields["attrs"];
+  classification: NonNullable<CardFields["classification"]>;
 }
 
 /** Every component a field accepts from the full data, in name order. */
 const compatible = memoRequest(async (field: PickerField, catalog: Catalog) => {
-  const index = await discoveryPack();
   const kind = fieldKind[field];
+  const [index, shard] = await Promise.all([discoveryPack(), cards(kind)]);
   const anointments = new Map(
     catalog.perks.filter((p) => p.anointment).map((p) => [p.id, p.specialization]),
   );
@@ -33,10 +42,13 @@ const compatible = memoRequest(async (field: PickerField, catalog: Catalog) => {
     for (const member of group.members) {
       if (member.kind !== kind) continue;
       if (field === "characterAnointment" && !anointments.has(member.id)) continue;
-      const cls = index.pack.attributes[member.id]?.class;
+      const card = shard[member.id];
       result.push({
         ...member,
-        ...(cls ? { classification: [{ class: cls as ClassName }] } : {}),
+        effects: card?.effects ?? [],
+        facts: card?.facts ?? [],
+        attrs: card?.attrs ?? {},
+        classification: card?.classification ?? [],
         detail:
           field === "characterAnointment"
             ? anointments.get(member.id)!
@@ -66,6 +78,8 @@ export async function candidates(
   q: string,
   catalog: Catalog,
   attributes: Attributes = {},
+  conditions: Condition[] = [],
+  scope: Scope = "action",
 ): Promise<Picked> {
   const kind = fieldKind[field];
   const wanted = applicable(kind, attributes);
@@ -93,11 +107,19 @@ export async function candidates(
     table,
     wanted,
   );
-  if (!ids && !Object.keys(wanted).length) return { items: all, matched: null, facets };
+  const mechanics = conditions.some((c) => c.category);
+  if (!ids && !Object.keys(wanted).length && !mechanics)
+    return { items: all, matched: null, facets };
+  const meeting = groupsMeeting(index, conditions, scope);
+  const met = (id: string) => meeting.has(index.canonical.get(id) ?? id);
   const matched = new Set(
     groups
       .flatMap((g) => g.members.map((m) => m.id))
-      .filter((id) => hasAttributes(table[id], wanted)),
+      .filter((id) => hasAttributes(table[id], wanted) && met(id)),
   );
-  return { items: texted.filter((c) => memberWith(index, c, kind, wanted)), matched, facets };
+  return {
+    items: texted.filter((c) => memberWith(index, c, kind, wanted) && met(c.id)),
+    matched,
+    facets,
+  };
 }

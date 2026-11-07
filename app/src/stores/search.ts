@@ -1,4 +1,4 @@
-import { ref, shallowRef } from "vue";
+import { ref, shallowRef, type InjectionKey } from "vue";
 import { defineStore } from "pinia";
 import MiniSearch, { type SearchResult } from "minisearch";
 import { cards, discovery, type SearchDocument } from "@/data";
@@ -64,7 +64,7 @@ export async function textIds(q: string): Promise<Set<string> | undefined> {
 
 const noCard: CardFields = { effects: [], facts: [], attrs: {} };
 
-export const useSearchStore = defineStore("search", () => {
+function searchState() {
   const q = ref("");
   const kind = ref("");
   const attributes = ref<Attributes>({});
@@ -152,4 +152,11 @@ export const useSearchStore = defineStore("search", () => {
     run,
     browse,
   };
-});
+}
+
+export const useSearchStore = defineStore("search", searchState);
+/** The picker's own search, so replacing a field leaves the Search page's as it was. */
+export const usePickerSearchStore = defineStore("picker-search", searchState);
+
+/** The search a MechanicFilters inside this tree narrows. */
+export const MECHANIC_SEARCH: InjectionKey<typeof useSearchStore> = Symbol("mechanic search");

@@ -2,17 +2,14 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import { useDebounceFn } from "@vueuse/core";
+import { useDebounceFn, useMediaQuery } from "@vueuse/core";
 import { t } from "@/i18n";
 import { useSearchStore } from "@/stores/search";
 import AddButton from "@/components/AddButton.vue";
 import AttributeFilters from "@/components/AttributeFilters.vue";
 import FacetOptions from "@/components/FacetOptions.vue";
-import IdentityLine from "@/components/IdentityLine.vue";
 import MechanicFilters from "@/components/MechanicFilters.vue";
-import ObjectCell from "@/components/ObjectCell.vue";
-import ObjectSummary from "@/components/ObjectSummary.vue";
-import { kindNames, objectRoute, type Hit } from "@/components/presentation";
+import ResultCard from "@/components/ResultCard.vue";
 import type { Attributes } from "@/domain/attributes";
 import { usePlacedText } from "@/components/tray";
 
@@ -29,6 +26,7 @@ const activeFilters = computed(
 );
 const input = ref<HTMLInputElement | null>(null);
 const placed = usePlacedText();
+const phone = useMediaQuery("(max-width: 767px)");
 
 const addableKinds = new Set([
   "creature",
@@ -115,38 +113,18 @@ onMounted(() => {
       <div v-if="narrowed" class="result-count muted">{{ count }}</div>
       <div v-if="narrowed" class="results">
         <template v-if="items.length">
-          <ObjectCell
+          <ResultCard
             v-for="item in items"
             :key="item.id"
-            tag="article"
             class="result"
-            :data="item"
+            link
+            :compact="phone"
+            :item="item"
             :selected="detail && route.params.id === item.id"
             :added="!!placed(item)"
           >
-            <template #label>
-              <IdentityLine :data="item" :identity="false">
-                <RouterLink
-                  class="result-name"
-                  :to="objectRoute(item.id, item.matched_rules as Hit[])"
-                  >{{ item.name }}</RouterLink
-                >
-              </IdentityLine>
-            </template>
-            <template #detail>
-              <small>{{
-                item.matched_names.join(" · ") || kindNames[item.kind] || item.kind
-              }}</small>
-              <ObjectSummary
-                :data="item"
-                :limit="2"
-                :sources="['creature', 'material'].includes(item.kind)"
-              />
-            </template>
-            <template v-if="addableKinds.has(item.kind)" #aside>
-              <AddButton quick :item="item" />
-            </template>
-          </ObjectCell>
+            <AddButton v-if="addableKinds.has(item.kind)" quick :item="item" />
+          </ResultCard>
         </template>
         <p v-else class="empty">{{ t("search.noMatches") }}</p>
       </div>
@@ -245,30 +223,9 @@ onMounted(() => {
   .result:hover {
     background: var(--raised);
   }
-  .result:hover .result-name {
+  .result:hover :deep(.result-name) {
     text-decoration-color: var(--text);
   }
-}
-.result :deep(.cell-detail > small) {
-  display: block;
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: var(--fs-13);
-}
-.result-name {
-  display: inline-block;
-  padding-block: 4px;
-  font-size: var(--fs-15);
-  font-weight: 700;
-  text-decoration: underline;
-  text-decoration-color: var(--strong);
-  text-underline-offset: 3px;
-}
-.result :deep(.object-summary) {
-  margin-top: 4px;
-}
-.result :deep(.route-row) {
-  font-size: var(--fs-12);
 }
 .workspace {
   min-width: 0;
@@ -311,8 +268,14 @@ onMounted(() => {
     overflow: hidden;
     clip-path: inset(50%);
   }
+  /* Stays above the results while they scroll. */
   .search-row {
-    padding-top: var(--space-8);
+    position: sticky;
+    top: var(--header-height);
+    z-index: 5;
+    margin-inline: -16px;
+    padding: var(--space-8) 16px;
+    background: var(--ground);
   }
   .filter-toggle {
     display: inline-flex;

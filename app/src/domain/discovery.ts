@@ -337,6 +337,20 @@ function addTo(table: Map<string, Set<string>>, key: string, id: string) {
  * Components matching name words (prefix per word), a kind and mechanic filters, with the
  * facet counts for refining each filter. Card fields are joined separately from cards/.
  */
+/** Ids of the groups that meet every active mechanic filter; every group when none is active. */
+export function groupsMeeting(
+  index: DiscoveryIndex,
+  conditions: Condition[],
+  scope: Scope,
+): Set<string> {
+  const on = validateConditions(index, conditions, scope).filter((c) => c.category);
+  return new Set(
+    index.groups
+      .filter((g) => !on.length || g[scope].some((unit) => on.every((c) => matches(unit, c))))
+      .map((g) => g.entity.id),
+  );
+}
+
 export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): DiscoveryResult {
   const { labels, references } = index.pack;
   const q = (input.q ?? "").replaceAll("’", "'");
