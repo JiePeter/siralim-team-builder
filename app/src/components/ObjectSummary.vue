@@ -56,7 +56,7 @@ const effects = computed<SummaryEffect[]>(() => {
       ...list.filter((e) => !hit.has(Number(e.rank))),
     ];
   if (props.rank !== null && data.kind === "relic")
-    list = list.filter((e) => Number((e.label || "").replace("Rank ", "")) <= props.rank!);
+    list = list.filter((e) => Number(e.rank) <= props.rank!);
   if (
     !data.effects?.length &&
     data.description &&
