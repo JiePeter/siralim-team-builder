@@ -6,7 +6,7 @@ import {
   moveEquipment,
   returnCharacterPart,
   returnEquipment,
-  returnOrphans,
+  returnSlot,
   type CharacterDefinitions,
 } from "@/domain/assembly";
 import { newTeam, type Equipment, type Team } from "@/domain/team";
@@ -46,7 +46,7 @@ describe("equipment moves", () => {
     expect(target.properties![0]).toBe("enchantment:example");
   });
 
-  it("reject an occupied slot or one without a Primary", () => {
+  it("reject an occupied slot but not one without a Primary", () => {
     const occupied = {
       ...checked,
       slots: [{ base: "creature:0", artifact: "material:old" }, ...checked.slots.slice(1)],
@@ -54,9 +54,7 @@ describe("equipment moves", () => {
     expect(() => installInstance(occupied, uid, 0, "artifact", "material:new")).toThrow();
     expect(occupied.slots[0]!.artifact).toBe("material:old");
     const vacant = { ...checked, slots: [{}, ...checked.slots.slice(1)] };
-    expect(() => installInstance(vacant, uid, 0, "spells", "spell:one")).toThrow(
-      "Equip a Primary first",
-    );
+    expect(installInstance(vacant, uid, 0, "spells", "spell:one").slots[0]!.spells).toHaveLength(1);
   });
 
   it("copy and return an Artifact, keeping configurations independent", () => {
@@ -84,20 +82,23 @@ describe("equipment moves", () => {
     );
   });
 
-  it("send the gear of a slot without a Primary to the pool", () => {
+  it("leave the rest of a slot in place when its Primary leaves, and clear a whole slot", () => {
     const value = team();
-    value.slots[0] = { base: "creature:a", spells: ["spell:one"] };
     value.slots[1] = {
+      base: "creature:a",
       fusion: "creature:b",
       artifact: pooled("art", "material:c"),
       relic: "relic:example",
       spells: ["spell:one", "spell:two"],
     };
-    const next = returnOrphans(value);
-    expect(next.slots[0]).toEqual(value.slots[0]);
+    const withoutPrimary = returnEquipment(value, 1, "base");
+    expect(withoutPrimary.slots[1]!.base).toBeUndefined();
+    expect(withoutPrimary.slots[1]!.fusion).toBe("creature:b");
+    expect(withoutPrimary.slots[1]!.spells).toHaveLength(2);
+    const next = returnSlot(value, 1);
     expect(next.slots[1]).toEqual({ spells: [] });
     expect(next.inventory.map((i) => i.id).sort()).toEqual(
-      ["creature:b", "material:c", "relic:example", "spell:one", "spell:two"].sort(),
+      ["creature:a", "creature:b", "material:c", "relic:example", "spell:one", "spell:two"].sort(),
     );
   });
 });

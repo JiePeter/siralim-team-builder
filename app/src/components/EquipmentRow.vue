@@ -46,12 +46,12 @@ const data = computed(() =>
       ? component(itemId(props.value)!)
       : undefined,
 );
-const line = computed(() => {
-  if (props.at.field !== "artifact") return null;
-  if (blank.value) return "No Trait";
-  const trait = data.value?.effects[0]?.name;
-  return trait ? `${artifactType.value} · ${trait}` : artifactType.value;
-});
+const name = computed(() =>
+  props.at.field === "artifact" && !blank.value && data.value
+    ? `${artifactType.value} · ${data.value.name}`
+    : undefined,
+);
+const line = computed(() => (blank.value ? "No Trait" : null));
 const corner = computed(() =>
   props.at.field === "relic" && props.value ? String(asItem(props.value).rank || 1) : "",
 );
@@ -72,7 +72,7 @@ const corner = computed(() =>
       v-bind="drag(at)"
       @click="selected ? emit('place') : emit('inspect')"
     >
-      <EquipmentLine :data="data" :line="line" :corner="corner">
+      <EquipmentLine :data="data" :name="name" :line="line" :corner="corner">
         <template #menu>
           <button
             v-if="at.field === 'artifact' && copyable"

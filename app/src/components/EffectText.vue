@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Segment } from "@/data";
+import { assetUrl, type Segment } from "@/data";
 import InlineRef from "./InlineRef.vue";
 
 withDefaults(
@@ -15,17 +15,29 @@ withDefaults(
 
 <template>
   <template v-if="Array.isArray(segments)">
-    <template v-for="(part, index) in segments" :key="index">
-      <strong v-if="part.id && contextIds.includes(part.id)" class="inline-ref-current">{{
-        part.text
-      }}</strong>
-      <InlineRef
-        v-else-if="part.id && (part.kind === 'spell' || part.kind === 'condition')"
-        :id="part.id"
-        :text="part.text"
+    <span
+      v-for="(part, index) in segments"
+      :key="index"
+      :class="part.role && `effect-${part.role}`"
+    >
+      <img
+        v-if="part.icon"
+        :class="['tag-icon', { 'tag-icon-tile': part.kind === 'condition' }]"
+        :src="assetUrl(part.icon)"
+        alt=""
       />
-      <template v-else>{{ part.text }}</template>
-    </template>
+      <span :class="part.tag && `tag tag-${part.tag}`">
+        <strong v-if="part.id && contextIds.includes(part.id)" class="inline-ref-current">{{
+          part.text
+        }}</strong>
+        <InlineRef
+          v-else-if="part.id && (part.kind === 'spell' || part.kind === 'condition')"
+          :id="part.id"
+          :text="part.text"
+        />
+        <template v-else>{{ part.text }}</template>
+      </span>
+    </span>
   </template>
   <template v-else>{{ text }}</template>
 </template>
@@ -33,5 +45,8 @@ withDefaults(
 <style scoped>
 .inline-ref-current {
   font-weight: 700;
+}
+.tag-icon {
+  display: none;
 }
 </style>

@@ -17,6 +17,13 @@
   src: url("../assets/fonts/atkinson-700.woff2") format("woff2");
 }
 @font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/atkinson-400-italic.woff2") format("woff2");
+}
+@font-face {
   font-family: "Silkscreen";
   font-style: normal;
   font-weight: 400;
@@ -47,6 +54,8 @@
   --kind-material: #76c893;
   --kind-relic: #f08fc0;
   --kind-character: #6eb4ff;
+  --buff: #76c893;
+  --debuff: #f0908a;
 
   --danger-ground: #2a1418;
   --danger-line: #a8363a;
@@ -127,6 +136,7 @@
   --icon-undo: url("pixelarticons/svg/undo.svg");
   --icon-team: url("pixelarticons/svg/users.svg");
   --icon-tray: url("pixelarticons/svg/backpack.svg");
+  --icon-character: url("pixelarticons/svg/user.svg");
   --icon-close: url("pixelarticons/svg/close.svg");
   --icon-left: url("pixelarticons/svg/chevron-left.svg");
   --icon-right: url("pixelarticons/svg/chevron-right.svg");

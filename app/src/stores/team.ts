@@ -12,7 +12,7 @@ import {
   replaceInstance,
   returnCharacterPart,
   returnEquipment,
-  returnOrphans,
+  returnSlot,
   type CharacterField,
   type Position,
 } from "@/domain/assembly";
@@ -92,7 +92,7 @@ export const useTeamStore = defineStore("team", () => {
     // Edits may carry reactive objects from a dialog; validation clones with structuredClone.
     const next = validateTeam(
       checked,
-      trayTraits(checked, returnOrphans(plain(update(draft) ?? draft))),
+      trayTraits(checked, plain(update(draft) ?? draft)),
       previous,
     );
     if (excessTrait(checked, previous, next))
@@ -235,9 +235,9 @@ export const useTeamStore = defineStore("team", () => {
     });
   }
 
-  /** Dismiss a slot's Primary; the rest of the slot follows it to the tray. */
+  /** Send everything in a slot to the tray. */
   function clearSlot(slot: number) {
-    return change((next) => (next.slots[slot]!.base ? returnEquipment(next, slot, "base") : next));
+    return change((next) => returnSlot(next, slot));
   }
 
   /** Send the character base and every Anointment back to the tray. */

@@ -6,28 +6,25 @@ import CellPlate from "./CellPlate.vue";
 const props = withDefaults(
   defineProps<{
     data: ObjectPage | undefined;
+    /** The first line; defaults to the object's name. */
+    name?: string;
     /** The one line under the name; defaults to the first effect. */
     line?: string | null;
     /** A Spell Gem's property count, which picks its sprite. */
     properties?: number;
     corner?: string;
   }>(),
-  { line: null, properties: 0, corner: "" },
+  { name: undefined, line: null, properties: 0, corner: "" },
 );
 
-/** A creature or material names the Trait it carries under its own name. */
+/** A creature or material names the Trait it carries beside its own name. */
 const trait = computed(() =>
-  props.data && ["creature", "material"].includes(props.data.kind)
+  props.line === null && props.data && ["creature", "material"].includes(props.data.kind)
     ? props.data.effects[0]
     : undefined,
 );
 const text = computed(
-  () =>
-    props.line ??
-    trait.value?.name ??
-    props.data?.effects[0]?.description ??
-    props.data?.description ??
-    "",
+  () => props.line ?? props.data?.effects[0]?.description ?? props.data?.description ?? "",
 );
 </script>
 
@@ -36,10 +33,11 @@ const text = computed(
     <CellPlate v-if="data" compact :data="data" :properties="properties" :corner="corner" />
     <span class="equipment-text">
       <span v-if="data" class="equipment-title"
-        ><strong>{{ data.name }}</strong></span
+        ><strong>{{ name ?? data.name }}</strong
+        ><small v-if="trait" class="equipment-trait">{{ trait.name }}</small></span
       >
       <span v-else class="muted">Loading…</span>
-      <small :title="trait?.description ?? text">{{ text }}</small>
+      <small :title="text">{{ text }}</small>
     </span>
     <span class="equipment-actions" @click.stop>
       <slot />
@@ -60,14 +58,30 @@ const text = computed(
   display: grid;
   min-width: 0;
 }
-.equipment-title,
+.equipment-title > strong,
 .equipment-text > small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* Fixed to one line: a Trait name that does not fit wraps out of view whole. */
 .equipment-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-8);
+  height: 20px;
+  overflow: hidden;
   line-height: 20px;
+}
+.equipment-title > strong {
+  max-width: 100%;
+}
+.equipment-trait {
+  color: var(--muted);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  white-space: nowrap;
 }
 .equipment-text > small {
   color: var(--muted);

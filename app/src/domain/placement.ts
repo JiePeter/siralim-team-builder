@@ -1,5 +1,4 @@
 import {
-  gearRefusal,
   swapTraits,
   type CharacterField,
   type Position,
@@ -247,8 +246,6 @@ export function placementRefusal(
 ): string | null {
   const swap = source && traitSwap(index, team, source, target);
   if (swap) return swapRefusal(index, team, swap);
-  const refusal = gearRefusal(team, target, source);
-  if (refusal) return refusal;
   const slot = team.slots[target.slot];
   if (!slot || target.field === "spells" || target.field === "relic") return null;
   const after: Slot = { ...slot };

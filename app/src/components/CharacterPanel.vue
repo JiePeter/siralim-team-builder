@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import type { CharacterField } from "@/domain/assembly";
 import { characterEffects, type Character, type TeamIndex } from "@/domain/team";
+import { DIALOG_ACTIONS } from "./dialog";
 import DropZone from "./DropZone.vue";
 import EquipmentLine from "./EquipmentLine.vue";
 import { component } from "./components";
@@ -23,6 +24,7 @@ const emit = defineEmits<{
   clear: [];
 }>();
 
+const dialogActions = inject(DIALOG_ACTIONS, null);
 const drag = useDragSource();
 const specialization = computed(() =>
   props.index.catalog.specializations.find((s) => s.id === props.character.specialization),
@@ -41,9 +43,7 @@ const perk = (position: number) => {
 
 <template>
   <section class="slot character-slot" aria-label="Character">
-    <h2>
-      <slot name="lead" />
-      Character
+    <Teleport defer :to="`#${dialogActions}`">
       <button
         v-if="character.specialization || character.anointments.length"
         type="button"
@@ -54,7 +54,7 @@ const perk = (position: number) => {
       >
         <i class="icon icon-trash"></i>
       </button>
-    </h2>
+    </Teleport>
     <DropZone
       class="equipment"
       :accepts="accepts('characterBase')"

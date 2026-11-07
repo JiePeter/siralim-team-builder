@@ -65,19 +65,6 @@ function poolIndex(value: Team, uid: string): number {
   return index;
 }
 
-/**
- * Why a slot field cannot take gear, or null when it can: gear belongs to a slot's Primary, so a
- * Primary cannot leave its slot for an empty field of that slot. `source` is where placed gear
- * comes from.
- */
-export function gearRefusal(value: Team, target: Position, source?: Position): string | null {
-  if (target.field === "base") return null;
-  if (!value.slots[target.slot]?.base) return "Equip a Primary first";
-  if (source?.field === "base" && source.slot === target.slot)
-    return "This slot would have no Primary";
-  return null;
-}
-
 /** Equip a pool instance as the component `resolvedId`; `validateTeam` checks the field takes it. */
 export function installInstance(
   value: Team,
@@ -91,8 +78,6 @@ export function installInstance(
   const item = next.inventory[index]!;
   const slot = next.slots[slotIndex];
   if (!slot) throw new Error("Invalid slot");
-  const refusal = gearRefusal(next, { slot: slotIndex, field });
-  if (refusal) throw new Error(refusal);
   if (field !== "spells" && slot[field]) throw new Error("This slot is occupied");
   const installed: Equipment = { ...item, id: resolvedId };
   if (field === "relic") installed.rank ??= 1;
@@ -118,15 +103,12 @@ export function returnEquipment(value: Team, slot: number, field: SlotField, ind
   return next;
 }
 
-/** Gear belongs to a slot's Primary: a slot without one sends the rest of its gear to the pool. */
-export function returnOrphans(value: Team): Team {
+/** Send everything in a slot to the pool. */
+export function returnSlot(value: Team, slot: number): Team {
   let next = value;
-  value.slots.forEach((slot, i) => {
-    if (slot.base) return;
-    for (const field of ["fusion", "artifact", "relic"] as const)
-      if (next.slots[i]![field]) next = returnEquipment(next, i, field);
-    while (next.slots[i]!.spells?.length) next = returnEquipment(next, i, "spells", 0);
-  });
+  for (const field of ["base", "fusion", "artifact", "relic"] as const)
+    if (next.slots[slot]![field]) next = returnEquipment(next, slot, field);
+  while (next.slots[slot]!.spells?.length) next = returnEquipment(next, slot, "spells", 0);
   return next;
 }
 
@@ -162,8 +144,6 @@ export function replaceInstance(
 export function moveEquipment(value: Team, source: Position, target: Position): Team {
   if (source.slot === target.slot && source.field === target.field && target.field !== "spells")
     return structuredClone(value);
-  const refusal = gearRefusal(value, target, source);
-  if (refusal) throw new Error(refusal);
   const item = equipmentAt(value, source.slot, source.field, source.index);
   const cleared =
     target.field !== "spells" && equipmentAt(value, target.slot, target.field)

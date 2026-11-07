@@ -10,11 +10,18 @@ export interface Manifest {
   cards: Record<string, string>;
 }
 
-/** A run of effect text; `id`/`kind` mark an inline reference to another object. */
+/**
+ * A run of effect text; `id`/`kind` mark an inline reference to another object, `role` what the
+ * mechanics annotation says this run states, `tag` the kind of named value it is and `icon` its
+ * game icon.
+ */
 export interface Segment {
   text: string;
   id?: string;
   kind?: string;
+  role?: "trigger" | "condition" | "effect" | "amount" | "note";
+  tag?: string;
+  icon?: string;
 }
 
 export interface Classification {

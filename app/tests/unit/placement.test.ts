@@ -105,11 +105,9 @@ describe("dropping placed gear on a filled Trait field", () => {
   const fusion = { slot: 0, field: "fusion" } as const;
   const artifact = { slot: 0, field: "artifact" } as const;
 
-  it("lets a Primary trade with its own Fusion or Artifact but not leave for an empty field", () => {
+  it("lets a Primary trade with its own Fusion or Artifact, or move to an empty field", () => {
     const team = party(first.creature!);
-    expect(placementRefusal(index, team, fusion, first.creature!, primary)).toBe(
-      "This slot would have no Primary",
-    );
+    expect(placementRefusal(index, team, fusion, first.creature!, primary)).toBeNull();
     team.slots[0]!.fusion = second.creature!;
     expect(placementRefusal(index, team, fusion, first.creature!, primary)).toBeNull();
     expect(placementRefusal(index, reactive(team), fusion, first.creature!, primary)).toBeNull();

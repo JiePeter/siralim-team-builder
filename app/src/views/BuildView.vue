@@ -3,17 +3,11 @@ import { computed, ref, toRaw, useId, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useEventListener, useFileDialog, useMediaQuery, useSwipe } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { object, type Carrier } from "@/data";
+import { assetUrl, object, type Carrier } from "@/data";
 import { useSearchStore } from "@/stores/search";
 import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
 import type { Attributes } from "@/domain/attributes";
-import {
-  fieldLabels,
-  gearRefusal,
-  type CharacterField,
-  type Position,
-  type SlotField,
-} from "@/domain/assembly";
+import { fieldLabels, type CharacterField, type Position, type SlotField } from "@/domain/assembly";
 import { buildEffects } from "@/domain/effects";
 import {
   avatarCheck,
@@ -41,6 +35,7 @@ import ArtifactEditor from "@/components/ArtifactEditor.vue";
 import CarrierPicker from "@/components/CarrierPicker.vue";
 import CharacterEditor from "@/components/CharacterEditor.vue";
 import CharacterPanel from "@/components/CharacterPanel.vue";
+import DialogFooter from "@/components/DialogFooter.vue";
 import DropZone from "@/components/DropZone.vue";
 import EquipmentLine from "@/components/EquipmentLine.vue";
 import EquipmentRow from "@/components/EquipmentRow.vue";
@@ -51,6 +46,7 @@ import ModalDialog from "@/components/ModalDialog.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
 import PreviewDialog from "@/components/PreviewDialog.vue";
 import RelicEditor from "@/components/RelicEditor.vue";
+import TraitCell from "@/components/TraitCell.vue";
 import {
   BLEND,
   carriedInto,
@@ -62,6 +58,7 @@ import {
   useGemProperties,
 } from "@/components/assembly";
 import { component, loadComponent } from "@/components/components";
+import { spriteOf } from "@/components/presentation";
 import { draggedSelection, dragged, useDragSource, type Selection } from "@/components/dragging";
 import { attempt, toast, toastError } from "@/components/toast";
 import { placementLabel, selected } from "@/components/tray";
@@ -93,12 +90,21 @@ const gemProperties = useGemProperties();
 store.rules();
 
 const openSlot = ref(0);
+/** On a wider screen, whether a slot is open below the sheet; the Traits table shows otherwise. */
+const slotOpen = ref(false);
 const phone = useMediaQuery("(max-width: 767px)");
 /** On a phone a slot or the character opens as its own page, so Back closes it. */
 const page = computed(() => (phone.value ? route.query.page : undefined));
 const FIELDS = ["base", "fusion", "artifact", "relic"] as const;
+const TRAIT_FIELDS = ["base", "fusion", "artifact"] as const;
 const dialog = ref<Dialog | null>(null);
 const preview = ref<Equipment | null>(null);
+const coarse = useMediaQuery("(pointer: coarse)");
+/** The Trait field whose look-up is open and can start a swap. */
+const swapFrom = ref<Position | null>(null);
+watch(preview, (item) => {
+  if (!item) swapFrom.value = null;
+});
 const notesField = ref<HTMLTextAreaElement | null>(null);
 // A phone can discard a hidden page before its field loses focus.
 useEventListener(document, "visibilitychange", () => {
@@ -109,10 +115,30 @@ watch(
   () => route.query.slot,
   (value) => {
     const n = Number(value);
-    if (n >= 1 && n <= 6) openSlot.value = n - 1;
+    if (n >= 1 && n <= 6) {
+      openSlot.value = n - 1;
+      slotOpen.value = !phone.value;
+    }
   },
   { immediate: true },
 );
+const showSlot = computed(() => (phone.value ? page.value === "slot" : slotOpen.value));
+const showTraits = computed(() => (phone.value ? !page.value : !slotOpen.value));
+
+const characterModal = ref(false);
+/** The Character and Notes dialog; on a phone it follows the route, so Back closes it. */
+const characterOpen = computed({
+  get: () => (phone.value ? page.value === "character" : characterModal.value),
+  set: (value) => {
+    if (phone.value) {
+      if (!value && page.value === "character") closePage();
+    } else characterModal.value = value;
+  },
+});
+// Removing a focused field skips its change event, so a pending note saves first.
+watch(characterOpen, (value) => {
+  if (!value) notesField.value?.blur();
+});
 
 const dialogOpen = computed({
   get: () => dialog.value !== null,
@@ -122,10 +148,6 @@ const dialogOpen = computed({
 });
 const kindOf = (id: string) => index.value?.kinds.get(id);
 const slot = computed(() => team.value.slots[openSlot.value]!);
-/** A slot without a Primary holds nothing else, so only filled fields stay beside it. */
-const shownFields = computed(() =>
-  FIELDS.filter((f) => f === "base" || slot.value.base || slot.value[f]),
-);
 const characterSummary = computed(() => {
   const at = index.value;
   if (!at) return "";
@@ -148,17 +170,25 @@ const nameList = (ids: string[]) => {
 const replaced = computed(() =>
   index.value ? replacementNotices(index.value, toRaw(team.value)) : [],
 );
-const notices = computed(() => [
-  ...(index.value ? buildEffects(index.value, toRaw(team.value), () => undefined).notices : []),
-  ...unstacked.value.map(
-    ({ trait, slots }) =>
-      `${traitName(trait)} does not stack: only Slot ${slotIndex(slots[0]!)} counts`,
+/** Each notice with the slots it marks; a team-wide one marks none. */
+const notices = computed<{ text: string; slots: number[] }[]>(() => [
+  ...(index.value ? buildEffects(index.value, toRaw(team.value), () => undefined).notices : []).map(
+    (text) => ({ text, slots: [] }),
   ),
-  ...replaced.value.map(
-    ({ owner, listeners, certain }) =>
-      `${traitName(owner)} ${certain ? "stops" : "can stop"} ${nameList(listeners)}`,
+  ...unstacked.value.map(({ trait, slots }) => ({
+    text: `${traitName(trait)} does not stack: only Slot ${slotIndex(slots[0]!)} counts`,
+    slots: slots.slice(1),
+  })),
+  ...replaced.value.map(({ owner, listeners, certain }) => ({
+    text: `${traitName(owner)} ${certain ? "stops" : "can stop"} ${nameList(listeners)}`,
+    slots: [],
+  })),
+  ...team.value.slots.flatMap((s, i) =>
+    !s.base && (s.fusion || s.artifact || s.relic || s.spells?.length)
+      ? [{ text: `Slot ${slotIndex(i)}: no Primary`, slots: [i] }]
+      : [],
   ),
-  ...(avatars.value?.notice ? [avatars.value.notice] : []),
+  ...(avatars.value?.notice ? [{ text: avatars.value.notice, slots: avatars.value.slots }] : []),
   ...(index.value
     ? gemNotices(
         team.value,
@@ -167,13 +197,10 @@ const notices = computed(() => [
         index.value.rules.spell_gems,
       )
     : []
-  ).map(({ slot, message }) => `Slot ${slotIndex(slot)}: ${message}`),
+  ).map(({ slot, message }) => ({ text: `Slot ${slotIndex(slot)}: ${message}`, slots: [slot] })),
 ]);
-const NOTICES_SHOWN = 3;
-const allNotices = ref(false);
-const shownNotices = computed(() =>
-  allNotices.value ? notices.value : notices.value.slice(0, NOTICES_SHOWN),
-);
+const noticesOpen = ref(false);
+const slotNotices = (i: number) => notices.value.filter((n) => n.slots.includes(i));
 const overAvatar = (i: number) => !!avatars.value?.notice && avatars.value.slots.includes(i);
 
 /** Each slot's Fusion and Artifact traits that repeat one the creature already has. */
@@ -182,6 +209,9 @@ const repeats = computed(() =>
 );
 const repeatNotice = (trait: string) =>
   `${component(trait)?.name ?? "This trait"} is already on this creature, so this copy has no effect`;
+function fieldWarning(at: number, field: SlotField) {
+  return field === "base" && overAvatar(at) ? avatars.value!.notice : repeatWarning(at, field);
+}
 function repeatWarning(at: number, field: SlotField) {
   const found = repeats.value[at]?.find((r) => r.field === field);
   if (found) return repeatNotice(found.trait);
@@ -239,9 +269,7 @@ function fits(field: SlotField): boolean {
 /** Why the selection cannot go into `target`, or null when it can. */
 function refusal(target: Position, selection: Selection, id: string): string | null {
   const source = "slot" in selection ? selection : undefined;
-  return index.value
-    ? placementRefusal(index.value, team.value, target, id, source)
-    : gearRefusal(team.value, target, source);
+  return index.value ? placementRefusal(index.value, team.value, target, id, source) : null;
 }
 /** Whether the item being placed may go into `target`. */
 function allowed(target: Position): boolean {
@@ -253,19 +281,18 @@ function swapping(target: Position): TraitSwap | null {
   const s = placingSelection.value;
   return s && "slot" in s && index.value ? traitSwap(index.value, team.value, s, target) : null;
 }
-function accepts(field: SlotField): boolean | null {
+function accepts(target: Position): boolean | null {
   if (movingMember.value !== null) return false;
   if (!placing.value) return null;
-  const target = { slot: openSlot.value, field };
-  return allowed(target) && (fits(field) || !!swapping(target));
+  return allowed(target) && (fits(target.field) || !!swapping(target));
 }
-function fieldHint(field: SlotField): string | null {
-  const target = { slot: openSlot.value, field };
+function fieldHint(target: Position): string | null {
   return swapping(target) && allowed(target) ? "Swap" : null;
 }
 /** The field of a creature's slot that the item being placed goes to when dropped on its tile. */
 function tileField(slot: number): SlotField | null {
   if (!placing.value) return null;
+  if (!team.value.slots[slot]!.base && fits("base")) return "base";
   if (fits("fusion")) return allowed({ slot, field: "fusion" }) ? "fusion" : null;
   return (
     (["artifact", "spells", "relic"] as const).find(
@@ -277,7 +304,7 @@ function tileField(slot: number): SlotField | null {
 function tileHint(i: number): string | null {
   if (!acceptsMember(i)) return null;
   if (movingMember.value !== null) return "Swap";
-  const field = team.value.slots[i]!.base ? tileField(i) : "base";
+  const field = tileField(i);
   if (field && swapping({ slot: i, field })) return "Swap";
   return field === "fusion" ? "Fuse" : field && fieldLabels[field];
 }
@@ -290,7 +317,7 @@ function acceptsMember(i: number): boolean | null {
   if (!placing.value) return null;
   const s = placingSelection.value;
   if (s && "slot" in s && s.slot === i) return false;
-  return team.value.slots[i]!.base ? tileField(i) !== null : fits("base");
+  return tileField(i) !== null;
 }
 function acceptsCharacter(field: CharacterField): boolean | null {
   if (movingMember.value !== null) return false;
@@ -318,6 +345,8 @@ const cells = computed(() =>
     return {
       index: i,
       label,
+      notices: slotNotices(i).map((n) => n.text),
+      sprite: s.base && base && spriteOf(base, 0) ? assetUrl(spriteOf(base, 0)!) : null,
       data: base ?? (first ? component(itemId(first)!) : null),
       classFrom: fusion,
       vacant: !s.base && !others,
@@ -457,6 +486,15 @@ function pickCarrier(option: Carrier) {
   if (d?.type === "carrier") attempt(() => install(d.uid, d.target, option.id));
 }
 
+/** A Specialization goes to its field, an Anointment to the next free one. */
+function dropOnCharacter() {
+  const specialization = acceptsCharacter("characterBase");
+  const part = dropped();
+  return specialization
+    ? placeCharacter("characterBase", 0, part)
+    : placeCharacter("characterAnointment", team.value.character.anointments.length, part);
+}
+
 function pickCharacter(uid: string) {
   const d = dialog.value;
   if (d?.type === "character") attempt(() => placeCharacter(d.field, d.position, { uid }));
@@ -470,7 +508,7 @@ async function takeCharacter(id: string) {
 }
 
 async function placeOnTile(target: number) {
-  const field = team.value.slots[target]!.base ? tileField(target) : "base";
+  const field = tileField(target);
   const selection = dragged.value ? dropped() : selected.value;
   if (!selection) return;
   if (!("member" in selection)) {
@@ -491,8 +529,41 @@ async function placeOnTile(target: number) {
 
 function tapTile(i: number) {
   if (selected.value && acceptsMember(i)) attempt(() => placeOnTile(i));
-  else if (phone.value) router.push({ query: { slot: String(i + 1), page: "slot" } });
-  else openSlot.value = i;
+  else if (phone.value) openSlotPage(i);
+  else {
+    openSlot.value = i;
+    slotOpen.value = true;
+  }
+}
+
+function openSlotPage(i: number) {
+  router.push({ query: { slot: String(i + 1), page: "slot" } });
+}
+
+function closeSlot() {
+  if (phone.value) return closePage();
+  slotOpen.value = false;
+  if (route.query.slot) router.replace({ query: {} });
+}
+
+function inspectField(target: Position) {
+  if (target.field === "artifact") dialog.value = { type: "artifact", slot: target.slot };
+  else if (target.field === "relic") dialog.value = { type: "relic", slot: target.slot };
+  else preview.value = asItem(equipmentAt(target)!);
+}
+
+/** Touch has no drag, so a Trait's look-up also offers the swap. */
+function inspectTrait(target: Position) {
+  const item = asItem(equipmentAt(target)!);
+  if (coarse.value && item.id !== BLANK_ARTIFACT) {
+    swapFrom.value = target;
+    preview.value = item;
+  } else inspectField(target);
+}
+
+function startSwap() {
+  selected.value = swapFrom.value;
+  preview.value = null;
 }
 
 const SLOT_COUNT = 6;
@@ -722,6 +793,50 @@ const gemPosition = (position: number): Position => ({
           <i class="icon icon-trash"></i>Delete team
         </button>
       </FloatingMenu>
+      <div v-if="!phone" class="view-tabs" role="tablist" aria-label="View">
+        <button
+          type="button"
+          class="view-tab"
+          role="tab"
+          :aria-selected="!slotOpen"
+          @click="closeSlot"
+        >
+          Traits
+        </button>
+        <button
+          type="button"
+          class="view-tab"
+          role="tab"
+          :aria-selected="slotOpen"
+          @click="slotOpen = true"
+        >
+          Slots
+        </button>
+      </div>
+      <button
+        v-if="notices.length"
+        type="button"
+        class="notices-toggle"
+        :aria-expanded="noticesOpen"
+        @click="noticesOpen = !noticesOpen"
+      >
+        {{ notices.length === 1 ? "1 notice" : `${notices.length} notices` }}
+        <i :class="['icon', noticesOpen ? 'icon-up' : 'icon-down']"></i>
+      </button>
+      <DropZone
+        v-if="!phone"
+        :accepts="acceptsCharacter('characterBase') || acceptsCharacter('characterAnointment')"
+        @drop="attempt(() => dropOnCharacter())"
+      >
+        <button
+          type="button"
+          class="character-key"
+          title="Character and Notes"
+          @click="characterModal = true"
+        >
+          <i class="icon icon-character"></i>Character
+        </button>
+      </DropZone>
       <button
         type="button"
         class="icon-button share-key"
@@ -793,57 +908,76 @@ const gemPosition = (position: number): Position => ({
         </button>
       </FloatingMenu>
     </div>
-    <div v-if="notices.length" class="build-notices">
+    <div v-if="noticesOpen && notices.length" class="build-notices">
       <ul>
-        <li v-for="notice in shownNotices" :key="notice">{{ notice }}</li>
+        <li v-for="notice in notices" :key="notice.text">{{ notice.text }}</li>
       </ul>
-      <button
-        v-if="notices.length > NOTICES_SHOWN"
-        type="button"
-        class="notices-toggle"
-        :aria-expanded="allNotices"
-        @click="allNotices = !allNotices"
-      >
-        {{ allNotices ? "Show fewer" : `Show all ${notices.length}` }}
-      </button>
     </div>
-    <div class="slots">
+    <div :class="['slots', { 'traits-shown': showTraits }]">
       <div class="creature-slots">
         <div class="slot-sheet" role="group" aria-label="Team slots">
-          <DropZone
-            v-for="cell in cells"
-            :key="cell.index"
-            class="slot-drop"
-            :accepts="acceptsMember(cell.index)"
-            :hint="tileHint(cell.index)"
-            @drop="attempt(() => placeOnTile(cell.index))"
-          >
-            <ObjectCell
-              tag="button"
-              layout="tile"
-              :class="[
-                'slot-cell',
-                {
-                  vacant: cell.vacant,
-                  next: cell.index === cells.findIndex((c) => c.vacant),
-                  'over-limit': overAvatar(cell.index),
-                },
-              ]"
-              :data="cell.data"
-              :class-from="cell.classFrom"
-              :aria-pressed="phone ? undefined : cell.index === openSlot"
-              :aria-label="`Slot ${slotIndex(cell.index)}${cell.label ? ': ' + cell.label : ''}`"
-              :title="cell.label || undefined"
-              type="button"
-              v-bind="cell.vacant ? {} : drag({ member: cell.index })"
-              @click="tapTile(cell.index)"
+          <div v-for="cell in cells" :key="cell.index" class="slot-column">
+            <DropZone
+              class="slot-drop"
+              :accepts="acceptsMember(cell.index)"
+              :hint="tileHint(cell.index)"
+              @drop="attempt(() => placeOnTile(cell.index))"
             >
-              <template #index
-                ><span class="cell-index">{{ slotIndex(cell.index) }}</span></template
+              <ObjectCell
+                tag="button"
+                layout="tile"
+                :class="[
+                  'slot-cell',
+                  {
+                    vacant: cell.vacant,
+                    next: cell.index === cells.findIndex((c) => c.vacant),
+                    'over-limit': overAvatar(cell.index),
+                    noticed: cell.notices.length,
+                  },
+                ]"
+                :data="showTraits ? null : cell.data"
+                :class-from="cell.classFrom"
+                :aria-pressed="phone ? undefined : slotOpen && cell.index === openSlot"
+                :aria-label="
+                  [
+                    `Slot ${slotIndex(cell.index)}${cell.label ? ': ' + cell.label : ''}`,
+                    ...cell.notices,
+                  ].join('. ')
+                "
+                :title="[cell.label, ...cell.notices].filter(Boolean).join('\n') || undefined"
+                type="button"
+                v-bind="cell.vacant ? {} : drag({ member: cell.index })"
+                @click="tapTile(cell.index)"
               >
-              <template v-if="cell.label" #label>{{ cell.label }}</template>
-            </ObjectCell>
-          </DropZone>
+                <template #index
+                  ><span class="cell-index">{{ slotIndex(cell.index) }}</span></template
+                >
+                <template v-if="cell.label" #label>{{ cell.label }}</template>
+              </ObjectCell>
+            </DropZone>
+            <template v-if="showTraits">
+              <img
+                v-if="cell.sprite"
+                class="slot-backdrop"
+                :src="cell.sprite"
+                alt=""
+                aria-hidden="true"
+              />
+              <TraitCell
+                v-for="field in TRAIT_FIELDS"
+                :key="field"
+                :at="{ slot: cell.index, field }"
+                :value="team.slots[cell.index]![field]"
+                :next="field === 'base' && cell.index === cells.findIndex((c) => c.vacant)"
+                :accepts="accepts({ slot: cell.index, field })"
+                :hint="fieldHint({ slot: cell.index, field })"
+                :warning="fieldWarning(cell.index, field)"
+                @place="attempt(() => place({ slot: cell.index, field }))"
+                @drop="attempt(() => place({ slot: cell.index, field }, dropped()))"
+                @inspect="inspectTrait({ slot: cell.index, field })"
+              />
+            </template>
+          </div>
         </div>
         <DropZone
           v-if="phone"
@@ -862,7 +996,7 @@ const gemPosition = (position: number): Position => ({
           </button>
         </DropZone>
         <section
-          v-if="!phone || page === 'slot'"
+          v-if="showSlot"
           :ref="(el) => (slotPage = phone ? (el as HTMLElement | null) : null)"
           :class="['slot', 'open-slot', { 'phone-page': phone }]"
           :aria-label="`Slot ${openSlot + 1}`"
@@ -873,7 +1007,7 @@ const gemPosition = (position: number): Position => ({
               type="button"
               class="page-back"
               aria-label="Back to team"
-              @click="closePage"
+              @click="closeSlot"
             >
               <i class="icon icon-left"></i>
             </button>
@@ -896,6 +1030,11 @@ const gemPosition = (position: number): Position => ({
               <i class="icon icon-trash"></i>
             </button>
           </h2>
+          <div v-if="slotNotices(openSlot).length" class="build-notices slot-notices">
+            <ul>
+              <li v-for="notice in slotNotices(openSlot)" :key="notice.text">{{ notice.text }}</li>
+            </ul>
+          </div>
           <span v-if="swipeOffset" :class="['swipe-peek', swipeOffset < 0 ? 'right' : 'left']">
             Slot {{ slotIndex(slotAfter(swipeOffset < 0 ? 1 : -1)) }}
           </span>
@@ -905,36 +1044,24 @@ const gemPosition = (position: number): Position => ({
             :style="swipeOffset ? { transform: `translateX(${swipeOffset}px)` } : undefined"
           >
             <EquipmentRow
-              v-for="field in shownFields"
+              v-for="field in FIELDS"
               :key="field"
               :at="{ slot: openSlot, field }"
               :value="slot[field]"
-              :accepts="accepts(field)"
-              :hint="fieldHint(field)"
+              :accepts="accepts({ slot: openSlot, field })"
+              :hint="fieldHint({ slot: openSlot, field })"
               :next="field === 'base' && !slot.base"
               :copyable="copySlots.length > 0"
-              :warning="
-                field === 'base' && overAvatar(openSlot)
-                  ? avatars!.notice
-                  : repeatWarning(openSlot, field)
-              "
+              :warning="fieldWarning(openSlot, field)"
               @place="attempt(() => place({ slot: openSlot, field }))"
               @drop="attempt(() => place({ slot: openSlot, field }, dropped()))"
-              @inspect="
-                field === 'artifact'
-                  ? (dialog = { type: 'artifact', slot: openSlot })
-                  : field === 'relic'
-                    ? (dialog = { type: 'relic', slot: openSlot })
-                    : (preview = asItem(slot[field]!))
-              "
+              @inspect="inspectField({ slot: openSlot, field })"
               @copy="dialog = { type: 'copy', at: { slot: openSlot, field } }"
               @remove="attempt(() => store.unequip({ slot: openSlot, field }))"
             />
-            <p v-if="!slot.base" class="locked-hint">Add a Primary to equip the rest</p>
             <DropZone
-              v-if="slot.base || slot.spells?.length"
               class="gem-area"
-              :accepts="accepts('spells')"
+              :accepts="accepts({ slot: openSlot, field: 'spells' })"
               @drop="attempt(() => place({ slot: openSlot, field: 'spells' }, dropped()))"
             >
               <small>Spell Gems</small>
@@ -988,9 +1115,16 @@ const gemPosition = (position: number): Position => ({
           </div>
         </section>
       </div>
+    </div>
+
+    <ModalDialog
+      v-if="index"
+      v-model:open="characterOpen"
+      class="character-dialog"
+      title="Character"
+      routed
+    >
       <CharacterPanel
-        v-if="index && (!phone || page === 'character')"
-        :class="{ 'phone-page': phone }"
         :character="team.character"
         :index="index"
         :accepts="acceptsCharacter"
@@ -1000,15 +1134,9 @@ const gemPosition = (position: number): Position => ({
         @perks="dialog = { type: 'perks' }"
         @inspect="(id) => (preview = { uid: '', id })"
         @clear="clearCharacter"
-      >
-        <template v-if="phone" #lead>
-          <button type="button" class="page-back" aria-label="Back to team" @click="closePage">
-            <i class="icon icon-left"></i>
-          </button>
-        </template>
-      </CharacterPanel>
-      <section v-if="!page" class="slot notes-panel" aria-label="Notes">
-        <h2>Notes</h2>
+      />
+      <section class="notes-panel" aria-label="Notes">
+        <h3>Notes</h3>
         <textarea
           ref="notesField"
           aria-label="Team notes"
@@ -1018,7 +1146,7 @@ const gemPosition = (position: number): Position => ({
           @change="attempt(() => store.setNotes(($event.target as HTMLTextAreaElement).value))"
         ></textarea>
       </section>
-    </div>
+    </ModalDialog>
 
     <ModalDialog
       v-model:open="dialogOpen"
@@ -1108,7 +1236,11 @@ const gemPosition = (position: number): Position => ({
         @apply="(character) => attempt(() => store.setCharacter(character))"
       />
     </ModalDialog>
-    <PreviewDialog v-model:item="preview" />
+    <PreviewDialog v-model:item="preview">
+      <DialogFooter v-if="swapFrom">
+        <button type="button" class="primary" @click="startSwap">Swap</button>
+      </DialogFooter>
+    </PreviewDialog>
   </section>
 </template>
 
@@ -1116,7 +1248,6 @@ const gemPosition = (position: number): Position => ({
 .team {
   display: grid;
   gap: var(--space-16);
-  max-width: 1280px;
   margin: 0 auto;
   padding: var(--gutter);
 }
@@ -1155,16 +1286,45 @@ const gemPosition = (position: number): Position => ({
   min-width: var(--field);
   height: var(--field);
 }
-.share-key {
-  margin-left: auto;
+.character-key {
+  min-height: var(--field);
+}
+.view-tabs {
+  display: flex;
+  gap: var(--space-8);
+  margin-right: auto;
+  margin-left: var(--space-8);
+}
+.view-tab {
+  min-height: var(--field);
+  padding: 0 var(--space-8);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  clip-path: none;
+  color: var(--muted);
+}
+.view-tab:hover {
+  background: none;
+  color: var(--text);
+}
+.view-tab[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+}
+.character-dialog :deep(.character-slot) {
+  border: 0;
 }
 .notes-panel {
-  align-self: start;
+  padding: var(--space-8) var(--space-12) var(--space-12);
+}
+.notes-panel > h3 {
+  margin: 0 0 var(--space-8);
 }
 .notes-panel > textarea {
   display: block;
-  width: calc(100% - 24px);
-  margin: 12px;
+  width: 100%;
   resize: vertical;
 }
 .build-notices {
@@ -1179,36 +1339,41 @@ const gemPosition = (position: number): Position => ({
   list-style: none;
 }
 .build-notices li {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
   padding: 8px 12px;
 }
 .build-notices li + li {
   border-top: 1px solid var(--danger-rule);
 }
-.build-notices li::before {
+.notices-toggle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--field);
+  padding: 0 var(--space-4) 0 var(--space-8);
+  clip-path: none;
+  background: none;
+  border: 0;
+  color: var(--danger-text);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+.notices-toggle::after {
   content: "";
+  order: 1;
   flex: none;
   width: 8px;
   height: 8px;
   background: var(--danger-mark);
 }
-.notices-toggle {
-  width: 100%;
-  min-height: var(--control-compact);
-  justify-content: flex-start;
-  padding: 0 12px 0 28px;
-  clip-path: none;
-  background: none;
-  border: 0;
-  border-top: 1px solid var(--danger-line);
-  color: var(--danger-text);
-  font-size: var(--fs-13);
-  font-weight: 700;
+.notices-toggle > .icon {
+  order: 2;
 }
 .notices-toggle:hover {
   background: var(--danger-hover);
+}
+.slot-notices {
+  border-width: 1px 0 0;
 }
 .slots {
   display: grid;
@@ -1265,7 +1430,8 @@ const gemPosition = (position: number): Position => ({
 .slot-cell.over-limit {
   border-color: var(--danger-line);
 }
-.slot-cell.over-limit::before {
+.slot-cell.over-limit::before,
+.slot-cell.noticed::before {
   content: "";
   position: absolute;
   top: 8px;
@@ -1276,6 +1442,80 @@ const gemPosition = (position: number): Position => ({
 }
 .slot-drop {
   display: grid;
+}
+.slot-column {
+  display: contents;
+}
+/* Each card spans the sheet's rows, so one field's Traits line up across the slots. */
+.traits-shown .slot-column {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  min-width: 0;
+  padding-bottom: var(--space-8);
+  overflow: hidden;
+  background: var(--cell);
+}
+/* The name shares the left edge of the Traits below. */
+.traits-shown .slot-cell {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: var(--space-8);
+  min-height: var(--row);
+  padding: 14px 7px 14px 11px;
+  text-align: left;
+}
+.traits-shown .slot-cell :deep(> .cell-label) {
+  flex: 0 1 auto;
+  order: 1;
+  min-width: 0;
+  min-height: 0;
+  font-size: var(--fs-15);
+}
+.traits-shown .slot-cell.noticed::before,
+.traits-shown .slot-cell.over-limit::before {
+  position: static;
+  order: 2;
+  flex: none;
+  align-self: center;
+}
+.traits-shown .slot-cell .cell-index {
+  position: static;
+  order: 3;
+  flex: none;
+  margin-left: auto;
+}
+.traits-shown .slot-cell::after,
+.traits-shown .slot-cell.vacant::after {
+  content: "";
+  order: 4;
+  flex: none;
+  align-self: center;
+  width: 24px;
+  height: 24px;
+  background-color: var(--muted);
+  -webkit-mask: var(--icon-right) center / 24px 24px no-repeat;
+  mask: var(--icon-right) center / 24px 24px no-repeat;
+}
+/* 64px sprites at a whole 4x, faint enough that even a white pixel keeps the text over it readable. */
+.slot-backdrop {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: 256px;
+  height: 256px;
+  image-rendering: pixelated;
+  opacity: 0.14;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.slot-column:nth-child(3n + 1) {
+  --trait-label: block;
 }
 .slot-name {
   font: 400 24px / 1 var(--pixel-font);
@@ -1376,30 +1616,75 @@ const gemPosition = (position: number): Position => ({
 }
 
 @media (min-width: 1100px) {
-  .slots {
-    grid-template-columns: minmax(0, 1fr) 320px;
-    grid-template-rows: auto 1fr;
-  }
-  .creature-slots {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-  }
-  .slots > :deep(.character-slot) {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: start;
-  }
-  .notes-panel {
-    grid-column: 2;
-    grid-row: 2;
-  }
   .slot-sheet {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .traits-shown .slot-sheet {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* Six cards in a row only where each still holds a readable measure. */
+@media (min-width: 1900px) {
+  .traits-shown .slot-sheet {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .slot-column:nth-child(3n + 1) {
+    --trait-label: none;
+  }
+  .slot-column:nth-child(6n + 1) {
+    --trait-label: block;
   }
 }
 @media (max-width: 767px) {
   .team {
     padding: var(--space-12) var(--gutter) var(--space-24);
+  }
+  .traits-shown .slot-cell {
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-8) 7px var(--space-8) 11px;
+  }
+  /* A long team name shortens before the keys move; the notices fill the second row. */
+  .team-head {
+    display: grid;
+    grid-template-columns: minmax(0, max-content) auto minmax(0, 1fr) auto auto;
+  }
+  .share-key {
+    grid-column: 4;
+  }
+  .more-key {
+    grid-column: 5;
+  }
+  .notices-toggle {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-height: var(--control-compact);
+    padding: 0 1px 0 11px;
+    background: var(--danger-ground);
+    border: 1px solid var(--danger-line);
+  }
+  .notices-toggle > .icon {
+    margin-left: auto;
+  }
+  .traits-shown .slot-cell .cell-index {
+    display: none;
+  }
+  .traits-shown .slot-cell::after,
+  .traits-shown .slot-cell.vacant::after {
+    width: 12px;
+    height: 12px;
+    margin-left: auto;
+    -webkit-mask-size: 12px 12px;
+    mask-size: 12px 12px;
+  }
+  .traits-shown .slot-cell :deep(> .cell-label) {
+    font-size: var(--fs-13);
+    white-space: normal;
+  }
+  .slot-backdrop {
+    width: 128px;
+    height: 128px;
+    opacity: 0.22;
   }
 }
 </style>

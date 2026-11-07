@@ -57,12 +57,6 @@
   align-items: center;
   padding-bottom: 0;
 }
-.locked-hint {
-  margin: 0;
-  padding: 4px 12px 16px;
-  color: var(--muted);
-  font-size: var(--fs-13);
-}
 /* On a phone a slot or the character is its own page; the bottom navigation stays in reach. */
 .phone-page {
   position: fixed;
@@ -161,7 +155,8 @@
 .equipped[draggable="true"]:hover::before {
   background-color: var(--text);
 }
-.equipment.over-limit {
+.equipment.over-limit,
+.trait-cell.over-limit {
   box-shadow: inset 2px 0 var(--danger-mark);
 }
 .drag-source {

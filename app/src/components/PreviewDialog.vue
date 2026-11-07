@@ -62,6 +62,7 @@ const describe = computed(
         <EffectText :text="page.description" :segments="page.segments" :context-ids="[page.id]" />
       </div>
       <ReferenceBody :data="page" :hits="hits" />
+      <slot />
     </div>
   </ModalDialog>
 </template>
