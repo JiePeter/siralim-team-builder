@@ -21,9 +21,9 @@ export { joinSegments };
 
 export class DataNotFound extends Error {}
 
-const files = memoRequest((path: string, version?: string): Promise<unknown> => {
+function read(root: string, path: string, version?: string): Promise<unknown> {
   // Pack files change only with the pack; the manifest is revalidated on every visit.
-  const url = `${import.meta.env.BASE_URL}data/${locale === "en" ? "" : locale + "/"}${path}`;
+  const url = `${import.meta.env.BASE_URL}data/${root}${path}`;
   return (
     version ? fetch(`${url}?v=${encodeURIComponent(version)}`) : fetch(url, { cache: "no-cache" })
   ).then((response) => {
@@ -33,18 +33,34 @@ const files = memoRequest((path: string, version?: string): Promise<unknown> => 
     if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
     return response.json();
   });
+}
+
+/** The locale's pack, or the English one in a checkout that has exported only that. */
+const currentPack = memoRequest(async () => {
+  const open = async (root: string) => ({
+    root,
+    manifest: (await read(root, "manifest.json")) as Manifest,
+  });
+  const root = locale === "en" ? "" : `${locale}/`;
+  try {
+    return await open(root);
+  } catch (error) {
+    if (!root || !(error instanceof DataNotFound)) throw error;
+    return open("");
+  }
 });
 
-function load<T>(path: string, version?: string): Promise<T> {
-  return files(path, version) as Promise<T>;
+export async function manifest(): Promise<Manifest> {
+  return (await currentPack()).manifest;
 }
 
-export function manifest(): Promise<Manifest> {
-  return load<Manifest>("manifest.json");
-}
+const files = memoRequest(async (path: string): Promise<unknown> => {
+  const pack = await currentPack();
+  return read(pack.root, path, pack.manifest.pack);
+});
 
-async function packFile<T>(path: string): Promise<T> {
-  return load<T>(path, (await manifest()).pack);
+function packFile<T>(path: string): Promise<T> {
+  return files(path) as Promise<T>;
 }
 
 /** Mirrors object_path in kb/export.py. */

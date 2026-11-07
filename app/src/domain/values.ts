@@ -38,14 +38,20 @@ export function words(text: string): string[] {
   return text.match(/\p{Script=Han}|(?:(?!\p{Script=Han})[\p{L}\p{N}])+/gu) ?? [];
 }
 
+/** Runs of consecutive Han characters; typed text reads each one as a phrase. */
+export function hanRuns(text: string): string[] {
+  return text.match(/\p{Script=Han}+/gu) ?? [];
+}
+
 /** Every term begins some word of `have`; true without terms. */
 export function prefixed(have: readonly string[], terms: readonly string[]): boolean {
   return terms.every((term) => have.some((word) => word.startsWith(term)));
 }
 
-/** Whether `text` matches typed text the way Search matches a name. */
+/** Whether `text` has every word of `q` as a word prefix and every Han run of `q` unbroken. */
 export function matchesText(text: string, q: string): boolean {
-  return prefixed(words(fold(text)), words(fold(q)));
+  const folded = fold(text);
+  return prefixed(words(folded), words(fold(q))) && hanRuns(q).every((run) => folded.includes(run));
 }
 
 /** Python string order (code points), for sort keys. */

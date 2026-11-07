@@ -1,6 +1,6 @@
 import { ref, shallowRef } from "vue";
 import { defineStore } from "pinia";
-import MiniSearch from "minisearch";
+import MiniSearch, { type SearchResult } from "minisearch";
 import { cards, discovery, type SearchDocument } from "@/data";
 import { memoRequest } from "@/data/memo";
 import type { Attributes } from "@/domain/attributes";
@@ -18,17 +18,20 @@ import {
   type DiscoveryResult,
   type Scope,
 } from "@/domain/discovery";
-import { fold, words } from "@/domain/values";
+import { fold, hanRuns, words } from "@/domain/values";
 
 export type SearchItem = ReturnType<typeof withCard<DiscoveryItem>>;
 
 export const discoveryPack = memoRequest(() => discovery().then(discoveryIndex));
 
+const TEXT_FIELDS = ["name", "members", "text", "locations"];
+
 /** Names, members, effect text and locations, matched per word by prefix like the discovery words. */
 const textIndex = memoRequest(() =>
   discoveryPack().then(({ pack }) => {
     const index = new MiniSearch<SearchDocument>({
-      fields: ["name", "members", "text", "locations"],
+      fields: TEXT_FIELDS,
+      storeFields: TEXT_FIELDS,
       tokenize: words,
       processTerm: fold,
       searchOptions: { prefix: true, combineWith: "AND" },
@@ -38,10 +41,25 @@ const textIndex = memoRequest(() =>
   }),
 );
 
-/** Ids of the components whose text matches `q`; undefined when `q` has no words to match. */
+const idsOf = (hits: SearchResult[]) => new Set(hits.map((hit) => String(hit.id)));
+
+/** Ids of the components with every word of `q` anywhere in their text. */
+export async function scatteredIds(q: string): Promise<Set<string>> {
+  return idsOf((await textIndex()).search(q));
+}
+
+/**
+ * Ids of the components whose text matches `q`; undefined when `q` has no words to match.
+ * Those holding every Han run of `q` unbroken within a field, when there are any; else all matches.
+ */
 export async function textIds(q: string): Promise<Set<string> | undefined> {
   if (!words(fold(q)).length) return undefined;
-  return new Set((await textIndex()).search(q).map((hit) => String(hit.id)));
+  const hits = (await textIndex()).search(q);
+  const runs = hanRuns(q);
+  const phrased = hits.filter((hit) =>
+    runs.every((run) => TEXT_FIELDS.some((field) => String(hit[field]).includes(run))),
+  );
+  return idsOf(phrased.length ? phrased : hits);
 }
 
 const noCard: CardFields = { effects: [], facts: [], attrs: {} };
@@ -72,14 +90,18 @@ export const useSearchStore = defineStore("search", () => {
     const current = ++version;
     try {
       const [index, ids] = await Promise.all([discoveryPack(), textIds(q.value)]);
-      const result = query(index, {
-        q: q.value,
-        kind: kind.value,
-        attributes: attributes.value,
-        conditions: conditions.value,
-        scope: scope.value,
-        ids,
-      });
+      const search = (matching?: Set<string>) =>
+        query(index, {
+          q: q.value,
+          kind: kind.value,
+          attributes: attributes.value,
+          conditions: conditions.value,
+          scope: scope.value,
+          ids: matching,
+        });
+      let result = search(ids);
+      // The chosen filters can exclude every component holding the phrase.
+      if (ids && !result.total) result = search(await scatteredIds(q.value));
       const shards = new Map(
         await Promise.all(
           [...new Set(result.items.map((i) => i.kind))].map(
