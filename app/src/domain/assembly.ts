@@ -8,16 +8,21 @@ import {
   type Team,
 } from "./team";
 
-export type SlotField = "base" | "fusion" | "artifact" | "spells" | "relic";
+export type SlotField = "base" | "fusion" | "artifact" | "nether" | "spells" | "relic";
+export type ListField = "spells" | "nether";
 export type CharacterField = "characterBase" | "characterAnointment";
 
 export const fieldLabels: Record<SlotField, string> = {
   base: "Primary",
   fusion: "Fusion",
   artifact: "Artifact",
+  nether: "Nether",
   relic: "Relic",
   spells: "Spell Gem",
 };
+
+export const isListField = (field: SlotField): field is ListField =>
+  field === "spells" || field === "nether";
 
 export interface Position {
   slot: number;
@@ -78,10 +83,10 @@ export function installInstance(
   const item = next.inventory[index]!;
   const slot = next.slots[slotIndex];
   if (!slot) throw new Error("Invalid slot");
-  if (field !== "spells" && slot[field]) throw new Error("This slot is occupied");
+  if (!isListField(field) && slot[field]) throw new Error("This slot is occupied");
   const installed: Equipment = { ...item, id: resolvedId };
   if (field === "relic") installed.rank ??= 1;
-  if (field === "spells") (slot.spells ??= []).push(installed);
+  if (isListField(field)) (slot[field] ??= []).push(installed);
   else slot[field] = installed;
   next.inventory.splice(index, 1);
   return next;
@@ -89,7 +94,7 @@ export function installInstance(
 
 export function equipmentAt(value: Team, slot: number, field: SlotField, index = 0) {
   const at: Slot | undefined = value.slots[slot];
-  return field === "spells" ? at?.spells?.[index] : at?.[field];
+  return isListField(field) ? at?.[field]?.[index] : at?.[field];
 }
 
 /** Unequip into the pool. */
@@ -98,7 +103,7 @@ export function returnEquipment(value: Team, slot: number, field: SlotField, ind
   const item = equipmentAt(next, slot, field, index);
   if (!item) throw new Error("Equipment not found");
   next.inventory.push(typeof item === "string" ? newInstance(item) : item);
-  if (field === "spells") next.slots[slot]!.spells!.splice(index, 1);
+  if (isListField(field)) next.slots[slot]![field]!.splice(index, 1);
   else delete next.slots[slot]![field];
   return next;
 }
@@ -108,7 +113,8 @@ export function returnSlot(value: Team, slot: number): Team {
   let next = value;
   for (const field of ["base", "fusion", "artifact", "relic"] as const)
     if (next.slots[slot]![field]) next = returnEquipment(next, slot, field);
-  while (next.slots[slot]!.spells?.length) next = returnEquipment(next, slot, "spells", 0);
+  for (const field of ["spells", "nether"] as const)
+    while (next.slots[slot]![field]?.length) next = returnEquipment(next, slot, field, 0);
   return next;
 }
 
@@ -130,7 +136,7 @@ export function replaceInstance(
   field: SlotField,
   resolvedId: string,
 ): Team {
-  const occupied = field !== "spells" && equipmentAt(value, slot, field);
+  const occupied = !isListField(field) && equipmentAt(value, slot, field);
   return installInstance(
     occupied ? returnEquipment(value, slot, field) : value,
     uid,
@@ -142,11 +148,11 @@ export function replaceInstance(
 
 /** Move equipped gear; an occupied target field sends its occupant back to the pool. */
 export function moveEquipment(value: Team, source: Position, target: Position): Team {
-  if (source.slot === target.slot && source.field === target.field && target.field !== "spells")
+  if (source.slot === target.slot && source.field === target.field && !isListField(target.field))
     return structuredClone(value);
   const item = equipmentAt(value, source.slot, source.field, source.index);
   const cleared =
-    target.field !== "spells" && equipmentAt(value, target.slot, target.field)
+    !isListField(target.field) && equipmentAt(value, target.slot, target.field)
       ? returnEquipment(value, target.slot, target.field)
       : value;
   const next = returnEquipment(cleared, source.slot, source.field, source.index);

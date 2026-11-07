@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useMediaQuery } from "@vueuse/core";
+import { isListField } from "@/domain/assembly";
 import { itemId } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
 import ModalDialog from "@/components/ModalDialog.vue";
@@ -39,7 +40,7 @@ const placing = computed(() => {
     id = item && shownAs(index.value, item);
   } else {
     const slot = team.value.slots[s.slot];
-    const item = s.field === "spells" ? slot?.spells?.[s.index ?? 0] : slot?.[s.field];
+    const item = isListField(s.field) ? slot?.[s.field]?.[s.index ?? 0] : slot?.[s.field];
     id = itemId(item);
   }
   return id ? (component(id)?.name ?? "") : "";

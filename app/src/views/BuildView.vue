@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { computed, ref, toRaw, useId, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useEventListener, useFileDialog, useMediaQuery, useSwipe } from "@vueuse/core";
+import { useEventListener, useFileDialog, useMediaQuery, useStorage, useSwipe } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { assetUrl, object, type Carrier } from "@/data";
 import { useSearchStore } from "@/stores/search";
 import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
 import type { Attributes } from "@/domain/attributes";
-import { fieldLabels, type CharacterField, type Position, type SlotField } from "@/domain/assembly";
+import {
+  fieldLabels,
+  isListField,
+  type CharacterField,
+  type Position,
+  type SlotField,
+} from "@/domain/assembly";
 import { buildEffects } from "@/domain/effects";
 import {
   avatarCheck,
@@ -27,6 +33,7 @@ import {
   characterEffects,
   isCharacterPart,
   itemId,
+  NETHER_TRAITS,
   type ArtifactConfig,
   type Equipment,
   type EquipmentRef,
@@ -95,7 +102,12 @@ const slotOpen = ref(false);
 const phone = useMediaQuery("(max-width: 767px)");
 /** On a phone a slot or the character opens as its own page, so Back closes it. */
 const page = computed(() => (phone.value ? route.query.page : undefined));
-const FIELDS = ["base", "fusion", "artifact", "relic"] as const;
+const showNether = useStorage("siralim-planner.show-nether", false);
+const fields = computed(() =>
+  showNether.value
+    ? (["base", "fusion", "artifact", "nether", "relic"] as const)
+    : (["base", "fusion", "artifact", "relic"] as const),
+);
 const TRAIT_FIELDS = ["base", "fusion", "artifact"] as const;
 const dialog = ref<Dialog | null>(null);
 const preview = ref<Equipment | null>(null);
@@ -226,7 +238,7 @@ function repeatWarning(at: number, field: SlotField) {
 
 function equipmentAt(at: Position) {
   const s = team.value.slots[at.slot];
-  return at.field === "spells" ? s?.spells?.[at.index ?? 0] : s?.[at.field];
+  return isListField(at.field) ? s?.[at.field]?.[at.index ?? 0] : s?.[at.field];
 }
 
 /** The component being dragged, or else the one chosen for placing. */
@@ -258,6 +270,8 @@ const placingConfigured = computed(() => {
 /** Whether the item being placed is the kind a field holds. */
 function fits(field: SlotField): boolean {
   if (!placing.value) return false;
+  const from = placingSelection.value;
+  if (from && "slot" in from && from.field === "nether" && field !== "nether") return false;
   const carried =
     index.value && !placingConfigured.value ? carriersOf(index.value, placing.value) : null;
   if (carried && (carried.creature || carried.materials.length)) return carriedInto(carried, field);
@@ -339,7 +353,8 @@ const cells = computed(() =>
     const fusion = s.base && s.fusion && !blended.value ? component(itemId(s.fusion)!) : null;
     const others =
       (["fusion", "artifact", "relic"] as const).filter((f) => s[f]).length +
-      (s.spells?.length ?? 0);
+      (s.spells?.length ?? 0) +
+      (s.nether?.length ?? 0);
     const first = s.fusion ?? s.artifact ?? s.relic ?? s.spells?.[0];
     const label = base ? base.name : others ? `${others} ${others === 1 ? "item" : "items"}` : "";
     return {
@@ -396,7 +411,7 @@ async function install(uid: string, target: Position, resolvedId: string) {
  */
 async function place(target: Position, selection: Selection | null = selected.value) {
   if (!selection) {
-    if (target.field === "spells" || !equipmentAt(target)) dialog.value = { type: "pool", target };
+    if (isListField(target.field) || !equipmentAt(target)) dialog.value = { type: "pool", target };
     return;
   }
   if ("character" in selection || "member" in selection)
@@ -434,7 +449,7 @@ async function place(target: Position, selection: Selection | null = selected.va
   const item = team.value.inventory.find((i) => i.uid === selection.uid);
   if (!item) throw new Error("Component has moved");
   const data = await loadComponent(item.id);
-  if (data.kind !== "trait") return install(item.uid, target, data.id);
+  if (data.kind !== "trait" || target.field === "nether") return install(item.uid, target, data.id);
   const kind =
     target.field === "artifact"
       ? "material"
@@ -619,7 +634,7 @@ function copyTargets(at: Position) {
   const id = itemId(equipmentAt(at));
   return copySlots.value.map((i) => {
     const target = team.value.slots[i]!;
-    const occupant = at.field !== "spells" && itemId(target[at.field]);
+    const occupant = !isListField(at.field) && itemId(target[at.field]);
     const gems = at.field === "spells" ? (target.spells?.length ?? 0) : 0;
     const held = occupant
       ? `Replaces ${occupant === BLANK_ARTIFACT ? "Artifact" : component(occupant)?.name}`
@@ -728,6 +743,11 @@ const gemLine = (gem: EquipmentRef) =>
   (asItem(gem).properties ?? [])
     .map((id) => propertyLabel(gemProperties.value, asItem(gem), id))
     .join(" · ") || null;
+const netherAt = (slot: number, position: number) => ({
+  slot,
+  field: "nether" as const,
+  index: position,
+});
 const gemPosition = (position: number): Position => ({
   slot: openSlot.value,
   field: "spells",
@@ -872,20 +892,27 @@ const gemPosition = (position: number): Position => ({
       <button
         type="button"
         class="icon-button more-key"
-        aria-label="Export and Import"
-        title="Export and Import"
+        aria-label="More"
+        title="More"
         aria-haspopup="menu"
         :aria-expanded="fileOpen"
         :popovertarget="fileMenu"
       >
         <i class="icon icon-more"></i>
       </button>
-      <FloatingMenu
-        :id="fileMenu"
-        v-slot="{ close }"
-        v-model:open="fileOpen"
-        label="Export and Import"
-      >
+      <FloatingMenu :id="fileMenu" v-slot="{ close }" v-model:open="fileOpen" label="More">
+        <button
+          type="button"
+          role="menuitemcheckbox"
+          :aria-checked="showNether"
+          @click="
+            close();
+            showNether = !showNether;
+          "
+        >
+          <span>Nether Stones</span><i v-if="showNether" class="icon icon-check menu-mark"></i>
+        </button>
+        <hr />
         <button
           type="button"
           role="menuitem"
@@ -913,7 +940,7 @@ const gemPosition = (position: number): Position => ({
         <li v-for="notice in notices" :key="notice.text">{{ notice.text }}</li>
       </ul>
     </div>
-    <div :class="['slots', { 'traits-shown': showTraits }]">
+    <div :class="['slots', { 'traits-shown': showTraits, 'nether-shown': showNether }]">
       <div class="creature-slots">
         <div class="slot-sheet" role="group" aria-label="Team slots">
           <div v-for="cell in cells" :key="cell.index" class="slot-column">
@@ -976,6 +1003,33 @@ const gemPosition = (position: number): Position => ({
                 @drop="attempt(() => place({ slot: cell.index, field }, dropped()))"
                 @inspect="inspectTrait({ slot: cell.index, field })"
               />
+              <div v-if="showNether" class="nether-band">
+                <TraitCell
+                  v-for="(trait, position) in team.slots[cell.index]!.nether ?? []"
+                  :key="asItem(trait).uid || position"
+                  :at="netherAt(cell.index, position)"
+                  :value="trait"
+                  :next="false"
+                  :accepts="accepts(netherAt(cell.index, position))"
+                  :hint="null"
+                  :warning="null"
+                  @place="attempt(() => place(netherAt(cell.index, position)))"
+                  @drop="attempt(() => place(netherAt(cell.index, position), dropped()))"
+                  @inspect="inspectTrait(netherAt(cell.index, position))"
+                />
+                <TraitCell
+                  v-if="(team.slots[cell.index]!.nether?.length ?? 0) < NETHER_TRAITS"
+                  :at="netherAt(cell.index, team.slots[cell.index]!.nether?.length ?? 0)"
+                  :value="undefined"
+                  :next="false"
+                  :accepts="accepts({ slot: cell.index, field: 'nether' })"
+                  :hint="null"
+                  :warning="null"
+                  @place="attempt(() => place({ slot: cell.index, field: 'nether' }))"
+                  @drop="attempt(() => place({ slot: cell.index, field: 'nether' }, dropped()))"
+                  @inspect="() => {}"
+                />
+              </div>
             </template>
           </div>
         </div>
@@ -1043,22 +1097,64 @@ const gemPosition = (position: number): Position => ({
             :class="['slot-body', enteredFrom && `from-${enteredFrom}`]"
             :style="swipeOffset ? { transform: `translateX(${swipeOffset}px)` } : undefined"
           >
-            <EquipmentRow
-              v-for="field in FIELDS"
-              :key="field"
-              :at="{ slot: openSlot, field }"
-              :value="slot[field]"
-              :accepts="accepts({ slot: openSlot, field })"
-              :hint="fieldHint({ slot: openSlot, field })"
-              :next="field === 'base' && !slot.base"
-              :copyable="copySlots.length > 0"
-              :warning="fieldWarning(openSlot, field)"
-              @place="attempt(() => place({ slot: openSlot, field }))"
-              @drop="attempt(() => place({ slot: openSlot, field }, dropped()))"
-              @inspect="inspectField({ slot: openSlot, field })"
-              @copy="dialog = { type: 'copy', at: { slot: openSlot, field } }"
-              @remove="attempt(() => store.unequip({ slot: openSlot, field }))"
-            />
+            <template v-for="field in fields" :key="field">
+              <DropZone
+                v-if="field === 'nether'"
+                class="gem-area nether-area"
+                :accepts="accepts({ slot: openSlot, field })"
+                @drop="attempt(() => place({ slot: openSlot, field }, dropped()))"
+              >
+                <small>Nether</small>
+                <div
+                  v-for="(trait, position) in slot.nether ?? []"
+                  :key="asItem(trait).uid || position"
+                  v-bind="drag(netherAt(openSlot, position))"
+                  class="gem equipped"
+                  @click="
+                    selected
+                      ? attempt(() => place({ slot: openSlot, field }))
+                      : inspectField(netherAt(openSlot, position))
+                  "
+                >
+                  <EquipmentLine :data="component(itemId(trait)!)">
+                    <template #menu>
+                      <button
+                        type="button"
+                        class="icon-button"
+                        aria-label="Back to tray: Nether"
+                        title="Back to tray"
+                        @click="attempt(() => store.unequip(netherAt(openSlot, position)))"
+                      >
+                        <i class="icon icon-undo"></i>
+                      </button>
+                    </template>
+                  </EquipmentLine>
+                </div>
+                <button
+                  v-if="(slot.nether?.length ?? 0) < NETHER_TRAITS"
+                  type="button"
+                  class="drop-target"
+                  @click="attempt(() => place({ slot: openSlot, field }))"
+                >
+                  <i class="icon icon-plus"></i>Nether
+                </button>
+              </DropZone>
+              <EquipmentRow
+                v-else
+                :at="{ slot: openSlot, field }"
+                :value="slot[field]"
+                :accepts="accepts({ slot: openSlot, field })"
+                :hint="fieldHint({ slot: openSlot, field })"
+                :next="field === 'base' && !slot.base"
+                :copyable="copySlots.length > 0"
+                :warning="fieldWarning(openSlot, field)"
+                @place="attempt(() => place({ slot: openSlot, field }))"
+                @drop="attempt(() => place({ slot: openSlot, field }, dropped()))"
+                @inspect="inspectField({ slot: openSlot, field })"
+                @copy="dialog = { type: 'copy', at: { slot: openSlot, field } }"
+                @remove="attempt(() => store.unequip({ slot: openSlot, field }))"
+              />
+            </template>
             <DropZone
               class="gem-area"
               :accepts="accepts({ slot: openSlot, field: 'spells' })"
@@ -1516,6 +1612,15 @@ const gemPosition = (position: number): Position => ({
 }
 .slot-column:nth-child(3n + 1) {
   --trait-label: block;
+}
+.nether-shown.traits-shown .slot-column {
+  grid-row: span 5;
+}
+.nether-band {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  border-top: 1px dashed var(--strong);
 }
 .slot-name {
   font: 400 24px / 1 var(--pixel-font);

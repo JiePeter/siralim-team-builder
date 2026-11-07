@@ -17,6 +17,7 @@ export function fieldKinds(slotKinds: SlotKinds): Record<SlotField, string[]> {
     base: [...slotKinds.base, "trait"],
     fusion: [...slotKinds.fusion, "trait"],
     artifact: [...slotKinds.artifact, "trait"],
+    nether: ["trait"],
     relic: slotKinds.relic,
     spells: slotKinds.spells,
   };
@@ -30,6 +31,7 @@ export const fieldKind: Record<PickerField, string> = {
   base: "creature",
   fusion: "creature",
   artifact: "material",
+  nether: "trait",
   relic: "relic",
   spells: "spell",
   characterBase: "specialization",
@@ -53,6 +55,7 @@ export const slotIndex = (i: number) => String(i + 1).padStart(2, "0");
 
 /** Whether a trait has a carrier the field takes: a creature for Primary and Fusion, a material for Artifact. */
 export function carriedInto(carriers: Carriers, field: PickerField): boolean {
+  if (field === "nether") return true;
   if (field === "base" || field === "fusion") return !!carriers.creature;
   if (field === "artifact" || field === "artifactTrait") return carriers.materials.length > 0;
   return false;

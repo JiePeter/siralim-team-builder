@@ -42,7 +42,7 @@ export const asItem = (item: EquipmentRef): Equipment =>
   typeof item === "string" ? { uid: "", id: item, properties: [] } : item;
 
 /** Component kinds each slot field holds. */
-export type SlotKinds = Record<SlotField, string[]>;
+export type SlotKinds = Record<Exclude<SlotField, "nether">, string[]>;
 
 /** Anointments a character holds with the Perks in `active`. */
 export function anointmentCapacity(
@@ -61,6 +61,8 @@ export interface Slot {
   base?: EquipmentRef;
   fusion?: EquipmentRef;
   artifact?: EquipmentRef;
+  /** Traits of the Nether Stone socketed in the Artifact. */
+  nether?: EquipmentRef[];
   spells?: EquipmentRef[];
   relic?: EquipmentRef;
 }
@@ -83,6 +85,7 @@ export interface Team {
 }
 
 export const PARTY_SIZE = 6;
+export const NETHER_TRAITS = 3;
 
 export function newTeam(): Team {
   return {
@@ -301,7 +304,7 @@ function shape<const K extends string>(...keys: K[]) {
   );
 }
 
-const SlotShape = shape("base", "fusion", "artifact", "spells", "relic");
+const SlotShape = shape("base", "fusion", "artifact", "nether", "spells", "relic");
 const EquipmentShape = shape(
   "uid",
   "id",
@@ -556,6 +559,9 @@ export function validateTeam(index: TeamIndex, input: unknown, previous?: unknow
     for (const field of ["base", "fusion", "artifact", "relic"] as const) {
       if (truthy(slot[field])) instance(slot[field], index.rules.slot_kinds[field]);
     }
+    const nether = get(slot, "nether", []);
+    if (!Array.isArray(nether) || nether.length > NETHER_TRAITS) fail("Invalid Nether Stone");
+    for (const trait of nether) instance(trait, ["trait"]);
     const spells = get(slot, "spells", []);
     if (!Array.isArray(spells)) fail("Invalid Spell list");
     for (const gem of spells) instance(gem, index.rules.slot_kinds.spells);

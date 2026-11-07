@@ -37,7 +37,12 @@ const compatible = memoRequest(async (field: PickerField, catalog: Catalog) => {
       result.push({
         ...member,
         ...(cls ? { classification: [{ class: cls as ClassName }] } : {}),
-        detail: field === "characterAnointment" ? anointments.get(member.id)! : trait,
+        detail:
+          field === "characterAnointment"
+            ? anointments.get(member.id)!
+            : member.kind === "trait"
+              ? ""
+              : trait,
       });
     }
   }

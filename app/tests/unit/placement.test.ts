@@ -6,6 +6,7 @@ import { replaceInstance } from "@/domain/assembly";
 import {
   avatarCheck,
   gemNotices,
+  NETHER_FULL,
   NO_CARRIER,
   placementRefusal,
   REPEATED_TRAIT,
@@ -94,6 +95,18 @@ describe("repeated traits on one creature", () => {
     const artifact = { slot: 0, field: "artifact" } as const;
     expect(placementRefusal(index, team, artifact, carriers.materials[0]!)).toBe(REPEATED_TRAIT);
     expect(placementRefusal(index, team, artifact, trait)).toBe(REPEATED_TRAIT);
+  });
+
+  it("refuse a fourth Nether Trait and one the creature already has", () => {
+    const traits = [...index.carriers].filter(([, c]) => c.creature).map(([trait]) => trait);
+    const team = party(index.carriers.get(traits[0]!)!.creature!);
+    const nether = { slot: 0, field: "nether" } as const;
+    team.slots[0]!.nether = traits.slice(1, 4);
+    expect(placementRefusal(index, team, nether, traits[4]!)).toBe(NETHER_FULL);
+    team.slots[0]!.nether = traits.slice(1, 3);
+    expect(placementRefusal(index, team, nether, traits[4]!)).toBeNull();
+    expect(placementRefusal(index, team, nether, traits[0]!)).toBe(REPEATED_TRAIT);
+    expect(placementRefusal(index, team, nether, traits[1]!)).toBe(REPEATED_TRAIT);
   });
 });
 

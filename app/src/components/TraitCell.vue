@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { fieldLabels, type TraitPosition } from "@/domain/assembly";
+import { fieldLabels } from "@/domain/assembly";
+import type { CarriedField } from "@/domain/placement";
 import { asItem, itemId, type EquipmentRef } from "@/domain/team";
 import { BLANK_ARTIFACT } from "@/stores/team";
 import DropZone from "./DropZone.vue";
@@ -10,7 +11,7 @@ import { useDragSource } from "./dragging";
 import { selected } from "./tray";
 
 const props = defineProps<{
-  at: TraitPosition;
+  at: { slot: number; field: CarriedField; index?: number };
   value: EquipmentRef | undefined;
   /** The step the team needs next. */
   next: boolean;
@@ -22,12 +23,12 @@ const emit = defineEmits<{ place: []; drop: []; inspect: [] }>();
 
 const drag = useDragSource();
 const label = computed(() => fieldLabels[props.at.field]);
-const SHORT_LABELS = { base: "Pri", fusion: "Fus", artifact: "Art" };
+const SHORT_LABELS = { base: "Pri", fusion: "Fus", artifact: "Art", nether: "Net" };
 const page = computed(() => {
   const id = itemId(props.value);
   return id && id !== BLANK_ARTIFACT ? component(id) : undefined;
 });
-const trait = computed(() => page.value?.effects[0]);
+const trait = computed(() => (page.value?.kind === "trait" ? page.value : page.value?.effects[0]));
 const carrier = computed(() => {
   if (!props.value) return "";
   const type = props.at.field === "artifact" ? asItem(props.value).artifact?.type || "Sword" : "";
@@ -35,7 +36,13 @@ const carrier = computed(() => {
 });
 const picked = computed(() => {
   const s = selected.value;
-  return !!s && "slot" in s && s.slot === props.at.slot && s.field === props.at.field;
+  return (
+    !!s &&
+    "slot" in s &&
+    s.slot === props.at.slot &&
+    s.field === props.at.field &&
+    s.index === props.at.index
+  );
 });
 </script>
 
@@ -96,6 +103,15 @@ const picked = computed(() => {
 }
 .field-artifact .trait-label {
   color: var(--kind-material);
+}
+.field-nether {
+  border-top: 0;
+}
+.field-nether .trait-label {
+  color: var(--muted);
+}
+.field-nether + .field-nether .trait-label {
+  display: none;
 }
 .label-short {
   display: none;

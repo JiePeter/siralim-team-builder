@@ -28,6 +28,7 @@ function sharedTeam() {
       }),
     ),
     relic: item(`relic:${i}`, { rank: 100 }),
+    ...(i === 0 ? { nether: [item("trait:1953"), item("trait:899")] } : {}),
   }));
   team.inventory = [item("trait:1953", { shown: "creature:1242" })];
   team.character = {

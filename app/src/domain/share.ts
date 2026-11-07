@@ -48,6 +48,7 @@ type PackedSlot = [
   Blank<PackedItem>?,
   Blank<PackedItem[]>?,
   Blank<PackedItem>?,
+  Blank<PackedItem[]>?,
 ];
 type PackedTeam = [
   string,
@@ -124,16 +125,18 @@ function packSlot(slot: Slot): Packed {
     packItem(slot.artifact),
     (slot.spells ?? []).map(packItem),
     packItem(slot.relic),
+    (slot.nether ?? []).map(packItem),
   );
 }
 
-function unpackSlot([base, fusion, artifact, spells, relic]: PackedSlot): Slot {
+function unpackSlot([base, fusion, artifact, spells, relic, nether]: PackedSlot): Slot {
   const slot: Slot = {};
   if (base != null) slot.base = unpackItem(base);
   if (fusion != null) slot.fusion = unpackItem(fusion);
   if (artifact != null) slot.artifact = unpackItem(artifact);
   if (spells) slot.spells = spells.map(unpackItem);
   if (relic != null) slot.relic = unpackItem(relic);
+  if (nether) slot.nether = nether.map(unpackItem);
   return slot;
 }
 

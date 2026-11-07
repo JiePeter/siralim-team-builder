@@ -1,4 +1,5 @@
 import {
+  isListField,
   swapTraits,
   type CharacterField,
   type Position,
@@ -12,6 +13,7 @@ import {
   itemId,
   characterEffects,
   entityOf,
+  NETHER_TRAITS,
   PARTY_SIZE,
   type EquipmentRef,
   type Slot,
@@ -39,6 +41,9 @@ export function placedParts(team: Team): { ref: EquipmentRef; at: Placement }[] 
       const ref = slot[field];
       if (ref) parts.push({ ref, at: { slot: i, field } });
     }
+    slot.nether?.forEach((ref, index) =>
+      parts.push({ ref, at: { slot: i, field: "nether", index } }),
+    );
     slot.spells?.forEach((ref, index) =>
       parts.push({ ref, at: { slot: i, field: "spells", index } }),
     );
@@ -130,13 +135,21 @@ export function avatarCheck(
   return { limit, slots, notice };
 }
 
+export type CarriedField = TraitField | "nether";
+
 /**
  * The traits a creature carries, in field order: its innate trait, its Fusion parent's trait, and
- * the trait its Artifact's Trait Slot adds.
+ * the trait its Artifact's Trait Slot adds, then those of its Nether Stone.
  */
-export function slotTraits(index: TeamIndex, slot: Slot): { field: TraitField; trait: string }[] {
-  return (["base", "fusion", "artifact"] as const).flatMap((field) => {
-    const id = itemId(slot[field]);
+export function slotTraits(index: TeamIndex, slot: Slot): { field: CarriedField; trait: string }[] {
+  const held: [CarriedField, EquipmentRef | undefined][] = [
+    ["base", slot.base],
+    ["fusion", slot.fusion],
+    ["artifact", slot.artifact],
+    ...(slot.nether ?? []).map((ref): [CarriedField, EquipmentRef] => ["nether", ref]),
+  ];
+  return held.flatMap(([field, ref]) => {
+    const id = itemId(ref);
     const trait = id && entityOf(index, id);
     return trait && index.carriers.has(trait) ? [{ field, trait }] : [];
   });
@@ -149,7 +162,7 @@ export function slotTraits(index: TeamIndex, slot: Slot): { field: TraitField; t
 export function repeatedTraits(
   index: TeamIndex,
   slot: Slot,
-): { field: TraitField; trait: string }[] {
+): { field: CarriedField; trait: string }[] {
   const seen = new Set<string>();
   return slotTraits(index, slot).filter(({ trait }) => {
     const again = seen.has(trait);
@@ -159,6 +172,7 @@ export function repeatedTraits(
 }
 
 export const REPEATED_TRAIT = "This creature already has this Trait";
+export const NETHER_FULL = `A Nether Stone holds at most ${NETHER_TRAITS} Traits`;
 export const NO_CARRIER = "This Trait has no compatible creature or material for this slot";
 
 export interface TraitSwap {
@@ -249,8 +263,14 @@ export function placementRefusal(
   const slot = team.slots[target.slot];
   if (!slot || target.field === "spells" || target.field === "relic") return null;
   const after: Slot = { ...slot };
-  if (source?.slot === target.slot && source.field !== "spells") delete after[source.field];
-  after[target.field] = id;
+  if (source?.slot === target.slot) {
+    if (source.field === "nether") after.nether = slot.nether?.filter((_, i) => i !== source.index);
+    else if (!isListField(source.field)) delete after[source.field];
+  }
+  if (target.field === "nether") {
+    if ((after.nether?.length ?? 0) >= NETHER_TRAITS) return NETHER_FULL;
+    after.nether = [...(after.nether ?? []), id];
+  } else after[target.field] = id;
   return slotRepeat(index, slot, after) ? REPEATED_TRAIT : null;
 }
 
