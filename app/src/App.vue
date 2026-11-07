@@ -12,7 +12,7 @@ import PartsTray from "@/components/PartsTray.vue";
 import { shownAs } from "@/components/assembly";
 import { component } from "@/components/components";
 import { dismiss, toastAction, toastFailed, toastText } from "@/components/toast";
-import { bursts, selected, trayOpen } from "@/components/tray";
+import { bursts, cancelPlacing, selected, trayOpen } from "@/components/tray";
 import { kindNames } from "@/components/presentation";
 import { assetUrl } from "@/data";
 import { LOCALES, locale, setLocale, t, type Locale } from "@/i18n";
@@ -37,9 +37,10 @@ const pageTitle = computed(() => {
 /** The tray item or gear chosen for placing, named in the tray bar. */
 const placing = computed(() => {
   const s = selected.value;
-  if (!s || "character" in s || "member" in s) return "";
+  if (!s || "character" in s) return "";
   let id: string | undefined;
-  if ("uid" in s) {
+  if ("member" in s) id = itemId(team.value.slots[s.member]?.base);
+  else if ("uid" in s) {
     const item = team.value.inventory.find((i) => i.uid === s.uid);
     id = item && shownAs(index.value, item);
   } else {
@@ -49,6 +50,17 @@ const placing = computed(() => {
   }
   return id ? (component(id)?.name ?? "") : "";
 });
+
+/** The Build tab returns to the page of Build that was left. */
+const lastBuild = ref("/build");
+watch(
+  () => route.fullPath,
+  () => {
+    if (route.name === "build" && !route.query.tray) lastBuild.value = route.fullPath;
+  },
+  { immediate: true },
+);
+const buildLink = computed(() => (route.name === "build" ? "/build" : lastBuild.value));
 
 watch(trayCount, (count, previous) => {
   if (count <= previous) return;
@@ -130,7 +142,7 @@ const credits = [
       <RouterLink to="/search" :class="{ active: searching }"
         ><i class="icon icon-search"></i>{{ t("app.search") }}</RouterLink
       >
-      <RouterLink to="/build" :class="{ active: route.name === 'build' }"
+      <RouterLink :to="buildLink" :class="{ active: route.name === 'build' }"
         ><i class="icon icon-team"></i>{{ t("app.build") }}</RouterLink
       >
     </nav>
@@ -201,7 +213,7 @@ const credits = [
         ></I18nT
       ></span
     >
-    <button type="button" class="tray-cancel" @click="selected = null">
+    <button type="button" class="tray-cancel" @click="cancelPlacing">
       {{ t("app.cancel") }}
     </button>
   </div>

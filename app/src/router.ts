@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import SearchEmpty from "./views/SearchEmpty.vue";
 import SearchView from "./views/SearchView.vue";
 
+let buildScroll = 0;
 let settledPath: string | null = null;
 let onSettled: (() => void) | null = null;
 
@@ -29,9 +30,12 @@ export const router = createRouter({
     // Opening or closing an overlay page leaves the page underneath where it was.
     if (
       to.path === from.path &&
-      (to.query.tray !== from.query.tray || to.query.page !== from.query.page)
+      (to.query.tray !== from.query.tray ||
+        to.query.page !== from.query.page ||
+        to.query.slot !== from.query.slot)
     )
       return false;
+    if (to.name === "build") return saved ?? { top: buildScroll };
     if (to.name !== "object") return saved ?? { top: 0 };
     await settled(to.fullPath);
     const hit = !saved && to.query.focus ? document.querySelector("[data-focus-hit]") : null;
@@ -60,6 +64,7 @@ export const router = createRouter({
   ],
 });
 
-router.beforeEach(() => {
+router.beforeEach((_, from) => {
   settledPath = null;
+  if (from.name === "build") buildScroll = window.scrollY;
 });
