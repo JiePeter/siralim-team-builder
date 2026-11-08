@@ -82,6 +82,12 @@ export function joinSegments(segments: Segment[]): string {
   return segments.map((part) => part.text).join("");
 }
 
+/** The component kind an id names; a Specialization id has a shorter prefix than its kind. */
+export function idKind(id: string): string {
+  const prefix = id.split(":")[0]!;
+  return prefix === "spec" ? "specialization" : prefix;
+}
+
 /** A random id. `crypto.randomUUID` exists only in secure contexts, and the planner is also opened over plain HTTP on a local network. */
 export function newUid(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(16));

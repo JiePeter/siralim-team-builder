@@ -918,6 +918,9 @@
 "acquisition_source:ffddb1564d2ccd567c30": {
 "name": "下界首领：吉兰（领域深度 115）"
 },
+"artifact:0": {
+"name": "神器"
+},
 "artifact_property:0": {
 "description": "生物的攻击造成更多伤害。",
 "name": "攻击伤害"

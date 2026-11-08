@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { assetUrl } from "@/data";
+import AssetImage from "./AssetImage.vue";
 import { objectRoute } from "./presentation";
 
 defineProps<{ src?: string | null; label: string; id?: string | null }>();
@@ -14,7 +14,7 @@ defineProps<{ src?: string | null; label: string; id?: string | null }>();
     :aria-label="label"
     :data-tooltip="label"
   >
-    <img v-if="src" :src="assetUrl(src)" alt="" />
+    <AssetImage v-if="src" :src="src" alt="" />
     <template v-else>{{ label }}</template>
   </RouterLink>
   <span
@@ -24,7 +24,7 @@ defineProps<{ src?: string | null; label: string; id?: string | null }>();
     :aria-label="label"
     :data-tooltip="label"
   >
-    <img :src="assetUrl(src)" alt="" />
+    <AssetImage :src="src" alt="" />
   </span>
   <span v-else>{{ label }}</span>
 </template>

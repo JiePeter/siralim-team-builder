@@ -5,7 +5,7 @@ import { storeToRefs } from "pinia";
 import { useEventListener, useTimeoutFn } from "@vueuse/core";
 import { useTeamStore } from "@/stores/team";
 import { t } from "@/i18n";
-import { MAX_TRAIT_COPIES, placedParts, whereIs } from "@/domain/placement";
+import { onePerTeam, placedParts, traitLimitReached, whereIs } from "@/domain/placement";
 import { asItem, asTrait, BLANK_ARTIFACT, type Equipment, type Team } from "@/domain/team";
 import DropZone from "./DropZone.vue";
 import CellPlate from "./CellPlate.vue";
@@ -13,7 +13,7 @@ import PreviewDialog from "./PreviewDialog.vue";
 import PropertyPills from "./PropertyPills.vue";
 import { canPlace, shownAs } from "./assembly";
 import { component } from "./components";
-import { carriedEffect, kindGroup, kindGroups, useShowNether } from "./presentation";
+import { carriedEffect, kindGroup, kindGroups, propertyCount, useShowNether } from "./presentation";
 import { dragged, draggedSelection, useDragSource } from "./dragging";
 import { attempt, toast } from "./toast";
 import { flashed, lineKey, selected, startPlacing, trayOpen, useEntity } from "./tray";
@@ -32,9 +32,6 @@ const preview = ref<Equipment | null>(null);
 const list = ref<HTMLElement | null>(null);
 const showNether = useShowNether();
 const kindOf = (id: string) => index.value?.kinds.get(id);
-
-/** One per team, so the tray never holds two of them. */
-const single = new Set(["relic", "specialization", "perk"]);
 
 interface Line {
   key: string;
@@ -109,13 +106,8 @@ const inBuild = (line: Line) =>
       ? t("tray.inBuild")
       : "";
 const trashLabel = t("tray.clear");
-const atLimit = (line: Line) => {
-  const where = whereIs(team.value, line.item.id, entity);
-  return (
-    entity(line.item.id).startsWith("trait:") &&
-    where.placed.length + where.tray.length >= MAX_TRAIT_COPIES
-  );
-};
+const atLimit = (line: Line) =>
+  traitLimitReached(entity(line.item.id), whereIs(team.value, line.item.id, entity));
 
 /** The line whose last copy waits for a second tap before leaving the tray. */
 const arming = ref<string | null>(null);
@@ -243,6 +235,7 @@ watch(flashed, async (uid) => {
                 v-if="component(line.shown)"
                 compact
                 :data="component(line.shown)!"
+                :properties="propertyCount(line.item)"
                 :added="line.placed > 1 ? line.placed : line.placed > 0"
               />
             </button>
@@ -288,7 +281,7 @@ watch(flashed, async (uid) => {
                 >
                   <i :class="['icon', line.uids.length > 1 ? 'icon-minus' : 'icon-trash']"></i>
                 </button>
-                <template v-if="!single.has(line.kind)">
+                <template v-if="!onePerTeam(line.kind)">
                   <span class="tray-quantity">{{ line.uids.length }}</span>
                   <button
                     type="button"

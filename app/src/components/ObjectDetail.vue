@@ -5,6 +5,7 @@ import { computedAsync } from "@vueuse/core";
 import { object, type Offer, type ObjectPage, type Route, type Section } from "@/data";
 import { className, i18n, t } from "@/i18n";
 import AddButton from "./AddButton.vue";
+import AssetImage from "./AssetImage.vue";
 import CellPlate from "./CellPlate.vue";
 import CreatureStats from "./CreatureStats.vue";
 import DetailItem from "./DetailItem.vue";
@@ -197,7 +198,8 @@ const condition = computed(() => {
 
 const variants = computed(
   () =>
-    (props.data.attrs.variants as { id: number; label: string; image: string }[] | undefined) ?? [],
+    (props.data.attrs.variants as
+      { id: number; label: string; image: string | null }[] | undefined) ?? [],
 );
 
 type Item = Section["items"][number];
@@ -249,17 +251,17 @@ function itemText(item: Omit<Item, "routes">) {
       <CellPlate v-else class="detail-plate" :data="data" />
       <div class="detail-titles">
         <h1>
-          {{ data.attrs.short_name || data.name
+          {{ data.attrs.short_name || (kind === "class" ? className(data.name) : data.name)
           }}<span class="detail-kind">{{ kindNames[kind] || kind }}</span>
         </h1>
         <div v-if="identity" class="detail-sub">
           <span v-if="identity.className" class="detail-icon-text"
-            ><img v-if="identity.classIcon" :src="identity.classIcon" alt="" />{{
+            ><AssetImage v-if="identity.classIcon" :src="identity.classIcon" alt="" />{{
               identity.className
             }}</span
           >
           <span v-if="identity.race" class="detail-icon-text"
-            ><img v-if="identity.raceIcon" :src="identity.raceIcon" alt="" />{{
+            ><AssetImage v-if="identity.raceIcon" :src="identity.raceIcon" alt="" />{{
               identity.race
             }}</span
           >
@@ -297,6 +299,7 @@ function itemText(item: Omit<Item, "routes">) {
           {{ playText(data) }}
         </p>
       </div>
+      <CreatureStats v-if="kind === 'creature'" :data="data" />
       <div v-if="found" class="detail-found">
         <div>
           {{ found.label }}
@@ -308,7 +311,6 @@ function itemText(item: Omit<Item, "routes">) {
         </div>
         <div v-if="found.terms.length">{{ found.terms.join(" · ") }}</div>
       </div>
-      <CreatureStats v-if="kind === 'creature'" :data="data" />
       <p v-if="headEffect" class="detail-effect">
         <EffectText :text="data.description" :segments="data.segments" :context-ids="contextIds" />
       </p>
@@ -469,7 +471,9 @@ function itemText(item: Omit<Item, "routes">) {
 
     <section v-if="variants.length" class="detail-section">
       <div class="detail-variants">
-        <div v-for="v in variants" :key="v.id"><img :src="v.image" alt="" />{{ v.label }}</div>
+        <div v-for="v in variants" :key="v.id">
+          <AssetImage v-if="v.image" :src="v.image" alt="" />{{ v.label }}
+        </div>
       </div>
     </section>
 
@@ -665,6 +669,9 @@ function itemText(item: Omit<Item, "routes">) {
   gap: 6px 24px;
   align-items: start;
 }
+.detail-split:not(:has(> .detail-side)) {
+  grid-template-columns: minmax(0, 1fr);
+}
 .detail-split > .detail-side {
   grid-column: 2;
   grid-row: 1 / span 2;
@@ -848,6 +855,19 @@ function itemText(item: Omit<Item, "routes">) {
 }
 
 /* narrow: stats and text take the full width under the plate and name */
+@container (min-width: 481px) {
+  .detail-head:not(.with-stats):not(:has(.detail-effect)) {
+    grid-template-areas:
+      "plate titles"
+      "plate found";
+  }
+  .detail-head:not(.with-stats):not(:has(.detail-found)) {
+    grid-template-areas:
+      "plate titles"
+      "plate effect";
+  }
+}
+
 @container (max-width: 720px) {
   .detail-head.with-stats {
     grid-template-columns: auto minmax(0, 1fr);
@@ -869,12 +889,13 @@ function itemText(item: Omit<Item, "routes">) {
   .detail-head.with-stats {
     --plate: 64px;
     grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas:
-      "plate titles"
-      "stats stats"
-      "found found"
-      "effect effect";
+    grid-template-areas: "plate titles";
     gap: 10px 14px;
+  }
+  .detail-head > .creature-stats,
+  .detail-head > .detail-found,
+  .detail-head > .detail-effect {
+    grid-area: auto / 1 / auto / -1;
   }
   .detail-titles {
     align-self: center;

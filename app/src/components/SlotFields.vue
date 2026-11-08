@@ -13,7 +13,7 @@ import { useBuildNotices } from "./buildNotices";
 import { component } from "./components";
 import { useDragSource } from "./dragging";
 import { usePlacing } from "./placing";
-import { useShowNether } from "./presentation";
+import { propertyCount, useShowNether } from "./presentation";
 import { selected } from "./tray";
 
 const props = defineProps<{ atSlot: number }>();
@@ -48,7 +48,6 @@ const gemPosition = (position: number): Position => ({
   field: "spells",
   index: position,
 });
-const propertyCount = (gem: EquipmentRef) => asItem(gem).properties?.length ?? 0;
 const gemLine = (gem: EquipmentRef) =>
   (asItem(gem).properties ?? [])
     .map((id) => propertyLabel(gemProperties.value, asItem(gem), id))

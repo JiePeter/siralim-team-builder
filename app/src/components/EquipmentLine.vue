@@ -62,6 +62,7 @@ const text = computed(
 }
 .equipment-text {
   display: grid;
+  grid-column: 2;
   min-width: 0;
 }
 .equipment-title > strong,

@@ -4,7 +4,7 @@ import difflib
 import json
 import re
 from collections import defaultdict
-from .current import SNAPSHOT, norm, records
+from .current import SNAPSHOT, class_icon, norm, records
 
 # Later roles paint over earlier ones: an amount sits inside the effect that states it.
 SPAN_ROLES = ("effect", "condition", "trigger", "note", "amount")
@@ -165,7 +165,7 @@ class InlineReferences:
             return {
                 **span,
                 "tag": "class-" + name,
-                "icon": f"/assets/siralim/images/misc/class/{name}.png",
+                "icon": class_icon(name),
             }
         if tag == "race":
             return {**span, "icon": self.race_icons.get(norm(span.get("name", span["text"])))}

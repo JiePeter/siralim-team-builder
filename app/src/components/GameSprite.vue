@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { assetUrl } from "@/data";
+import AssetImage from "./AssetImage.vue";
 import { spriteOf, type Displayable } from "./presentation";
 
 const props = defineProps<{
@@ -12,5 +12,5 @@ const src = computed(() => spriteOf(props.data, props.properties));
 </script>
 
 <template>
-  <img v-if="src" class="game-sprite" :src="assetUrl(src)" alt="" loading="lazy" />
+  <AssetImage v-if="src" class="game-sprite" :src="src" alt="" loading="lazy" />
 </template>

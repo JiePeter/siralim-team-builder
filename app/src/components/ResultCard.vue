@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { RouterLink } from "vue-router";
 import type { Effect } from "@/data";
+import { joinSegments } from "@/domain/values";
 import CellPlate from "./CellPlate.vue";
 import ObjectSummary from "./ObjectSummary.vue";
 import { component } from "./components";
@@ -56,8 +57,8 @@ const line = computed(() => {
   names.delete(undefined);
   return [...names].join(" · ") || kindNames[props.item.kind] || "";
 });
-const preview = computed(
-  () => effect.value.segments?.map((s) => s.text).join("") ?? effect.value.description ?? "",
+const preview = computed(() =>
+  effect.value.segments ? joinSegments(effect.value.segments) : (effect.value.description ?? ""),
 );
 /** The page has the sources, which the list data leaves out. */
 const full = computed(() => (open.value ? (component(props.item.id) ?? props.item) : props.item));
@@ -202,6 +203,10 @@ function toggle(event: MouseEvent) {
   align-items: baseline;
   align-self: end;
   gap: 0 var(--space-8);
+}
+.fixed:not(:has(> .result-effect)) .result-titles {
+  grid-row: 1 / span 2;
+  align-self: center;
 }
 .fixed .result-titles > small {
   font-size: var(--fs-12);

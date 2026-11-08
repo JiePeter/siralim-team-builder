@@ -156,7 +156,6 @@
   box-shadow: inset 2px 0 var(--danger-mark);
 }
 .field-warning {
-  grid-column: 1 / -1;
   margin: var(--space-4) 0 0;
   color: var(--danger-text);
   font-size: var(--fs-13);

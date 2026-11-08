@@ -2,6 +2,7 @@ import { computed, ref, shallowRef, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { synergies } from "@/data";
 import { whereIs } from "@/domain/placement";
+import { idKind } from "@/domain/values";
 import { useTeamStore } from "@/stores/team";
 import { shownAs } from "./assembly";
 import { loadComponent } from "./components";
@@ -57,7 +58,7 @@ export function useTraySuggestions() {
     () =>
       new Map(
         suggestions(seeds.value, (id) => {
-          const intent = intentOf({ id, kind: id.split(":")[0] }, catalog.value, team.value);
+          const intent = intentOf({ id, kind: idKind(id) }, catalog.value, team.value);
           const where = whereIs(team.value, intent.id, entity);
           return !!intent.ownBase || where.tray.length + where.placed.length > 0;
         }).map((suggestion, position) => [

@@ -3,7 +3,8 @@ import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useEventListener } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { assetUrl, object, type Carrier } from "@/data";
+import { object, type Carrier } from "@/data";
+import AssetImage from "@/components/AssetImage.vue";
 import { useTeamStore } from "@/stores/team";
 import { fieldLabels, isListField, type CharacterField, type Position } from "@/domain/assembly";
 import { NO_CARRIER, placementRefusal, traitSwap } from "@/domain/placement";
@@ -148,7 +149,7 @@ const cells = computed(() =>
       index: i,
       label,
       notices: slotNotices(i).map((n) => n.text),
-      sprite: s.base && base && spriteOf(base, 0) ? assetUrl(spriteOf(base, 0)!) : null,
+      sprite: base ? spriteOf(base, 0) : null,
       data: base ?? (first ? component(itemId(first)!) : null),
       classFrom: fusion,
       vacant: isVacant(s),
@@ -720,7 +721,7 @@ const dialogWarning = computed(() => {
               </ObjectCell>
             </DropZone>
             <template v-if="showTraits">
-              <img
+              <AssetImage
                 v-if="cell.sprite"
                 class="slot-backdrop"
                 :src="cell.sprite"

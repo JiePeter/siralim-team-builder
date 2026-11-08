@@ -1,6 +1,7 @@
 import type { RouteLocationRaw } from "vue-router";
 import { createSharedComposable, useMediaQuery, useStorage } from "@vueuse/core";
 import type { Attrs, Classification, ObjectSummary, Route } from "@/data";
+import { asItem, type EquipmentRef } from "@/domain/team";
 import { t } from "@/i18n";
 
 export const usePhone = () => useMediaQuery("(max-width: 767px)");
@@ -83,6 +84,9 @@ export function spriteOf(data: Displayable | null | undefined, properties = 0): 
   const src = data?.image || data?.attrs?.image;
   return typeof src === "string" && src ? src : null;
 }
+
+/** How many properties a placed Spell Gem holds. */
+export const propertyCount = (gem: EquipmentRef): number => asItem(gem).properties?.length ?? 0;
 
 /** The plate frame drawn for a component kind; other kinds keep a plain rule. */
 export function frameOf(data: Displayable | null | undefined): string {

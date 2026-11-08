@@ -1,6 +1,13 @@
 import { computed, ref, type Ref } from "vue";
 import type { Catalog } from "@/data";
-import { MAX_TRAIT_COPIES, whereIs, type Placement, type Whereabouts } from "@/domain/placement";
+import {
+  onePerTeam,
+  traitLimitReached,
+  whereIs,
+  type Placement,
+  type Whereabouts,
+} from "@/domain/placement";
+import { idKind } from "@/domain/values";
 import { entityOf, type Equipment, type Team } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
 import { fieldLabels } from "@/domain/assembly";
@@ -83,7 +90,7 @@ export function intentOf(item: Candidate, catalog: Catalog | null, team: Team): 
     : undefined;
   return {
     id,
-    unique: item.kind === "relic" || /^(relic|spec|perk):/.test(id),
+    unique: onePerTeam(idKind(id)),
     ownBase: base?.name ?? null,
     baseChosen: !!catalog?.specializations.some((s) => chosen(s.id)),
   };
@@ -112,10 +119,6 @@ export function usePlacement(item: Ref<Candidate>) {
   const intent = computed(() => intentOf(item.value, catalog.value, store.team));
   const entity = useEntity();
   const where = computed(() => whereIs(store.team, intent.value.id, entity));
-  const full = computed(
-    () =>
-      entity(intent.value.id).startsWith("trait:") &&
-      where.value.placed.length + where.value.tray.length >= MAX_TRAIT_COPIES,
-  );
+  const full = computed(() => traitLimitReached(entity(intent.value.id), where.value));
   return { intent, where, full, text: computed(() => whereText(where.value)) };
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core";
-import { assetUrl, catalog } from "@/data";
+import { catalog } from "@/data";
+import AssetImage from "./AssetImage.vue";
 import { className, t } from "@/i18n";
 import {
   OTHER,
@@ -23,10 +24,8 @@ function choose(name: AttributeName, value: string) {
 const classIcons = computedAsync(async () => (await catalog()).class_icons, {});
 
 /** The game's class icon; other attributes have none. Shown where options can hold images. */
-const icon = (name: AttributeName, value: string) => {
-  const path = name === "class" ? classIcons.value[value] : undefined;
-  return path ? assetUrl(path) : null;
-};
+const icon = (name: AttributeName, value: string) =>
+  name === "class" ? classIcons.value[value] : undefined;
 
 function label(option: { value: string; count: number }, attribute: AttributeName) {
   const shown = attribute === "class" ? className(option.value) : option.value;
@@ -46,7 +45,7 @@ function label(option: { value: string; count: number }, attribute: AttributeNam
     >
       <option value="">{{ allAttributeLabels[facet.name] }}</option>
       <option v-for="option in facet.options" :key="option.value" :value="option.value">
-        <img
+        <AssetImage
           v-if="icon(facet.name, option.value)"
           :src="icon(facet.name, option.value)!"
           alt=""

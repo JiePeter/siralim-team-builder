@@ -81,6 +81,10 @@ def image(path):
     return "/assets/siralim/" + path if path in assets() else None
 
 
+def class_icon(name):
+    return image("images/misc/class/" + name.lower() + ".png")
+
+
 def swapped_class(label):
     """The class a Class Swap property turns its Spell Gem into, as the data names classes."""
     found = re.fullmatch(r"Class Swap: (\w+)", label)
@@ -160,7 +164,7 @@ def load(db):
             (
                 eid("class", cls),
                 cls,
-                json.dumps({"image": image("images/misc/class/" + cls.lower() + ".png")}),
+                json.dumps({"image": class_icon(cls)}),
             ),
         )
     for r in data["races.json"]:

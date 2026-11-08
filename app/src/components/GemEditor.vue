@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
-import { assetUrl, type GemProperty } from "@/data";
+import type { GemProperty } from "@/data";
 import type { Equipment } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
 import { className, t } from "@/i18n";
 import EffectText from "./EffectText.vue";
 import GameSprite from "./GameSprite.vue";
 import IdentityLine from "./IdentityLine.vue";
+import AssetImage from "./AssetImage.vue";
 import ObjectLink from "./ObjectLink.vue";
 import { component } from "./components";
 import { toastError } from "./toast";
@@ -127,7 +128,7 @@ function chooseVariant(p: GemProperty, id: number) {
           :aria-pressed="variants[p.id] === v.id"
           @click="chooseVariant(p, v.id)"
         >
-          <img v-if="v.icon" :src="assetUrl(v.icon)" alt="" />{{ v.label }}
+          <AssetImage v-if="v.icon" :src="v.icon" alt="" />{{ v.label }}
         </button>
       </div>
     </div>

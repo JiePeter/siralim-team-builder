@@ -10,7 +10,7 @@ import {
   ListboxRoot,
 } from "reka-ui";
 import type { Position } from "@/domain/assembly";
-import { placedParts, placementRefusal, type Placement } from "@/domain/placement";
+import { onePerTeam, placedParts, placementRefusal, type Placement } from "@/domain/placement";
 import { applicable, type Attributes } from "@/domain/attributes";
 import { blankCondition, type Condition, type Scope } from "@/domain/discovery";
 import { itemId, type Equipment } from "@/domain/team";
@@ -19,6 +19,7 @@ import { t } from "@/i18n";
 import AttributeFilters from "./AttributeFilters.vue";
 import MechanicFilters from "./MechanicFilters.vue";
 import CellPlate from "./CellPlate.vue";
+import { propertyCount } from "./presentation";
 import ResultCard from "./ResultCard.vue";
 import { useTeamStore } from "@/stores/team";
 import {
@@ -137,8 +138,10 @@ const listed = computed(() => !q.value.trim() && !activeFilters.value && !inTray
 
 /** A Relic is chosen by its look and name; its rank effects belong to its editor. */
 const tiles = computed(() => props.field === "relic");
-/** One-per-team components already placed cannot be placed again. */
-const unique = computed(() => props.field === "relic" || props.field === "characterAnointment");
+/** One-per-team components already placed cannot be placed again; the Specialization field swaps its sole occupant. */
+const unique = computed(
+  () => props.field !== "characterBase" && onePerTeam(fieldKind[props.field]),
+);
 /** Every placement in the team, grouped by what each component stands for. */
 const placements = computed(() => {
   const groups = new Map<string, Placement[]>();
@@ -239,7 +242,11 @@ const blocked = (id: string) =>
             :line="page.kind === 'specialization' ? '' : undefined"
           >
             <template #plate>
-              <CellPlate :data="page" :added="count > 1 ? count : false" />
+              <CellPlate
+                :data="page"
+                :properties="propertyCount(item)"
+                :added="count > 1 ? count : false"
+              />
             </template>
           </ResultCard>
         </ListboxItem>

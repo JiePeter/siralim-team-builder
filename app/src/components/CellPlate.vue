@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { assetUrl } from "@/data";
 import { className } from "@/i18n";
+import AssetImage from "./AssetImage.vue";
 import { classOf, frameOf, spriteOf, type Displayable } from "./presentation";
 
 const props = withDefaults(
@@ -56,10 +56,9 @@ const sprite = computed(() => {
   const src = spriteOf(props.data, props.properties);
   return src && src !== failed.value ? src : null;
 });
-const fallback = computed(() =>
-  assetUrl(
+const fallback = computed(
+  () =>
     `/assets/siralim/images/misc/category/${kindIcons[props.data.kind ?? ""] || "item_misc"}.png`,
-  ),
 );
 const frame = computed(() => frameOf(props.data));
 const tint = computed(() => {
@@ -83,15 +82,15 @@ const badges = computed(() => {
 
 <template>
   <span :class="['cell-plate', `frame-${frame}`, { 'kind-plate': !sprite, compact }]" :style="tint"
-    ><img
-      :src="sprite ? assetUrl(sprite) : fallback"
+    ><AssetImage
+      :src="sprite ?? fallback"
       alt=""
       loading="lazy"
-      @error="failed = sprite" /><img
+      @error="failed = sprite" /><AssetImage
       v-for="badge in badges"
       :key="badge.at"
       :class="['plate-badge', `plate-badge-${badge.at}`]"
-      :src="assetUrl(badge.src)"
+      :src="badge.src"
       :alt="badge.label"
       :title="badge.label" /><span v-if="corner" class="plate-corner">{{ corner }}</span
     ><span v-if="addable" class="add-mark"><i class="icon icon-plus"></i></span

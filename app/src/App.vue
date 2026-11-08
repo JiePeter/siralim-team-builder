@@ -15,6 +15,7 @@ import { dismiss, toastAction, toastFailed, toastText } from "@/components/toast
 import { bursts, cancelPlacing, selected, trayOpen } from "@/components/tray";
 import { kindNames, usePhone } from "@/components/presentation";
 import { assetUrl } from "@/data";
+import { idKind } from "@/domain/values";
 import { LOCALES, locale, setLocale, t, type Locale } from "@/i18n";
 
 document.documentElement.lang = locale;
@@ -30,8 +31,7 @@ const searching = computed(() => route.name === "search" || route.name === "obje
 const bumped = ref(false);
 const pageTitle = computed(() => {
   if (route.query.page === "synergy") return t("app.synergies");
-  const kind = String(route.params.id ?? "").split(":")[0]!;
-  return kind === "spec" ? kindNames.specialization : kindNames[kind];
+  return kindNames[idKind(String(route.params.id ?? ""))];
 });
 
 /** The tray item or gear chosen for placing, named in the tray bar. */

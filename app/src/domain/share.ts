@@ -1,7 +1,7 @@
 // Share links are `#team=<code>`, where code is the team as a bit stream encoded as unpadded
 // base64url. Each field takes only the bits its values need. Name and notes follow as UTF-8 text.
 import { t } from "@/i18n";
-import { newUid } from "./values";
+import { idKind, newUid } from "./values";
 import { PARTY_SIZE, itemId, newTeam, type ArtifactConfig, type Equipment } from "./team";
 import type { EquipmentRef, Slot, Team } from "./team";
 
@@ -22,7 +22,6 @@ const KINDS = Object.keys(ID_BITS);
 const ARTIFACT_TYPES = ["Helmet", "Sword", "Staff", "Shield", "Boots"];
 const VARIANT_BITS = 6;
 const RELIC_RANK_BITS = 7;
-const GEM_COUNT_BITS = 4;
 const NETHER_COUNT_BITS = 2;
 const PROPERTY_COUNT_BITS = 2;
 
@@ -137,7 +136,7 @@ function readArtifact(input: BitReader): ArtifactConfig {
 /** What an item holds beyond its id, which depends on its kind. */
 function writeBody(out: BitWriter, ref: EquipmentRef) {
   const item = typeof ref === "string" ? ({ id: ref } as Equipment) : ref;
-  const kind = item.id.split(":")[0];
+  const kind = idKind(item.id);
   if (kind === "spell") {
     const properties = item.properties ?? [];
     out.bits(properties.length, PROPERTY_COUNT_BITS);
@@ -157,7 +156,7 @@ function writeBody(out: BitWriter, ref: EquipmentRef) {
 
 function readBody(input: BitReader, id: string): Equipment {
   const item: Equipment = { uid: newUid(), id, properties: [] };
-  const kind = id.split(":")[0];
+  const kind = idKind(id);
   if (kind === "spell") {
     const count = input.bits(PROPERTY_COUNT_BITS);
     for (let i = 0; i < count; i++) {
@@ -201,7 +200,7 @@ function writeSlot(out: BitWriter, slot: Slot) {
     out.flag(!!item);
     if (item) writeItem(out, item, kinds);
   }
-  out.bits(spells.length, GEM_COUNT_BITS);
+  out.count(spells.length);
   for (const gem of spells) writeItem(out, gem, ["spell"]);
   out.bits(nether.length, NETHER_COUNT_BITS);
   for (const trait of nether) writeItem(out, trait, ["trait"]);
@@ -213,7 +212,7 @@ function readSlot(input: BitReader): Slot {
   for (const [field, kinds] of SINGLE_FIELDS) {
     if (input.flag()) slot[field] = readItem(input, kinds);
   }
-  const gems = input.bits(GEM_COUNT_BITS);
+  const gems = input.count();
   if (gems) slot.spells = Array.from({ length: gems }, () => readItem(input, ["spell"]));
   const traits = input.bits(NETHER_COUNT_BITS);
   if (traits) slot.nether = Array.from({ length: traits }, () => readItem(input, ["trait"]));

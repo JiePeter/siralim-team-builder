@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { assetUrl, type Segment } from "@/data";
+import type { Segment } from "@/data";
+import AssetImage from "./AssetImage.vue";
 import InlineRef from "./InlineRef.vue";
 
 withDefaults(
@@ -21,10 +22,10 @@ const tagClass = (part: Segment) => part.tag && `tag tag-${part.tag}`;
 <template>
   <template v-if="Array.isArray(segments)">
     <template v-for="(part, index) in segments" :key="index">
-      <img
+      <AssetImage
         v-if="icons && part.icon"
         :class="['tag-icon', { 'tag-icon-tile': part.kind === 'condition' }]"
-        :src="assetUrl(part.icon)"
+        :src="part.icon"
         alt=""
       />
       <strong

@@ -1,4 +1,5 @@
 import { className, t } from "@/i18n";
+import { idKind } from "./values";
 import {
   isListField,
   swapTraits,
@@ -79,12 +80,24 @@ export function whereIs(
 /** More copies of one Trait than a team has creatures cannot all take effect. */
 export const MAX_TRAIT_COPIES = PARTY_SIZE;
 
+/** Whether the team and tray hold the most copies that can take effect of what `entity` stands for. */
+export function traitLimitReached(entity: string, where: Whereabouts): boolean {
+  return idKind(entity) === "trait" && where.placed.length + where.tray.length >= MAX_TRAIT_COPIES;
+}
+
+const ONE_PER_TEAM = new Set(["relic", "specialization", "perk"]);
+
+/** A team holds at most one copy of each component of these kinds. */
+export function onePerTeam(kind: string): boolean {
+  return ONE_PER_TEAM.has(kind);
+}
+
 /** Copies of each Trait across the team and tray, counting creatures and materials as their Trait. */
 function traitCopies(index: TeamIndex, team: Team): Map<string, number> {
   const counts = new Map<string, number>();
   for (const item of [...team.inventory, ...placedParts(team).map((part) => part.ref)]) {
     const trait = entityOf(index, itemId(item)!);
-    if (trait?.startsWith("trait:")) counts.set(trait, (counts.get(trait) ?? 0) + 1);
+    if (idKind(trait) === "trait") counts.set(trait, (counts.get(trait) ?? 0) + 1);
   }
   return counts;
 }
