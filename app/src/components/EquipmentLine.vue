@@ -13,8 +13,10 @@ const props = withDefaults(
     /** A Spell Gem's property count, which picks its sprite. */
     properties?: number;
     corner?: string;
+    /** A Relic's rank, shown after the name. */
+    level?: number;
   }>(),
-  { name: undefined, line: null, properties: 0, corner: "" },
+  { name: undefined, line: null, properties: 0, corner: "", level: 0 },
 );
 
 /** A creature or material names the Trait it carries beside its own name. */
@@ -34,6 +36,7 @@ const text = computed(
     <span class="equipment-text">
       <span v-if="data" class="equipment-title"
         ><strong>{{ name ?? data.name }}</strong
+        ><small v-if="level" class="equipment-level">Lv.{{ level }}</small
         ><small v-if="trait" class="equipment-trait">{{ trait.name }}</small></span
       >
       <span v-else class="muted">{{ $t("editors.loading") }}</span>
@@ -76,6 +79,11 @@ const text = computed(
 }
 .equipment-title > strong {
   max-width: 100%;
+}
+.equipment-level {
+  color: var(--accent);
+  font: 400 10px / 1 var(--pixel-font);
+  white-space: nowrap;
 }
 .equipment-trait {
   color: var(--muted);

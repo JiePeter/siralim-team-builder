@@ -46,5 +46,13 @@ export default {
     relic: "Relic",
     shop: "Shop",
     items: "{n} Item | {n} Items",
+    boughtAt: "Sold at",
+    from: "From",
+    sources: "Sources",
+    perkList: "Perks",
+    drops: "Drops",
+    showAll: "Show all {n}",
+    level: "Lv.{rank}",
+    duration: "{n} turns",
   },
 };

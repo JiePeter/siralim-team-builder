@@ -3,12 +3,9 @@ import { computed, shallowRef, watch } from "vue";
 import { object, type ObjectPage } from "@/data";
 import type { Equipment } from "@/domain/team";
 import ArtifactSummary from "./ArtifactSummary.vue";
-import EffectText from "./EffectText.vue";
-import IdentityLine from "./IdentityLine.vue";
 import ModalDialog from "./ModalDialog.vue";
-import ObjectLink from "./ObjectLink.vue";
+import ObjectDetail from "./ObjectDetail.vue";
 import PropertyPills from "./PropertyPills.vue";
-import ReferenceBody from "./ReferenceBody.vue";
 import type { Hit } from "./presentation";
 
 const item = defineModel<Equipment | null>("item", { required: true });
@@ -44,35 +41,16 @@ const open = computed({
     if (!value) item.value = null;
   },
 });
-const describe = computed(
-  () =>
-    !!page.value?.description && !["creature", "material", "card_set"].includes(page.value.kind),
-);
 </script>
 
 <template>
   <ModalDialog v-model:open="open" :title="page?.name ?? ''">
-    <div v-if="page && item" class="choices preview">
-      <IdentityLine class="preview-navigation" :data="page">
-        <ObjectLink :item="page" :hits="hits" />
-      </IdentityLine>
-      <PropertyPills v-if="page.kind === 'spell'" :item="item" />
-      <ArtifactSummary :item="item" full />
-      <div v-if="describe" class="description">
-        <EffectText :text="page.description" :segments="page.segments" :context-ids="[page.id]" />
-      </div>
-      <ReferenceBody :data="page" :hits="hits" />
+    <ObjectDetail v-if="page && item" class="choices preview" :data="page" :hits="hits" preview>
+      <template #head>
+        <PropertyPills v-if="page.kind === 'spell'" :item="item" />
+        <ArtifactSummary :item="item" full />
+      </template>
       <slot />
-    </div>
+    </ObjectDetail>
   </ModalDialog>
 </template>
-
-<style scoped>
-.preview-navigation {
-  margin: 0 0 12px;
-}
-/* A lookup is about this creature; switching family members belongs to its page. */
-.preview :deep(.family-switcher) {
-  display: none;
-}
-</style>

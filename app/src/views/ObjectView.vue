@@ -1,48 +1,29 @@
 <script setup lang="ts">
-import { computed, nextTick, onWatcherCleanup, ref, shallowRef, watch } from "vue";
-import { useMediaQuery } from "@vueuse/core";
+import { computed, nextTick, onWatcherCleanup, shallowRef, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { DataNotFound, object, type ObjectPage } from "@/data";
 import { t } from "@/i18n";
 import { prefetch, whenIdle } from "@/prefetch";
 import { pageSettled } from "@/router";
-import AddButton from "@/components/AddButton.vue";
-import EffectText from "@/components/EffectText.vue";
-import GameSprite from "@/components/GameSprite.vue";
-import IdentityLine from "@/components/IdentityLine.vue";
-import ReferenceBody from "@/components/ReferenceBody.vue";
-import SynergyStrip from "@/components/SynergyStrip.vue";
-import { kindNames, normalizeHits, objectRoute, parseHits } from "@/components/presentation";
-import { usePlacedText } from "@/components/tray";
+import ObjectDetail from "@/components/ObjectDetail.vue";
+import { normalizeHits, objectRoute, parseHits } from "@/components/presentation";
 
 const props = defineProps<{ id: string }>();
 const route = useRoute();
 const router = useRouter();
-const phone = useMediaQuery("(max-width: 767px)");
-const placed = usePlacedText();
 
 const page = shallowRef<ObjectPage | null>(null);
 const error = shallowRef<unknown>(null);
-const synergyReady = ref(false);
 const hits = computed(() => parseHits(route.query.focus));
 
-const synergyKinds = ["trait", "creature", "material", "spell", "relic", "specialization"];
-const hasSynergies = computed(() => synergyKinds.includes(page.value?.kind ?? ""));
-const synergySeed = computed(
-  () => hits.value.find((h) => h.entity_id?.startsWith("perk:"))?.entity_id || page.value?.id || "",
-);
-const describe = computed(
-  () =>
-    !!page.value?.description && !["creature", "material", "card_set"].includes(page.value.kind),
-);
-const addable = computed(() => !!page.value?.selectable && page.value.kind !== "enchantment");
-/** A creature or material reads its Synergies under the Trait they come from. */
-const synergyInTrait = computed(
-  () => ["creature", "material"].includes(page.value?.kind ?? "") && !!page.value?.traits?.length,
-);
-const added = computed(() =>
-  phone.value && addable.value && page.value ? placed(page.value) : "",
-);
+/** The page an object is read on when it has none of its own. */
+function hostOf(data: ObjectPage): string | null {
+  if (data.kind === "perk" && data.parent) return data.parent.id;
+  if (data.kind === "shop") return data.related?.find((r) => r.kind === "god")?.id ?? null;
+  if (data.kind === "card_set")
+    return data.sections?.flatMap((s) => s.items).find((i) => i.kind === "race")?.id ?? null;
+  return null;
+}
 
 let version = 0;
 watch(
@@ -51,7 +32,6 @@ watch(
     const current = ++version;
     page.value = null;
     error.value = null;
-    synergyReady.value = false;
     let data: ObjectPage;
     try {
       data = await object(id);
@@ -60,14 +40,10 @@ watch(
       return;
     }
     if (current !== version) return;
-    // A Perk is read on its character base page.
-    if (data.kind === "perk" && data.parent) {
-      router.replace(
-        objectRoute(
-          data.parent.id,
-          normalizeHits([...hits.value, { entity_id: data.id, reference: data.id }]),
-        ),
-      );
+    const host = hostOf(data);
+    if (host) {
+      const focus = data.kind === "perk" ? [{ entity_id: data.id, reference: data.id }] : [];
+      router.replace(objectRoute(host, normalizeHits([...hits.value, ...focus])));
       return;
     }
     page.value = data;
@@ -87,8 +63,8 @@ watch(page, (data) => {
 });
 
 // The route changes before the id prop does, so the previous page can still be on screen here.
-watch([page, synergyReady, () => route.fullPath], async ([data, ready]) => {
-  if (!data || data.id !== route.params.id || (hasSynergies.value && !ready)) return;
+watch([page, () => route.fullPath], async ([data]) => {
+  if (!data || data.id !== route.params.id) return;
   await nextTick();
   pageSettled(route.fullPath);
 });
@@ -96,45 +72,7 @@ watch([page, synergyReady, () => route.fullPath], async ([data, ready]) => {
 
 <template>
   <article v-if="page" class="object-page">
-    <div class="section-head object-head">
-      <div class="object-title">
-        <GameSprite :data="page" portrait />
-        <div class="object-names">
-          <IdentityLine :data="page" :identity="page.kind === 'creature'" title>
-            <h1>{{ page.name }}</h1>
-            <template #meta>
-              <span v-if="!phone && page.kind !== 'creature'" class="object-kind">{{
-                kindNames[page.kind] || page.kind
-              }}</span>
-              <small v-if="added" class="object-added">{{ added }}</small>
-            </template>
-          </IdentityLine>
-        </div>
-      </div>
-      <AddButton v-if="addable" primary :quick="phone" class="object-add" :item="page" />
-    </div>
-    <div v-if="describe" class="description">
-      <EffectText :text="page.description" :segments="page.segments" :context-ids="[page.id]" />
-    </div>
-    <SynergyStrip
-      v-if="hasSynergies && !synergyInTrait"
-      :key="page.id + synergySeed"
-      :owner="page.id"
-      :seed="synergySeed"
-      @ready="synergyReady = true"
-    />
-    <div class="object-content">
-      <ReferenceBody :data="page" :hits="hits">
-        <template v-if="hasSynergies && synergyInTrait" #trait>
-          <SynergyStrip
-            :key="page.id + synergySeed"
-            :owner="page.id"
-            :seed="synergySeed"
-            @ready="synergyReady = true"
-          />
-        </template>
-      </ReferenceBody>
-    </div>
+    <ObjectDetail :data="page" :hits="hits" />
   </article>
   <p v-else-if="error instanceof DataNotFound" class="notice">{{ t("search.objectNotFound") }}</p>
   <p v-else-if="error" class="notice">{{ t("search.objectFailed") }}</p>
@@ -146,74 +84,17 @@ watch([page, synergyReady, () => route.fullPath], async ([data, ready]) => {
 <style scoped>
 .object-page {
   max-width: 960px;
-  padding: 24px 28px 32px;
+  padding: 28px 40px 32px;
   background: var(--cell);
   border: 1px solid var(--line);
 }
-.object-head {
-  align-items: flex-start;
-  flex-wrap: wrap;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
-}
-.object-title {
-  display: flex;
-  flex: 1 1 320px;
-  align-items: center;
-  gap: 20px;
-  min-width: 0;
-}
-.object-names {
-  min-width: 0;
-}
-.object-kind {
-  color: var(--muted);
-  font-size: var(--fs-13);
-}
-.object-added {
-  color: var(--placed);
-  font-size: var(--fs-13);
-  font-weight: 700;
-}
-.object-add {
-  flex: none;
-  flex-direction: column;
-  align-items: flex-end;
-}
-.object-add :deep(button) {
-  padding: 0 18px;
-}
-.object-content :deep(.reference-trait > .synergy:not(.synergy-page)) {
-  margin-top: var(--space-12);
-}
 .notice {
   color: var(--muted);
-}
-@media (min-width: 1100px) {
-  .object-page {
-    padding: 32px 40px 40px;
-  }
 }
 @media (max-width: 767px) {
   .object-page {
     padding: 16px 16px 24px;
     border-width: 1px 0;
-  }
-  .object-head {
-    flex-wrap: nowrap;
-    align-items: center;
-    padding-bottom: 12px;
-    border-bottom: 0;
-  }
-  .object-title {
-    flex: 1 1 0;
-    gap: 12px;
-  }
-  .object-names :deep(h1) {
-    flex-basis: 100%;
-  }
-  .object-page > .synergy:not(.synergy-page) {
-    margin-top: var(--space-12);
   }
 }
 </style>

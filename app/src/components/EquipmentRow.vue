@@ -5,9 +5,10 @@ import { fieldLabels, type Position } from "@/domain/assembly";
 import { asItem, itemId, type EquipmentRef } from "@/domain/team";
 import { BLANK_ARTIFACT } from "@/stores/team";
 import { t } from "@/i18n";
+import CellPlate from "./CellPlate.vue";
 import DropZone from "./DropZone.vue";
 import EquipmentLine from "./EquipmentLine.vue";
-import { artifactTypeName } from "./assembly";
+import { artifactImage, artifactTypeName } from "./assembly";
 import { component } from "./components";
 import { useDragSource } from "./dragging";
 import { selected } from "./tray";
@@ -35,15 +36,15 @@ const emit = defineEmits<{
 const drag = useDragSource();
 const label = computed(() => fieldLabels[props.at.field]);
 const blank = computed(() => itemId(props.value) === BLANK_ARTIFACT);
-const artifactType = computed(() =>
-  artifactTypeName((props.value && asItem(props.value).artifact?.type) || "Sword"),
-);
+const typeKey = computed(() => (props.value && asItem(props.value).artifact?.type) || "Sword");
+const artifactType = computed(() => artifactTypeName(typeKey.value));
 const data = computed(() =>
   blank.value
     ? ({
         id: BLANK_ARTIFACT,
         kind: "artifact",
         name: artifactType.value,
+        image: artifactImage(typeKey.value),
         effects: [],
       } as unknown as ObjectPage)
     : props.value
@@ -56,8 +57,12 @@ const name = computed(() =>
     : undefined,
 );
 const line = computed(() => (blank.value ? t("editors.noTrait") : null));
-const corner = computed(() =>
-  props.at.field === "relic" && props.value ? String(asItem(props.value).rank || 1) : "",
+const level = computed(() =>
+  props.at.field === "relic" && props.value ? asItem(props.value).rank || 1 : 0,
+);
+/** The kind an empty field takes, whose frame and icon its key shows. */
+const emptyKind = computed(() =>
+  props.at.field === "artifact" ? "material" : props.at.field === "relic" ? "relic" : "creature",
 );
 </script>
 
@@ -76,7 +81,7 @@ const corner = computed(() =>
       v-bind="drag(at)"
       @click="selected ? emit('place') : emit('inspect')"
     >
-      <EquipmentLine :data="data" :name="name" :line="line" :corner="corner">
+      <EquipmentLine :data="data" :name="name" :line="line" :level="level">
         <template #menu>
           <button
             v-if="at.field === 'artifact' && copyable"
@@ -100,8 +105,14 @@ const corner = computed(() =>
         </template>
       </EquipmentLine>
     </div>
-    <button v-else type="button" :class="['drop-target', { next }]" @click="emit('place')">
-      <i class="icon icon-plus"></i>{{ label }}
+    <button
+      v-else
+      type="button"
+      :class="['field-add', { next }]"
+      :aria-label="label"
+      @click="emit('place')"
+    >
+      <CellPlate class="empty-key" compact addable :data="{ kind: emptyKind }" />
     </button>
     <p v-if="warning" class="field-warning">{{ warning }}</p>
   </DropZone>

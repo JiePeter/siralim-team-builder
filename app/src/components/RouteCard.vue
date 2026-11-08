@@ -13,10 +13,16 @@ const view = computed(() => routeView(props.route, { godName: props.godName ?? n
     <ObjectLink
       v-if="route.location"
       :item="{ id: route.location, name: view.title, image: route.location_image }"
-    />
-    <strong v-else>{{ view.title }}</strong>
-    <div class="route-facts">
-      <span v-for="fact in view.facts" :key="fact" class="pill">{{ fact }}</span>
-    </div>
+    >
+      <span v-if="view.facts.length" class="route-facts">
+        <span v-for="fact in view.facts" :key="fact" class="pill">{{ fact }}</span>
+      </span>
+    </ObjectLink>
+    <template v-else>
+      <strong>{{ view.title }}</strong>
+      <div class="route-facts">
+        <span v-for="fact in view.facts" :key="fact" class="pill">{{ fact }}</span>
+      </div>
+    </template>
   </div>
 </template>

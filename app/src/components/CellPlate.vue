@@ -7,7 +7,10 @@ import { classOf, frameOf, spriteOf, type Displayable } from "./presentation";
 const props = withDefaults(
   defineProps<{
     data: Displayable;
-    added?: boolean;
+    /** Already in the tray or equipped; a count above one is shown in place of the check. */
+    added?: boolean | number;
+    /** The plate is an Add key: a plus marks its top-right corner. */
+    addable?: boolean;
     /** The creature whose class the badge shows, when it differs from `data` (a fused slot). */
     classFrom?: Displayable | null;
     /** A Spell Gem's property count, which picks its sprite. */
@@ -19,6 +22,7 @@ const props = withDefaults(
   }>(),
   {
     added: false,
+    addable: false,
     classFrom: null,
     properties: 0,
     compact: false,
@@ -90,7 +94,10 @@ const badges = computed(() => {
       :src="assetUrl(badge.src)"
       :alt="badge.label"
       :title="badge.label" /><span v-if="corner" class="plate-corner">{{ corner }}</span
-    ><span v-if="added" class="added-check"><i class="icon icon-check"></i></span
+    ><span v-if="addable" class="add-mark"><i class="icon icon-plus"></i></span
+    ><span v-if="added" class="added-check"
+      ><template v-if="typeof added === 'number' && added > 1">{{ added }}</template
+      ><i v-else class="icon icon-check"></i></span
   ></span>
 </template>
 
@@ -243,9 +250,23 @@ const badges = computed(() => {
   background: var(--placed-ground);
   border: 1px solid var(--placed);
   color: var(--placed);
+  font: 400 9px / 1 var(--pixel-font);
+}
+.add-mark {
+  position: absolute;
+  z-index: 3;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 /* Half the icon's 24px grid: each 2px cell lands on one whole pixel. */
-.added-check .icon {
+.added-check .icon,
+.add-mark .icon {
   width: 12px;
   height: 12px;
   -webkit-mask-size: 12px 12px;

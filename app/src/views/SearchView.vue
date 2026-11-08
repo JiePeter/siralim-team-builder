@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import { useDebounceFn, useMediaQuery } from "@vueuse/core";
+import { useDebounceFn, useIntersectionObserver, useMediaQuery } from "@vueuse/core";
 import { t } from "@/i18n";
 import { useSearchStore } from "@/stores/search";
 import AddButton from "@/components/AddButton.vue";
@@ -11,7 +11,6 @@ import FacetOptions from "@/components/FacetOptions.vue";
 import MechanicFilters from "@/components/MechanicFilters.vue";
 import ResultCard from "@/components/ResultCard.vue";
 import type { Attributes } from "@/domain/attributes";
-import { usePlacedText } from "@/components/tray";
 
 const route = useRoute();
 const store = useSearchStore();
@@ -25,7 +24,6 @@ const activeFilters = computed(
     conditions.value.filter((c) => c.category).length,
 );
 const input = ref<HTMLInputElement | null>(null);
-const placed = usePlacedText();
 const phone = useMediaQuery("(max-width: 767px)");
 
 const addableKinds = new Set([
@@ -43,6 +41,20 @@ const count = computed(() => {
   return total.value > items.value.length
     ? t("search.showing", { found, shown: items.value.length })
     : found;
+});
+/** Cards are mounted a batch at a time while the end of the list is near the viewport. */
+const BATCH = 20;
+const rendered = ref(BATCH);
+const shownItems = computed(() => items.value.slice(0, rendered.value));
+const listEnd = ref<HTMLElement | null>(null);
+const nearEnd = ref(false);
+useIntersectionObserver(listEnd, ([entry]) => (nearEnd.value = !!entry?.isIntersecting), {
+  rootMargin: "600px",
+});
+watch(items, () => (rendered.value = BATCH));
+watch([nearEnd, rendered], () => {
+  if (nearEnd.value && rendered.value < items.value.length)
+    requestAnimationFrame(() => (rendered.value += BATCH));
 });
 const typed = useDebounceFn(() => store.run(), 180);
 
@@ -114,17 +126,19 @@ onMounted(() => {
       <div v-if="narrowed" class="results">
         <template v-if="items.length">
           <ResultCard
-            v-for="item in items"
+            v-for="item in shownItems"
             :key="item.id"
             class="result"
             link
             :compact="phone"
             :item="item"
             :selected="detail && route.params.id === item.id"
-            :added="!!placed(item)"
           >
-            <AddButton v-if="addableKinds.has(item.kind)" quick :item="item" />
+            <template v-if="addableKinds.has(item.kind)" #plate>
+              <AddButton :item="item" :plate="item" />
+            </template>
           </ResultCard>
+          <div ref="listEnd" class="list-end"></div>
         </template>
         <p v-else class="empty">{{ t("search.noMatches") }}</p>
       </div>

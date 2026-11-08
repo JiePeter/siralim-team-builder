@@ -403,12 +403,10 @@ export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): Discov
     const item = { ...(exact ?? explicit ?? named ?? group.entity) };
     const names = group.members
       .filter((m) => m.name !== item.name)
-      .filter(
-        (m) =>
-          !terms.length ||
-          prefixed(words(fold(m.name)), terms) ||
-          kind === "creature" ||
-          kind === "material",
+      .filter((m) =>
+        terms.length && kind !== "material"
+          ? prefixed(words(fold(m.name)), terms)
+          : m.kind === "creature" || (terms.length > 0 && prefixed(words(fold(m.name)), terms)),
       )
       .map((m) => m.name);
     const { descriptors } = group;

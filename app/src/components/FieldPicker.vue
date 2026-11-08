@@ -18,9 +18,9 @@ import { blankCondition } from "@/domain/discovery";
 import type { Equipment, Team } from "@/domain/team";
 import { matchesText } from "@/domain/values";
 import { MECHANIC_SEARCH, usePickerSearchStore, useSearchStore } from "@/stores/search";
-import { t } from "@/i18n";
 import AttributeFilters from "./AttributeFilters.vue";
 import MechanicFilters from "./MechanicFilters.vue";
+import CellPlate from "./CellPlate.vue";
 import ResultCard from "./ResultCard.vue";
 import { useTeamStore } from "@/stores/team";
 import {
@@ -46,8 +46,6 @@ const props = defineProps<{
   kindOf: (id: string) => string | undefined;
   /** The position a choice goes to, so a choice it refuses says why before it is tapped. */
   target?: Position;
-  /** The field holds something, so a choice replaces it. */
-  replacing?: boolean;
 }>();
 const emit = defineEmits<{
   pick: [uid: string];
@@ -134,9 +132,11 @@ const inTray = computed(() => {
 
 const more = computed(() => {
   const trayed = new Set(inTray.value.map(({ item }) => entity(item.id)));
-  return (found.value?.items ?? []).filter((c) => !trayed.has(entity(c.id)));
+  return (found.value?.items ?? []).filter((c) => !trayed.has(entity(c.id)) && !here(c.id));
 });
 
+/** A Relic is chosen by its look and name; its rank effects belong to its editor. */
+const tiles = computed(() => props.field === "relic");
 /** One-per-team components already placed cannot be placed again. */
 const unique = computed(() => props.field === "relic" || props.field === "characterAnointment");
 const placedAt = (id: string) =>
@@ -145,9 +145,12 @@ const refusal = (id: string) =>
   props.target && store.index ? placementRefusal(store.index, props.team, props.target, id) : null;
 const note = (id: string) => {
   const refused = refusal(id);
-  if (refused) return { text: refused, refused: true };
-  const placed = placedAt(id);
-  return placed ? { text: placed } : null;
+  return refused ? { text: refused, refused: true } : null;
+};
+/** Copies already in the team, marked on the plate. */
+const placedCount = (id: string) => {
+  const n = whereIs(props.team, id, entity).placed.length;
+  return n > 1 ? n : n > 0;
 };
 /** The field already holds this component. */
 const here = (id: string) =>
@@ -159,8 +162,6 @@ const here = (id: string) =>
       (props.target.index === undefined || at.index === props.target.index),
   );
 const blocked = (id: string) => here(id) || !!refusal(id) || (unique.value && !!placedAt(id));
-const keyLabel = (name: string) =>
-  t(props.replacing ? "tray.picker.replaceWith" : "tray.picker.place", { name });
 
 function choose(value: string) {
   const [source, key] = [value.slice(0, value.indexOf(":")), value.slice(value.indexOf(":") + 1)];
@@ -168,10 +169,10 @@ function choose(value: string) {
   else emit("take", key);
 }
 
-/** A pointer on the card opens its text; the key beside it, or Enter on the list, places it. */
-function selected(event: CustomEvent<{ originalEvent: Event }>, value: string) {
+/** A tap on the card or Enter on the list places it. */
+function selected(event: CustomEvent, value: string) {
   event.preventDefault();
-  if (!(event.detail.originalEvent as MouseEvent).detail) choose(value);
+  choose(value);
 }
 </script>
 
@@ -210,36 +211,36 @@ function selected(event: CustomEvent<{ originalEvent: Event }>, value: string) {
       </div>
     </div>
     <ListboxContent class="picker-list">
-      <ListboxGroup v-if="inTray.length">
+      <ListboxGroup v-if="inTray.length" :class="{ 'tile-group': tiles }">
         <ListboxGroupLabel class="picker-label">{{ $t("tray.picker.inTray") }}</ListboxGroupLabel>
         <ListboxItem
           v-for="{ item, count } in inTray"
           :key="item.uid"
           :value="`tray:${item.uid}`"
-          class="picker-choice"
+          :class="tiles ? 'picker-tile' : 'picker-choice'"
           @select="selected($event as never, `tray:${item.uid}`)"
         >
+          <template v-if="tiles && component(displayed(item))">
+            <CellPlate :data="component(displayed(item))!" :added="count > 1 ? count : false" />
+            <span class="tile-name">{{ component(displayed(item))!.name }}</span>
+          </template>
           <ResultCard
-            v-if="component(displayed(item))"
+            v-else-if="component(displayed(item))"
             compact
+            fixed
             :item="component(displayed(item))!"
-            :note="{ text: $t('tray.picker.inTrayCount', { count }) }"
+            :line="component(displayed(item))!.kind === 'specialization' ? '' : undefined"
           >
-            <button
-              type="button"
-              class="icon-button place-key"
-              :aria-label="keyLabel(component(displayed(item))!.name)"
-              @click.stop="choose(`tray:${item.uid}`)"
-            >
-              <i :class="['icon', replacing ? 'icon-replace' : 'icon-plus']"></i>
-            </button>
+            <template #plate>
+              <CellPlate :data="component(displayed(item))!" :added="count > 1 ? count : false" />
+            </template>
           </ResultCard>
         </ListboxItem>
       </ListboxGroup>
-      <ListboxGroup v-if="more.length">
+      <ListboxGroup v-if="more.length" :class="{ 'tile-group': tiles }">
         <ListboxGroupLabel class="picker-label"
           >{{ $t("tray.picker.moreMatches") }}
-          <span class="picker-count">{{ more.length }}</span></ListboxGroupLabel
+          <span class="count">{{ more.length }}</span></ListboxGroupLabel
         >
         <ListboxItem
           v-for="item in more.slice(0, shown)"
@@ -247,20 +248,23 @@ function selected(event: CustomEvent<{ originalEvent: Event }>, value: string) {
           :value="`data:${item.id}`"
           :disabled="blocked(item.id)"
           :data-note="note(item.id)?.text"
-          class="picker-choice"
+          :class="tiles ? 'picker-tile' : 'picker-choice'"
+          :title="note(item.id)?.text"
           @select="selected($event as never, `data:${item.id}`)"
         >
-          <ResultCard compact :item="item" :line="item.detail" :note="note(item.id)">
-            <button
-              v-if="!blocked(item.id)"
-              type="button"
-              class="icon-button place-key"
-              :aria-label="keyLabel(item.name)"
-              @click.stop="choose(`data:${item.id}`)"
-            >
-              <i :class="['icon', replacing ? 'icon-replace' : 'icon-plus']"></i>
-            </button>
-          </ResultCard>
+          <template v-if="tiles">
+            <CellPlate :data="item" :added="placedCount(item.id)" />
+            <span class="tile-name">{{ item.name }}</span>
+          </template>
+          <ResultCard
+            v-else
+            compact
+            fixed
+            :item="item"
+            :line="item.detail"
+            :note="note(item.id)"
+            :added="placedCount(item.id)"
+          />
         </ListboxItem>
       </ListboxGroup>
     </ListboxContent>
@@ -342,28 +346,49 @@ function selected(event: CustomEvent<{ originalEvent: Event }>, value: string) {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.picker-count {
-  font: 400 16px / 1 var(--pixel-font);
+.count {
+  color: var(--muted);
+  font: 400 11px / 1 var(--pixel-font);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
 }
 .picker-choice {
   margin-bottom: 2px;
 }
-.picker-choice > .result-card {
-  border-color: var(--line);
+.tile-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: var(--space-8);
+}
+.tile-group > .picker-label {
+  grid-column: 1 / -1;
+}
+.picker-tile {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-4);
+  cursor: pointer;
+  font-size: var(--fs-12);
+  line-height: 15px;
+  text-align: center;
+}
+.picker-tile[data-highlighted] {
+  background: var(--raised);
+}
+.picker-tile[data-disabled] {
+  cursor: default;
+  opacity: 0.4;
 }
 .picker-choice:has(> .result-card)[data-highlighted] > .result-card {
   background: var(--raised);
 }
+.picker-choice[data-disabled] > .result-card {
+  cursor: default;
+}
 .picker-choice[data-disabled] :deep(.cell-plate) {
   opacity: 0.4;
-}
-.place-key {
-  color: var(--accent);
-}
-.place-key:has(.icon-replace) {
-  color: var(--text);
 }
 /* Inside the dialog the empty line needs no box of its own. */
 .empty {

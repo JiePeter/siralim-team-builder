@@ -15,7 +15,7 @@ export default {
     character: "角色",
     clearCharacter: "清除角色",
     shortLabels: { base: "主", fusion: "融", artifact: "神", nether: "下" },
-    keys: { details: "详情", swap: "交换", tray: "回托盘", replace: "替换", move: "移动" },
+    keys: { swap: "交换", tray: "回托盘", replace: "替换", move: "移动" },
     properties: "词条",
     gemLimit: "一颗法术宝石最多可有 {max} 个词条",
     artifact: {
@@ -27,6 +27,7 @@ export default {
       trick: "技巧",
       dialogTitle: "神器 · 特性",
       spellSlot: "法术槽",
+      spell: "法术",
       types: { Sword: "剑", Staff: "法杖", Helmet: "头盔", Shield: "盾", Boots: "靴子" },
       triggers: {
         Sword: "攻击时 25%",

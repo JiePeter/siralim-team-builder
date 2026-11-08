@@ -46,5 +46,13 @@ export default {
     relic: "圣物",
     shop: "商店",
     items: "{n} 件物品",
+    boughtAt: "购于",
+    from: "来自",
+    sources: "来源",
+    perkList: "专长",
+    drops: "掉落",
+    showAll: "显示全部 {n}",
+    level: "Lv.{rank}",
+    duration: "持续 {n} 回合",
   },
 };

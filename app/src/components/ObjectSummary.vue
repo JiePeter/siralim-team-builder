@@ -27,6 +27,8 @@ const props = withDefaults(
     /** A relic shows only the ranks the visitor arrived for. */
     matchedOnly?: boolean;
     contextIds?: string[];
+    /** An effect name the surrounding row already shows. */
+    titled?: string;
   }>(),
   {
     limit: Infinity,
@@ -38,6 +40,7 @@ const props = withDefaults(
     classIcon: true,
     matchedOnly: false,
     contextIds: () => [],
+    titled: "",
   },
 );
 
@@ -88,7 +91,10 @@ const showFacts = computed(
   () => props.facts && ((props.data.facts || []).length || (spellGem.value && props.classIcon)),
 );
 const named = (e: SummaryEffect) =>
-  e.id !== props.data.id && e.name !== props.data.name && props.data.kind !== "relic";
+  e.id !== props.data.id &&
+  e.name !== props.data.name &&
+  e.name !== props.titled &&
+  props.data.kind !== "relic";
 const effectContext = (e: SummaryEffect) => [...props.contextIds, props.data.id, e.id];
 </script>
 

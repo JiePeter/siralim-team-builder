@@ -23,12 +23,14 @@ const source = computed(() => {
   <ObjectCell tag="article" layout="card" class="pairing-card" :data="card" :added="!!placed(card)">
     <template #label>
       <div class="pairing-head">
-        <h3><ObjectLink :item="card" :hits="card.hits" :sprite="false" /></h3>
+        <div class="pairing-title">
+          <h3><ObjectLink :item="card" :hits="card.hits" :sprite="false" /></h3>
+          <small v-if="source" class="pairing-source">{{ $t("synergy.with", { source }) }}</small>
+        </div>
         <AddButton quick class="add-candidate" :item="card" />
       </div>
     </template>
     <template #detail>
-      <small v-if="source" class="pairing-source">{{ $t("synergy.with", { source }) }}</small>
       <p>
         <template v-for="(text, i) in card.effects" :key="i"
           ><template v-if="i">{{ "\n\n" }}</template
@@ -58,9 +60,11 @@ const source = computed(() => {
   display: flex;
   flex-direction: column;
 }
-.pairing-card h3 {
+.pairing-title {
   flex: 1 1 auto;
   min-width: 0;
+}
+.pairing-card h3 {
   margin: 0;
 }
 .pairing-card p {
@@ -69,7 +73,8 @@ const source = computed(() => {
   white-space: pre-line;
 }
 .pairing-source {
-  margin-top: 6px;
+  display: block;
+  margin-top: var(--space-4);
   color: var(--muted);
   font-size: var(--fs-12);
 }

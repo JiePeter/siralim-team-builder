@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, toRef, useId } from "vue";
 import { useRouter } from "vue-router";
-import { useMediaQuery } from "@vueuse/core";
+import { createSharedComposable, useMediaQuery } from "@vueuse/core";
 import { useTeamStore } from "@/stores/team";
 import { t } from "@/i18n";
+import CellPlate from "./CellPlate.vue";
 import FloatingMenu from "./FloatingMenu.vue";
+import type { Displayable } from "./presentation";
 import { perkBase, selectionLabel, useCatalog, type Candidate } from "./selection";
 import { attempt, toast } from "./toast";
 import { burst, flash, trayOpen, usePlacement } from "./tray";
@@ -14,12 +16,16 @@ const props = defineProps<{
   primary?: boolean;
   /** An icon key for list rows; the row's plate shows that the component is already added. */
   quick?: boolean;
+  /** The key is this plate, which marks whether and how often the component is already added. */
+  plate?: Displayable;
 }>();
+
+const useSidebar = createSharedComposable(() => useMediaQuery("(min-width: 1100px)"));
 
 const store = useTeamStore();
 const router = useRouter();
 const catalog = useCatalog();
-const sidebar = useMediaQuery("(min-width: 1100px)");
+const sidebar = useSidebar();
 const { intent, where, full, text } = usePlacement(toRef(props, "item"));
 const busy = ref(false);
 
@@ -35,6 +41,21 @@ const base = computed(() => {
   return perk?.anointment ? (base ?? null) : null;
 });
 const baseMenu = useId();
+const count = computed(() => where.value.placed.length + where.value.tray.length);
+const plateLabel = computed(() =>
+  placedOnly.value
+    ? t("tray.add.placed", { name: name.value, text: text.value })
+    : ownBase.value
+      ? t("tray.add.comesWith", { name: ownBase.value })
+      : label.value === t("tray.add.add")
+        ? t("tray.add.addNamed", { name: name.value })
+        : t("tray.add.labelled", { label: label.value, name: name.value }),
+);
+
+function pressPlate(event: MouseEvent) {
+  if (placedOnly.value) jump();
+  else if (!ownBase.value) press(event);
+}
 const choosing = ref(false);
 
 function jump() {
@@ -68,9 +89,28 @@ async function add(event: MouseEvent, id: string, added: string) {
 </script>
 
 <template>
-  <div class="add-control">
+  <div :class="plate ? 'plate-control' : 'add-control'">
     <button
-      v-if="placedOnly"
+      v-if="plate"
+      type="button"
+      class="plate-key"
+      :aria-label="plateLabel"
+      :aria-busy="busy || undefined"
+      :aria-disabled="full || !!ownBase || undefined"
+      :aria-haspopup="base ? 'menu' : undefined"
+      :aria-expanded="base ? choosing : undefined"
+      :popovertarget="base ? baseMenu : undefined"
+      @click="pressPlate"
+    >
+      <CellPlate
+        :data="plate"
+        :added="count"
+        :addable="!placedOnly && !ownBase"
+        :class="{ full }"
+      />
+    </button>
+    <button
+      v-else-if="placedOnly"
       type="button"
       :class="['added-mark', { 'quick-key': quick }]"
       :aria-label="$t('tray.add.placed', { name, text })"
@@ -106,39 +146,61 @@ async function add(event: MouseEvent, id: string, added: string) {
       >
         <i class="icon icon-plus"></i><template v-if="!quick">{{ label }}</template>
       </button>
-      <FloatingMenu
-        v-if="base"
-        :id="baseMenu"
-        v-slot="{ close }"
-        v-model:open="choosing"
-        :label="$t('tray.add.addAs', { name })"
-      >
-        <button
-          type="button"
-          role="menuitem"
-          @click="
-            close();
-            add($event, intent.id, name);
-          "
-        >
-          {{ $t("tray.add.anointment") }}
-        </button>
-        <button
-          type="button"
-          role="menuitem"
-          @click="
-            close();
-            add($event, base!.id, base!.name);
-          "
-        >
-          {{ $t("tray.add.specializationOf", { name: base.name }) }}
-        </button>
-      </FloatingMenu>
     </template>
+    <FloatingMenu
+      v-if="base"
+      :id="baseMenu"
+      v-slot="{ close }"
+      v-model:open="choosing"
+      :label="$t('tray.add.addAs', { name })"
+    >
+      <button
+        type="button"
+        role="menuitem"
+        @click="
+          close();
+          add($event, intent.id, name);
+        "
+      >
+        {{ $t("tray.add.anointment") }}
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        @click="
+          close();
+          add($event, base!.id, base!.name);
+        "
+      >
+        {{ $t("tray.add.specializationOf", { name: base.name }) }}
+      </button>
+    </FloatingMenu>
   </div>
 </template>
 
 <style scoped>
+.plate-key {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  clip-path: none;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .plate-key:hover :deep(.cell-plate) {
+    background: var(--raised);
+  }
+}
+.plate-key:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+.plate-key :deep(.full .add-mark) {
+  opacity: 0.4;
+}
 .add-control {
   display: flex;
   flex-wrap: wrap;

@@ -50,6 +50,10 @@ export const artifactTrigger: Record<string, string> = Object.fromEntries(
   ARTIFACT_TYPES.map((type) => [type, t(`editors.artifact.triggers.${type}`)]),
 );
 
+/** The game's sprite for an Artifact type, at its highest tier. */
+export const artifactImage = (type: string): string =>
+  `/assets/siralim/images/item/artifact/${ARTIFACT_TYPES.includes(type) ? type : "Sword"}_t5.png`;
+
 /** The name an Artifact type is shown under. */
 export const artifactTypeName = (type: string): string =>
   ARTIFACT_TYPES.includes(type) ? t(`editors.artifact.types.${type}`) : type;

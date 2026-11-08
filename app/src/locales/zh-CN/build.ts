@@ -50,7 +50,6 @@ export default {
     thisTrait: "该特性",
     nameList: "{names}等 {count} 项",
     nameSeparator: "、",
-    items: "{n} 项",
     spellGemCount: "{n} 个法术宝石",
     unstacked: "{trait}不会叠加：仅槽位 {n} 生效",
     replacedCertain: "{owner}会使{listeners}失效",

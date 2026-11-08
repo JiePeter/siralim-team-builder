@@ -8,7 +8,7 @@ import { t } from "@/i18n";
 import { MAX_TRAIT_COPIES, placedParts, whereIs } from "@/domain/placement";
 import { asItem, asTrait, type Equipment, type Team } from "@/domain/team";
 import DropZone from "./DropZone.vue";
-import ObjectCell from "./ObjectCell.vue";
+import CellPlate from "./CellPlate.vue";
 import PreviewDialog from "./PreviewDialog.vue";
 import PropertyPills from "./PropertyPills.vue";
 import { canPlace, shownAs } from "./assembly";
@@ -100,6 +100,12 @@ const traitName = (line: Line) => {
   const data = component(line.shown);
   return data && ["creature", "material"].includes(data.kind) ? data.effects[0]?.name : undefined;
 };
+const inBuild = (line: Line) =>
+  line.placed > 1
+    ? t("tray.inBuildCount", { count: line.placed })
+    : line.placed
+      ? t("tray.inBuild")
+      : "";
 const trashLabel = t("tray.clear");
 const atLimit = (line: Line) => {
   const where = whereIs(team.value, line.item.id, entity);
@@ -214,96 +220,87 @@ watch(flashed, async (uid) => {
           :class="['tray-group', `group-${group.value}`]"
         >
           <h3>{{ group.label }}</h3>
-          <ObjectCell
+          <div
             v-for="line in group.lines"
             :key="line.key"
-            :class="['tray-item', { flash: line.uids.includes(flashed ?? '') }]"
-            :data="component(line.shown)"
-            :selected="isSelected(line)"
+            :class="[
+              'tray-item',
+              { flash: line.uids.includes(flashed ?? ''), selected: isSelected(line) },
+            ]"
             :data-uids="line.uids.join(' ')"
             v-bind="building && line.uids.length ? drag({ uid: line.uids[0]! }) : {}"
           >
-            <template v-if="building" #index>
-              <button
-                type="button"
-                class="tray-look"
-                :aria-label="$t('tray.lookUp', { name: name(line) })"
-                @click="preview = line.item"
-              ></button>
-            </template>
-            <template #label>
-              <button
-                type="button"
-                class="tray-name"
-                :aria-pressed="building && line.uids.length ? isSelected(line) : undefined"
-                @click="choose(line)"
+            <button
+              type="button"
+              class="tray-look"
+              :aria-label="[$t('tray.lookUp', { name: name(line) }), inBuild(line)].join('. ')"
+              :title="inBuild(line) || undefined"
+              @click="preview = line.item"
+            >
+              <CellPlate
+                v-if="component(line.shown)"
+                compact
+                :data="component(line.shown)!"
+                :added="line.placed > 1 ? line.placed : line.placed > 0"
+              />
+            </button>
+            <div class="tray-text">
+              <span class="tray-line"
+                ><button
+                  type="button"
+                  class="tray-name"
+                  :aria-pressed="building && line.uids.length ? isSelected(line) : undefined"
+                  @click="choose(line)"
+                >
+                  {{ name(line) }}</button
+                ><small
+                  v-if="line.item.rank"
+                  class="tray-rank"
+                  :aria-label="$t('tray.rank', { rank: line.item.rank })"
+                  >Lv.{{ line.item.rank }}</small
+                ><small v-if="traitName(line)" class="tray-trait">{{
+                  traitName(line)
+                }}</small></span
               >
-                {{ name(line) }}
-              </button>
-            </template>
-            <template #detail>
-              <small v-if="traitName(line) || line.item.rank" class="tray-trait">
-                <template v-if="line.item.rank">{{
-                  $t("tray.rank", { rank: line.item.rank })
-                }}</template
-                >{{ traitName(line) }}
-              </small>
-              <small v-if="line.placed" class="tray-in-build">{{
-                line.placed > 1
-                  ? $t("tray.inBuildCount", { count: line.placed })
-                  : $t("tray.inBuild")
-              }}</small>
               <PropertyPills :item="line.item" />
-            </template>
-            <template #aside>
-              <div class="tray-actions">
+            </div>
+            <div class="tray-actions">
+              <button
+                v-if="arming === line.key"
+                type="button"
+                class="tray-remove"
+                @click="remove(line)"
+              >
+                {{ $t("tray.remove") }}
+              </button>
+              <span v-else-if="line.uids.length" class="stepper">
                 <button
-                  v-if="building"
                   type="button"
-                  class="icon-button tray-eye"
-                  :aria-label="$t('tray.lookUp', { name: name(line) })"
-                  :title="$t('tray.lookUp', { name: name(line) })"
-                  @click="preview = line.item"
+                  class="icon-button"
+                  :aria-label="
+                    $t(line.uids.length > 1 ? 'tray.removeOne' : 'tray.removeNamed', {
+                      name: name(line),
+                    })
+                  "
+                  @click="decrease(line)"
                 >
-                  <i class="icon icon-eye"></i>
+                  <i :class="['icon', line.uids.length > 1 ? 'icon-minus' : 'icon-trash']"></i>
                 </button>
-                <button
-                  v-if="arming === line.key"
-                  type="button"
-                  class="tray-remove"
-                  @click="remove(line)"
-                >
-                  {{ $t("tray.remove") }}
-                </button>
-                <span v-else-if="line.uids.length" class="stepper">
+                <template v-if="!single.has(line.kind)">
+                  <span class="tray-quantity">{{ line.uids.length }}</span>
                   <button
                     type="button"
                     class="icon-button"
-                    :aria-label="
-                      $t(line.uids.length > 1 ? 'tray.removeOne' : 'tray.removeNamed', {
-                        name: name(line),
-                      })
-                    "
-                    @click="decrease(line)"
+                    :aria-label="$t('tray.addOne', { name: name(line) })"
+                    :aria-disabled="atLimit(line) || undefined"
+                    @click="attempt(() => store.copyPoolItem(line.uids[0]!))"
                   >
-                    <i :class="['icon', line.uids.length > 1 ? 'icon-minus' : 'icon-trash']"></i>
+                    <i class="icon icon-plus"></i>
                   </button>
-                  <template v-if="!single.has(line.kind)">
-                    <span class="tray-quantity">{{ line.uids.length }}</span>
-                    <button
-                      type="button"
-                      class="icon-button"
-                      :aria-label="$t('tray.addOne', { name: name(line) })"
-                      :aria-disabled="atLimit(line) || undefined"
-                      @click="attempt(() => store.copyPoolItem(line.uids[0]!))"
-                    >
-                      <i class="icon icon-plus"></i>
-                    </button>
-                  </template>
-                </span>
-              </div>
-            </template>
-          </ObjectCell>
+                </template>
+              </span>
+            </div>
+          </div>
         </section>
         <div v-if="!groups.length" class="tray-empty">
           <p class="muted">{{ $t("tray.empty") }}</p>
@@ -371,24 +368,28 @@ watch(flashed, async (uid) => {
   color: var(--kind-character);
 }
 .tray-item {
-  padding: 8px 12px 8px 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-width: 0;
+  padding: var(--space-8) var(--space-12) var(--space-8) var(--space-16);
+  border: 1px solid transparent;
   transition: background-color 0.3s;
 }
 .tray-look {
-  position: absolute;
-  top: 8px;
-  left: 16px;
-  z-index: 1;
-  width: 68px;
-  min-height: 68px;
+  flex: none;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
   padding: 0;
   background: none;
+  border: 0;
   clip-path: none;
 }
 .tray-look:hover,
 .tray-look:active:not(:disabled) {
   background: none;
-  border-color: transparent;
 }
 .tray-item[draggable="true"]::before {
   content: "";
@@ -415,15 +416,31 @@ watch(flashed, async (uid) => {
   border-color: var(--placed);
 }
 .tray-item.selected {
-  border-color: var(--text);
+  background: var(--raised);
+  border-color: var(--accent);
+}
+.tray-text {
+  display: grid;
+  flex: 1;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.tray-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-8);
 }
 .tray-name {
   min-height: 0;
   padding: 0;
   background: none;
   border: 0;
+  clip-path: none;
   color: var(--text);
+  font-size: var(--fs-15);
   font-weight: 700;
+  line-height: 20px;
   text-align: left;
   overflow-wrap: anywhere;
 }
@@ -433,27 +450,22 @@ watch(flashed, async (uid) => {
   text-decoration-color: var(--strong);
   text-underline-offset: 3px;
 }
-.tray-quantity {
-  align-self: center;
-  min-width: 28px;
-  color: var(--placed);
-  font: 400 16px / 1 var(--pixel-font);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-}
 .tray-trait {
-  display: block;
-  margin-top: 2px;
   color: var(--muted);
-  font-size: var(--fs-13);
+  font-size: var(--fs-12);
   overflow-wrap: anywhere;
 }
-.tray-in-build {
-  display: block;
-  margin-top: 2px;
-  color: var(--placed);
-  font-size: var(--fs-13);
-  font-weight: 700;
+.tray-rank {
+  color: var(--accent);
+  font: 400 10px / 1 var(--pixel-font);
+}
+.tray-quantity {
+  align-self: center;
+  min-width: 24px;
+  color: var(--text);
+  font: 400 13px / 1 var(--pixel-font);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 .tray-remove {
   min-height: var(--control-compact);
@@ -472,8 +484,8 @@ watch(flashed, async (uid) => {
 }
 .tray-actions {
   display: flex;
+  flex: none;
   justify-content: flex-end;
-  gap: 4px;
 }
 .tray-actions [aria-disabled="true"] {
   opacity: 0.4;
@@ -487,9 +499,6 @@ watch(flashed, async (uid) => {
 .stepper > button + button {
   margin-left: 0;
 }
-.tray-eye {
-  display: none;
-}
 /* Tray rows share the tray's ground, so only a rule can separate them. */
 @media (min-width: 768px) {
   .tray-head {
@@ -497,33 +506,6 @@ watch(flashed, async (uid) => {
   }
   .tray-item:not(.selected, .flash) {
     border-bottom-color: var(--line);
-  }
-}
-/* The narrow sidebar has no room beside the name, so its actions take their own row in the text column. */
-@media (min-width: 1100px) {
-  .tray-look {
-    display: none;
-  }
-  .tray-eye {
-    display: inline-flex;
-  }
-  .parts-tray .tray-item :deep(> .cell-mark) {
-    grid-row: 1 / span 3;
-  }
-  .tray-item :deep(> .cell-aside) {
-    grid-column: 2;
-    grid-row: auto;
-  }
-  .parts-tray .tray-item.object-cell-row:has(> .cell-aside) {
-    grid-template-columns: 68px minmax(0, 1fr);
-  }
-  .tray-actions {
-    justify-content: flex-start;
-  }
-}
-@media (max-width: 1099px) {
-  .tray-item :deep(> .cell-aside) {
-    align-self: center;
   }
 }
 .tray-empty {

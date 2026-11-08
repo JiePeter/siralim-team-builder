@@ -5,8 +5,9 @@ import { t } from "@/i18n";
 import type { CarriedField } from "@/domain/placement";
 import { asItem, itemId, type EquipmentRef } from "@/domain/team";
 import { BLANK_ARTIFACT } from "@/stores/team";
+import CellPlate from "./CellPlate.vue";
 import DropZone from "./DropZone.vue";
-import { artifactTypeName } from "./assembly";
+import { artifactImage, artifactTypeName } from "./assembly";
 import EffectText from "./EffectText.vue";
 import { component } from "./components";
 import { useDragSource } from "./dragging";
@@ -31,10 +32,16 @@ const SHORT_LABELS = {
   artifact: t("editors.shortLabels.artifact"),
   nether: t("editors.shortLabels.nether"),
 };
+/** The kind an empty field takes, whose frame and icon its key shows. */
+const EMPTY_KIND = { base: "creature", fusion: "creature", artifact: "material", nether: "trait" };
 const page = computed(() => {
   const id = itemId(props.value);
   return id && id !== BLANK_ARTIFACT ? component(id) : undefined;
 });
+/** An Artifact configured before it has a Trait shows its type. */
+const blankType = computed(() =>
+  itemId(props.value) === BLANK_ARTIFACT ? asItem(props.value!).artifact?.type || "Sword" : "",
+);
 const trait = computed(() => (page.value?.kind === "trait" ? page.value : page.value?.effects[0]));
 const carrier = computed(() => {
   if (!props.value) return "";
@@ -71,82 +78,92 @@ const picked = computed(() => {
       v-bind="drag(at)"
       @click="selected ? emit('place') : emit('inspect')"
     >
-      <small class="trait-label" :aria-label="label"
-        ><span class="label-full">{{ label }}</span
-        ><span class="label-short">{{ SHORT_LABELS[at.field] }}</span></small
-      >
-      <template v-if="trait">
-        <strong class="trait-name">{{ trait.name }}</strong>
-        <p class="trait-effect" :title="trait.description">
+      <CellPlate
+        v-if="page || blankType"
+        compact
+        class="trait-plate"
+        :data="page ?? { kind: 'artifact', image: artifactImage(blankType) }"
+      />
+      <span class="trait-text">
+        <span class="trait-line"
+          ><strong v-if="trait" class="trait-name">{{ trait.name }}</strong
+          ><span v-else class="trait-name trait-none">{{ $t("editors.noTrait") }}</span
+          ><small class="trait-label" :aria-label="label"
+            ><span class="label-full">{{ label }}</span
+            ><span class="label-short">{{ SHORT_LABELS[at.field] }}</span></small
+          ></span
+        >
+        <p v-if="trait" class="trait-effect" :title="trait.description">
           <EffectText
             :text="trait.description"
             :segments="trait.segments"
             :context-ids="[page!.id, trait.id]"
+            icons
           />
         </p>
-      </template>
-      <span v-else class="trait-name trait-none">{{ $t("editors.noTrait") }}</span>
+      </span>
     </div>
-    <button v-else type="button" :class="['drop-target', { next }]" @click="emit('place')">
-      <i class="icon icon-plus"></i>{{ label }}
+    <button
+      v-else
+      type="button"
+      :class="['trait-add', { next }]"
+      :aria-label="label"
+      @click="emit('place')"
+    >
+      <CellPlate class="empty-key" compact addable :data="{ kind: EMPTY_KIND[at.field] }" />
+      <span class="trait-add-label">{{ label }}</span>
     </button>
   </DropZone>
 </template>
 
 <style scoped>
-/* The filled area takes the whole cell, so hover and the opaque fill over the sprite cover all of it. */
+/* The filled area takes the whole cell, so its hover fill covers all of it. */
 .trait-cell {
   display: grid;
   min-width: 0;
   border-top: 1px solid var(--line);
 }
-.trait-label {
-  display: var(--trait-label, none);
-  float: right;
-  margin-left: var(--space-8);
-  color: var(--kind-creature);
-  font-size: var(--fs-12);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 20px;
-  text-transform: uppercase;
-}
-.field-artifact .trait-label {
-  color: var(--kind-material);
-}
-.field-nether {
-  border-top: 0;
-}
-.field-nether .trait-label {
-  color: var(--muted);
-}
-.field-nether + .field-nether .trait-label {
-  display: none;
-}
-.label-short {
-  display: none;
-}
+/* The plate sits beside the name; the effect runs on under it at the cell's full width. */
 .trait-cell > .equipped,
 .trait-cell > .equipped[draggable="true"] {
+  display: flow-root;
   min-width: 0;
   margin: 0;
   padding: var(--space-12);
+}
+.trait-plate {
+  float: left;
+  margin: 0 var(--space-12) var(--space-4) 0;
 }
 .trait-cell > .equipped {
   position: relative;
 }
 .trait-cell > .equipped:hover {
-  background: var(--ground);
+  background: var(--raised);
 }
 .trait-cell > .equipped[draggable="true"]::before {
   display: none;
-  top: 14px;
 }
-.trait-cell > .equipped[draggable="true"]:hover::before {
+.trait-text {
   display: block;
+  min-width: 0;
+}
+.trait-line {
+  display: flex;
+  margin-bottom: 2px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-8);
+}
+.trait-label {
+  color: var(--muted);
+  font-size: var(--fs-12);
+  white-space: nowrap;
+}
+.label-short {
+  display: none;
 }
 .trait-name {
-  display: block;
   font-size: var(--fs-15);
   font-weight: 700;
   line-height: 20px;
@@ -217,22 +234,40 @@ const picked = computed(() => {
 .trait-effect :deep(.tag-icon-tile) {
   mix-blend-mode: lighten;
 }
-.drop-target {
-  align-self: start;
-  width: auto;
-  min-width: 0;
-  margin: var(--space-8) var(--space-12);
-  padding: 0 var(--space-4);
+.trait-add {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-12);
+  width: 100%;
+  min-height: 0;
+  padding: var(--space-12);
+  background: none;
+  border: 0;
+  clip-path: none;
+  color: var(--muted);
   font-size: var(--fs-13);
+  font-weight: 400;
+  text-align: left;
+}
+.trait-add:hover {
+  background: var(--raised);
+  color: var(--text);
+}
+.trait-add.next :deep(.cell-plate)::before {
+  border-color: var(--accent);
+}
+.trait-add.next {
+  color: var(--text);
 }
 @media (max-width: 767px) {
   .trait-cell > .equipped,
   .trait-cell > .equipped[draggable="true"] {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     min-height: 44px;
-    padding: var(--space-4) var(--space-12);
+    padding: var(--space-4) var(--space-12) var(--space-4) var(--space-12);
+  }
+  .trait-plate {
+    display: none;
   }
   .trait-name {
     font-size: var(--fs-13);
@@ -246,10 +281,7 @@ const picked = computed(() => {
     position: absolute;
     top: 1px;
     right: var(--space-4);
-    float: none;
-    margin: 0;
     font-size: 10px;
-    letter-spacing: 0.04em;
     line-height: 10px;
   }
   .label-full {
@@ -257,6 +289,13 @@ const picked = computed(() => {
   }
   .label-short {
     display: inline;
+  }
+  .trait-add {
+    min-height: 44px;
+    padding: 2px var(--space-12);
+  }
+  .trait-add-label {
+    display: none;
   }
 }
 </style>

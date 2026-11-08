@@ -9,11 +9,25 @@ const actions = inject(DIALOG_ACTIONS, null);
 
 <template>
   <Teleport v-if="actions" defer :to="`#${actions}`">
-    <button v-if="replace" type="button" class="labelled-key" @click="emit('replace')">
-      <i class="icon icon-replace"></i>{{ $t("editors.keys.replace") }}
+    <button
+      v-if="replace"
+      type="button"
+      class="icon-button"
+      :aria-label="$t('editors.keys.replace')"
+      :title="$t('editors.keys.replace')"
+      @click="emit('replace')"
+    >
+      <i class="icon icon-replace"></i>
     </button>
-    <button v-if="tray" type="button" class="labelled-key" @click="emit('tray')">
-      <i class="icon icon-undo"></i>{{ $t("editors.keys.tray") }}
+    <button
+      v-if="tray"
+      type="button"
+      class="icon-button"
+      :aria-label="$t('editors.keys.tray')"
+      :title="$t('editors.keys.tray')"
+      @click="emit('tray')"
+    >
+      <i class="icon icon-undo"></i>
     </button>
   </Teleport>
 </template>

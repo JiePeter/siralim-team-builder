@@ -222,3 +222,30 @@
     grid-column: 1;
   }
 }
+
+/* An empty field's key is the kind's frame and the Add mark alone. */
+.cell-plate.empty-key.kind-plate > img {
+  visibility: hidden;
+}
+.field-add {
+  justify-self: start;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  clip-path: none;
+}
+.field-add:hover,
+.field-add:active:not(:disabled) {
+  background: none;
+}
+.field-add.next .cell-plate::before {
+  border-color: var(--accent);
+}
+/* Level with the plates of the draggable rows above it. */
+.equipment > .field-add,
+.gem-area > .field-add {
+  margin-left: var(--space-8);
+}

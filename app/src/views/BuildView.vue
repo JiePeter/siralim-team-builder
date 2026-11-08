@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, toRaw, useId, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { I18nT } from "vue-i18n";
 import { useEventListener, useFileDialog, useMediaQuery, useStorage, useSwipe } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { assetUrl, object, type Carrier } from "@/data";
@@ -44,6 +45,7 @@ import CharacterPanel from "@/components/CharacterPanel.vue";
 import DropZone from "@/components/DropZone.vue";
 import EditorActions from "@/components/EditorActions.vue";
 import EquipmentLine from "@/components/EquipmentLine.vue";
+import ResultCard from "@/components/ResultCard.vue";
 import EquipmentRow from "@/components/EquipmentRow.vue";
 import FieldPicker from "@/components/FieldPicker.vue";
 import FloatingMenu from "@/components/FloatingMenu.vue";
@@ -355,7 +357,7 @@ const cells = computed(() =>
       (s.spells?.length ?? 0) +
       (s.nether?.length ?? 0);
     const first = s.fusion ?? s.artifact ?? s.relic ?? s.spells?.[0];
-    const label = base ? base.name : others ? t("build.items", others) : "";
+    const label = base?.name ?? "";
     return {
       index: i,
       label,
@@ -456,6 +458,12 @@ function openField(target: Position) {
   else if (target.field === "spells" && target.index !== undefined && filled)
     dialog.value = { type: "gem", at: target };
   else dialog.value = { type: "pool", target };
+}
+
+/** On the Traits view a field is its Trait: a tap places the chosen item or opens the picker that replaces it. */
+function openTrait(target: Position) {
+  if (selected.value) return attempt(() => placeWithUndo(target));
+  dialog.value = { type: "pool", target };
 }
 
 /** Open the picker for a filled field from its editor; closing it returns to the editor. */
@@ -928,7 +936,8 @@ const dialogField = computed<Position | null>(() =>
 );
 const currentItem = computed(() => {
   const at = dialogField.value;
-  const item = at && equipmentAt(at);
+  // A list field opened without a position adds to the list.
+  const item = at && !(isListField(at.field) && at.index === undefined) && equipmentAt(at);
   return item ? asItem(item) : null;
 });
 const currentCharacter = computed(() => {
@@ -1228,9 +1237,9 @@ const dialogWarning = computed(() => {
                 :accepts="accepts({ slot: cell.index, field })"
                 :hint="fieldHint({ slot: cell.index, field })"
                 :warning="fieldWarning(cell.index, field)"
-                @place="openField({ slot: cell.index, field })"
+                @place="openTrait({ slot: cell.index, field })"
                 @drop="attempt(() => placeWithUndo({ slot: cell.index, field }, dropped()))"
-                @inspect="openField({ slot: cell.index, field })"
+                @inspect="openTrait({ slot: cell.index, field })"
               />
               <div v-if="showNether" class="nether-band">
                 <TraitCell
@@ -1286,9 +1295,7 @@ const dialogWarning = computed(() => {
                       :data="component(itemId(team.slots[cell.index]!.relic)!)!"
                       :corner="relicRank(team.slots[cell.index]!.relic!)"
                     />
-                    <template v-else
-                      ><i class="icon icon-plus"></i>{{ $t("build.relic") }}</template
-                    >
+                    <CellPlate v-else class="empty-key" compact addable :data="{ kind: 'relic' }" />
                   </button>
                 </DropZone>
                 <DropZone
@@ -1333,7 +1340,7 @@ const dialogWarning = computed(() => {
                     :aria-label="$t('build.spellGem')"
                     @click="openField({ slot: cell.index, field: 'spells' })"
                   >
-                    <i class="icon icon-plus"></i>{{ $t("build.spellGem") }}
+                    <CellPlate class="empty-key" compact addable :data="{ kind: 'spell' }" />
                   </button>
                 </DropZone>
               </div>
@@ -1361,7 +1368,13 @@ const dialogWarning = computed(() => {
                 compact
                 :data="component(specialization)!"
               />
-              <i v-else class="icon icon-plus"></i>
+              <CellPlate
+                v-else
+                class="empty-key"
+                compact
+                addable
+                :data="{ kind: 'specialization' }"
+              />
             </button>
           </DropZone>
           <DropZone
@@ -1383,7 +1396,7 @@ const dialogWarning = computed(() => {
                 compact
                 :data="component(team.character.anointments[position - 1]!)!"
               />
-              <i v-else class="icon icon-plus"></i>
+              <CellPlate v-else class="empty-key" compact addable :data="{ kind: 'perk' }" />
             </button>
           </DropZone>
         </div>
@@ -1403,15 +1416,14 @@ const dialogWarning = computed(() => {
             >
               <i class="icon icon-left"></i>
             </button>
-            <span class="slot-name">{{
-              phone ? slotIndex(openSlot) : $t("build.slot", { n: slotIndex(openSlot) })
-            }}</span>
-            <span v-if="cells[openSlot]!.label" class="slot-creature">
-              <strong>{{ cells[openSlot]!.label }}</strong>
-              <small v-if="slot.base">{{
-                traitName(slotTraits(index!, slot)[0]?.trait ?? "")
-              }}</small>
-            </span>
+            <span v-if="phone" class="slot-name"
+              ><span class="slot-number">{{ slotIndex(openSlot) }}</span></span
+            >
+            <I18nT v-else keypath="build.slot" tag="span" class="slot-name" scope="global">
+              <template #n
+                ><span class="slot-number">{{ slotIndex(openSlot) }}</span></template
+              >
+            </I18nT>
             <span v-if="phone" class="slot-pips" aria-hidden="true">
               <i
                 v-for="cell in cells"
@@ -1483,10 +1495,11 @@ const dialogWarning = computed(() => {
                 <button
                   v-if="(slot.nether?.length ?? 0) < NETHER_TRAITS"
                   type="button"
-                  class="drop-target"
+                  class="field-add"
+                  :aria-label="$t('build.nether')"
                   @click="openField({ slot: openSlot, field })"
                 >
-                  <i class="icon icon-plus"></i>{{ $t("build.nether") }}
+                  <CellPlate class="empty-key" compact addable :data="{ kind: 'trait' }" />
                 </button>
               </DropZone>
               <EquipmentRow
@@ -1552,10 +1565,11 @@ const dialogWarning = computed(() => {
               </div>
               <button
                 type="button"
-                class="drop-target"
+                class="field-add"
+                :aria-label="$t('build.spellGem')"
                 @click="openField({ slot: openSlot, field: 'spells' })"
               >
-                <i class="icon icon-plus"></i>{{ $t("build.spellGem") }}
+                <CellPlate class="empty-key" compact addable :data="{ kind: 'spell' }" />
               </button>
             </DropZone>
           </div>
@@ -1611,30 +1625,32 @@ const dialogWarning = computed(() => {
           :catalog="index.catalog"
           :kind-of="kindOf"
           :target="dialog.target"
-          :replacing="!!currentItem"
           @pick="pickPool"
           @take="takePool"
         >
           <template #current>
             <div v-if="currentItem" class="picker-current">
-              <EquipmentLine :data="component(currentItem.id)">
-                <template #menu>
-                  <button type="button" class="labelled-key" @click="preview = currentItem">
-                    <i class="icon icon-eye"></i>{{ $t("editors.keys.details") }}
-                  </button>
-                  <button
-                    v-if="canSwap(dialog.target)"
-                    type="button"
-                    class="labelled-key"
-                    @click="placeFromHere(dialogField!)"
-                  >
-                    <i class="icon icon-replace"></i>{{ $t("editors.keys.swap") }}
-                  </button>
-                  <button type="button" class="labelled-key" @click="sendToTray(dialogField!)">
-                    <i class="icon icon-undo"></i>{{ $t("editors.keys.tray") }}
-                  </button>
-                </template>
-              </EquipmentLine>
+              <ResultCard :item="component(currentItem.id) as never" compact fixed link>
+                <button
+                  v-if="canSwap(dialog.target)"
+                  type="button"
+                  class="icon-button"
+                  :aria-label="$t('editors.keys.swap')"
+                  :title="$t('editors.keys.swap')"
+                  @click="placeFromHere(dialogField!)"
+                >
+                  <i class="icon icon-replace"></i>
+                </button>
+                <button
+                  type="button"
+                  class="icon-button"
+                  :aria-label="$t('editors.keys.tray')"
+                  :title="$t('editors.keys.tray')"
+                  @click="sendToTray(dialogField!)"
+                >
+                  <i class="icon icon-undo"></i>
+                </button>
+              </ResultCard>
             </div>
           </template>
         </FieldPicker>
@@ -1653,33 +1669,25 @@ const dialogWarning = computed(() => {
           :team="team"
           :catalog="index.catalog"
           :kind-of="kindOf"
-          :replacing="!!currentCharacter"
           @pick="pickCharacter"
           @take="takeCharacter"
         >
           <template #current>
             <div v-if="currentCharacter" class="picker-current">
-              <EquipmentLine :data="component(currentCharacter)">
-                <template #menu>
-                  <button
-                    type="button"
-                    class="labelled-key"
-                    @click="preview = { uid: '', id: currentCharacter! }"
-                  >
-                    <i class="icon icon-eye"></i>{{ $t("editors.keys.details") }}
-                  </button>
-                  <button
-                    type="button"
-                    class="labelled-key"
-                    @click="
-                      dialog?.type === 'character' &&
-                      sendCharacterToTray(dialog.field, dialog.position)
-                    "
-                  >
-                    <i class="icon icon-undo"></i>{{ $t("editors.keys.tray") }}
-                  </button>
-                </template>
-              </EquipmentLine>
+              <ResultCard :item="component(currentCharacter) as never" compact fixed link>
+                <button
+                  type="button"
+                  class="icon-button"
+                  :aria-label="$t('editors.keys.tray')"
+                  :title="$t('editors.keys.tray')"
+                  @click="
+                    dialog?.type === 'character' &&
+                    sendCharacterToTray(dialog.field, dialog.position)
+                  "
+                >
+                  <i class="icon icon-undo"></i>
+                </button>
+              </ResultCard>
             </div>
           </template>
         </FieldPicker>
@@ -1986,7 +1994,11 @@ const dialogWarning = computed(() => {
   gap: var(--space-8);
   min-height: var(--row);
   padding: 14px 7px 14px 11px;
+  background: color-mix(in srgb, var(--raised) 55%, transparent);
   text-align: left;
+}
+.traits-shown .slot-cell:hover {
+  background: color-mix(in srgb, var(--raised-hover) 70%, transparent);
 }
 .traits-shown .slot-cell :deep(> .cell-label) {
   flex: 0 1 auto;
@@ -2033,9 +2045,6 @@ const dialogWarning = computed(() => {
   pointer-events: none;
   transform: translate(-50%, -50%);
 }
-.slot-column:nth-child(3n + 1) {
-  --trait-label: block;
-}
 .nether-shown.traits-shown .slot-column {
   grid-row: span 5;
 }
@@ -2045,8 +2054,18 @@ const dialogWarning = computed(() => {
   min-width: 0;
   border-top: 1px dashed var(--strong);
 }
+/* The page's other rows say which creature and Traits the slot holds. */
 .slot-name {
-  font: 400 24px / 1 var(--pixel-font);
+  display: inline-flex;
+  flex: 1;
+  align-items: baseline;
+  gap: var(--space-8);
+  font-size: var(--fs-18);
+  font-weight: 700;
+  white-space: pre;
+}
+.slot-number {
+  font: 400 18px / 1 var(--pixel-font);
 }
 .copy-target {
   font-weight: 400;
@@ -2161,23 +2180,12 @@ const dialogWarning = computed(() => {
   color: var(--muted);
   font: 400 16px / 1 var(--pixel-font);
 }
-.slot-creature {
-  display: grid;
-  flex: 1;
-  min-width: 0;
-}
-.slot-creature > * {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.slot-creature > small {
-  color: var(--muted);
-  font-size: var(--fs-13);
-  font-weight: 400;
-}
 .picker-current {
   padding-bottom: var(--space-12);
+}
+.picker-current :deep(.result-action) {
+  display: flex;
+  gap: var(--space-4);
 }
 .field-notice {
   border-width: 0 0 1px;
@@ -2207,12 +2215,6 @@ const dialogWarning = computed(() => {
 @media (min-width: 1900px) {
   .traits-shown .slot-sheet {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-  .slot-column:nth-child(3n + 1) {
-    --trait-label: none;
-  }
-  .slot-column:nth-child(6n + 1) {
-    --trait-label: block;
   }
 }
 @media (max-width: 767px) {

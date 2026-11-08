@@ -22,8 +22,7 @@
       "description": "This creature's attacks deal 75% more damage and afflict the target with Bomb.",
       "image": "/assets/siralim/images/creature/ToxdwellerSlasher/battle.png",
       "matched_names": [
-       "Toxdweller Slasher",
-       "Slasher Poison"
+       "Toxdweller Slasher"
       ],
       "matched_rules": []
      },
@@ -34,8 +33,7 @@
       "description": "This creature can't cast spells manually. After this creature defends, it casts one of its spells that can target all your creatures.",
       "image": "/assets/siralim/images/creature/CerberusGatewatcher/battle.png",
       "matched_names": [
-       "Cerberus Gatewatcher",
-       "Gatewatcher Chain"
+       "Cerberus Gatewatcher"
       ],
       "matched_rules": []
      },
@@ -55,8 +53,7 @@
       "description": "After this creature attacks, it steals 20% of the target's attack and intelligence and gives it to your creatures.",
       "image": "/assets/siralim/images/creature/LunarHemomancer/battle.png",
       "matched_names": [
-       "Lunar Hemomancer",
-       "Lunar Blood Vial"
+       "Lunar Hemomancer"
       ],
       "matched_rules": []
      },
@@ -67,8 +64,7 @@
       "description": "After your creatures are healed, a random enemy takes damage equal to 50% of the amount of health recovered. This trait does not stack.",
       "image": "/assets/siralim/images/creature/ClairvoyantSpirit/battle.png",
       "matched_names": [
-       "Clairvoyant Spirit",
-       "Clairvoyant Fluff"
+       "Clairvoyant Spirit"
       ],
       "matched_rules": []
      },
@@ -79,8 +75,7 @@
       "description": "After this creature gains stats, your other creatures that don't have this trait gain 25% of those stats as well.",
       "image": "/assets/siralim/images/creature/GlutinousSlime/battle.png",
       "matched_names": [
-       "Glutinous Slime",
-       "Glutinous Ooze"
+       "Glutinous Slime"
       ],
       "matched_rules": []
      },
@@ -91,8 +86,7 @@
       "description": "After an enemy is healed, this creature decreases their lowest stat by 25%.",
       "image": "/assets/siralim/images/creature/FogSpirit/battle.png",
       "matched_names": [
-       "Fog Spirit",
-       "Fog Fluff"
+       "Fog Spirit"
       ],
       "matched_rules": []
      },
@@ -121,8 +115,7 @@
       "description": "This creature's attacks deal 5% more damage for each spell that has been cast by all creatures in the current battle.",
       "image": "/assets/siralim/images/creature/TopazCarbuncle/battle.png",
       "matched_names": [
-       "Topaz Carbuncle",
-       "Topaz Trinket"
+       "Topaz Carbuncle"
       ],
       "matched_rules": []
      },
@@ -133,8 +126,7 @@
       "description": "After an enemy is afflicted with a debuff, they lose 15% attack and intelligence. This trait does not stack.",
       "image": "/assets/siralim/images/creature/DryadVindicator/battle.png",
       "matched_names": [
-       "Dryad Vindicator",
-       "Vindicator Dew"
+       "Dryad Vindicator"
       ],
       "matched_rules": []
      },
@@ -145,8 +137,7 @@
       "description": "After an enemy is healed, this creature gains Maximum health equal to 30% of the amount healed.",
       "image": "/assets/siralim/images/creature/StoneGiant/battle.png",
       "matched_names": [
-       "Stone Giant",
-       "Stone Boulder"
+       "Stone Giant"
       ],
       "matched_rules": []
      },
@@ -165,9 +156,7 @@
       "name": "Abyss Orbs",
       "description": "If an enemy has taken at least 2 turns, they are afflicted with a random debuff at the start and end of their turn. This trait does not stack.",
       "image": "/assets/siralim/images/item/material/DarkStick.png",
-      "matched_names": [
-       "Dark Stick"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -177,8 +166,7 @@
       "description": "As long as your creatures haven't gained or lost stats, they have 75% more stats (other than health). This trait does not stack.",
       "image": "/assets/siralim/images/creature/AbyssalKraken/battle.png",
       "matched_names": [
-       "Abyssal Kraken",
-       "Ghastly Sucker"
+       "Abyssal Kraken"
       ],
       "matched_rules": []
      },
@@ -189,8 +177,7 @@
       "description": "After your creatures attack, they have a 20% chance to afflict the target with a random debuff. This trait does not stack.",
       "image": "/assets/siralim/images/creature/NihilistSealer/battle.png",
       "matched_names": [
-       "Nihilist Sealer",
-       "Ink of Eternity"
+       "Nihilist Sealer"
       ],
       "matched_rules": []
      },
@@ -228,8 +215,7 @@
       "description": "After this creature is attacked, it afflicts the enemy with Disarmed and Seals one of their Spell Gems.",
       "image": "/assets/siralim/images/creature/Blobbarian/battle.png",
       "matched_names": [
-       "Blobbarian",
-       "Blobbarian Gel"
+       "Blobbarian"
       ],
       "matched_rules": []
      },
@@ -275,9 +261,7 @@
       "name": "Adaptive Tactics",
       "description": "Your creatures' attacks ignore 5% of the enemies' Defense (up to 50%) for each time a creature died in the current battle. This trait does not stack.",
       "image": "/assets/siralim/images/item/material/WeaponKit.png",
-      "matched_names": [
-       "Weapon Kit"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -287,8 +271,7 @@
       "description": "After an ally casts a spell of a different class from the last spell cast in the current battle, this creature casts one of its spells.",
       "image": "/assets/siralim/images/creature/SpelljugglerTrapezist/battle.png",
       "matched_names": [
-       "Spelljuggler Trapezist",
-       "Patched Ball"
+       "Spelljuggler Trapezist"
       ],
       "matched_rules": []
      },
@@ -307,9 +290,7 @@
       "name": "Adept Wizarding",
       "description": "Your creatures can equip 1 additional Spell Gem and their spells are 30% more potent. This trait does not stack.",
       "image": "/assets/siralim/images/item/material/AdeptsToolBag.png",
-      "matched_names": [
-       "Adept's Tool Bag"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -319,8 +300,7 @@
       "description": "When this creature takes damage, and the damage exceeds 25% of its Maximum health, reduce the damage to 25% of its Maximum health. The amount of damage prevented cannot exceed 200% of this creature's Maximum health.",
       "image": "/assets/siralim/images/creature/CosmicGiant/battle.png",
       "matched_names": [
-       "Cosmic Giant",
-       "Cosmic Boulder"
+       "Cosmic Giant"
       ],
       "matched_rules": []
      },
@@ -340,8 +320,7 @@
       "description": "At the end of each enemy's turn, they cast a healing Spell Gem equipped by this creature in your favor. This trait does not stack.",
       "image": "/assets/siralim/images/creature/MarionetteEvangelist/battle.png",
       "matched_names": [
-       "Marionette Evangelist",
-       "Vestment Lace"
+       "Marionette Evangelist"
       ],
       "matched_rules": []
      },
@@ -352,8 +331,7 @@
       "description": "After an enemy with Mania heals your creatures, your creatures gain their highest stat (other than health) equal to 10% of the amount healed. This trait does not stack.",
       "image": "/assets/siralim/images/creature/OperaticDenizen/battle.png",
       "matched_names": [
-       "Operatic Denizen",
-       "Opera Glasses"
+       "Operatic Denizen"
       ],
       "matched_rules": []
      },
@@ -391,8 +369,7 @@
       "description": "Your creatures' Repelling buffs now have a 35% chance to ignore damage from attacks. This trait does not stack.",
       "image": "/assets/siralim/images/creature/DemonicVoidlord/battle.png",
       "matched_names": [
-       "Demonic Voidlord",
-       "Devil Heart"
+       "Demonic Voidlord"
       ],
       "matched_rules": []
      },
@@ -412,8 +389,7 @@
       "description": "This creature deals 50% more damage for each permanent Sorcery Spell Gem it has greater than its target. Maximum of 300% bonus damage.",
       "image": "/assets/siralim/images/creature/GladeWatcher/battle.png",
       "matched_names": [
-       "Glade Watcher",
-       "Glade Tears"
+       "Glade Watcher"
       ],
       "matched_rules": []
      },
@@ -424,8 +400,7 @@
       "description": "After this creature dies for the first time in battle, it resurrects with 50% health, and gains 50% attack, intelligence, defense, and speed.",
       "image": "/assets/siralim/images/creature/RoofstalkerWight/battle.png",
       "matched_names": [
-       "Roofstalker Wight",
-       "Roofstalker Rattle"
+       "Roofstalker Wight"
       ],
       "matched_rules": []
      },
@@ -454,8 +429,7 @@
       "description": "Enemies take 50% more damage from Blighted. This trait does not stack.",
       "image": "/assets/siralim/images/creature/LugubriousShambler/battle.png",
       "matched_names": [
-       "Lugubrious Shambler",
-       "Lugubrious Hook"
+       "Lugubrious Shambler"
       ],
       "matched_rules": []
      },
@@ -475,8 +449,7 @@
       "description": "Your creatures have a 40% greater chance to dodge attacks. This trait does not stack.",
       "image": "/assets/siralim/images/creature/PhaseMarauder/battle.png",
       "matched_names": [
-       "Phase Marauder",
-       "Marauder Prism"
+       "Phase Marauder"
       ],
       "matched_rules": []
      },
@@ -487,8 +460,7 @@
       "description": "This creature deals 80% more damage with attacks for each of its debuffs.",
       "image": "/assets/siralim/images/creature/FerociousFiend/battle.png",
       "matched_names": [
-       "Ferocious Fiend",
-       "Ferocious Tooth"
+       "Ferocious Fiend"
       ],
       "matched_rules": []
      },
@@ -499,8 +471,7 @@
       "description": "After this creature takes damage, the enemy is afflicted with Snared and Bleeding. Enemies with Snared take 50% more damage from Bleeding. This trait does not stack.",
       "image": "/assets/siralim/images/creature/IronMaiden/battle.png",
       "matched_names": [
-       "Iron Maiden",
-       "Bloody Spike"
+       "Iron Maiden"
       ],
       "matched_rules": []
      },
@@ -511,8 +482,7 @@
       "description": "This creature's attacks deal 200% more damage to targets that are at 100% health.",
       "image": "/assets/siralim/images/creature/SkeletonMarksman/battle.png",
       "matched_names": [
-       "Skeleton Marksman",
-       "Marksman Bone"
+       "Skeleton Marksman"
       ],
       "matched_rules": []
      },
@@ -522,9 +492,7 @@
       "name": "Alchemist's Buffer",
       "description": "This creature takes 50% less damage from spells and 50% more damage from attacks. This creature has 50% more Intelligence and 50% less Attack.",
       "image": "/assets/siralim/images/item/material/Corruptium.png",
-      "matched_names": [
-       "Corruptium"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -534,8 +502,7 @@
       "description": "After this creature attacks, it afflicts the target with Blind and Confused.",
       "image": "/assets/siralim/images/creature/ObsceneBlight/battle.png",
       "matched_names": [
-       "Obscene Blight",
-       "Corrupted Geode"
+       "Obscene Blight"
       ],
       "matched_rules": []
      },
@@ -546,8 +513,7 @@
       "description": "After an enemy is afflicted with a debuff, they have a 10% chance to be sent to the bottom of the Timeline. This trait does not stack.",
       "image": "/assets/siralim/images/creature/Ryetrap/battle.png",
       "matched_names": [
-       "Ryetrap",
-       "Bottle of Ryetrap"
+       "Ryetrap"
       ],
       "matched_rules": []
      },
@@ -558,8 +524,7 @@
       "description": "After your Griffons receive a buff, they share a copy of that buff with all the Griffons fighting on your side. This trait does not stack.",
       "image": "/assets/siralim/images/creature/GriffonDreamfinder/battle.png",
       "matched_names": [
-       "Griffon Dreamfinder",
-       "Dreamfinder Beak"
+       "Griffon Dreamfinder"
       ],
       "matched_rules": []
      },
@@ -570,8 +535,7 @@
       "description": "Your creatures cast spells 0.5 additional times (rounded down) for each Familiar fighting on your side. This trait does not stack.",
       "image": "/assets/siralim/images/creature/ArcaneFamiliar/battle.png",
       "matched_names": [
-       "Arcane Familiar",
-       "Arcane Pinion"
+       "Arcane Familiar"
       ],
       "matched_rules": []
      },
@@ -582,8 +546,7 @@
       "description": "Enemies with Feared cannot gain buffs.",
       "image": "/assets/siralim/images/creature/ShadowCobra/battle.png",
       "matched_names": [
-       "Shadow Cobra",
-       "Cobra Black Hole"
+       "Shadow Cobra"
       ],
       "matched_rules": []
      },
@@ -594,8 +557,7 @@
       "description": "This creature's first attack each battle deals 300% more damage.",
       "image": "/assets/siralim/images/creature/SkeletonBuccaneer/battle.png",
       "matched_names": [
-       "Skeleton Buccaneer",
-       "Buccaneer Bone"
+       "Skeleton Buccaneer"
       ],
       "matched_rules": []
      },
@@ -606,8 +568,7 @@
       "description": "This creature deals 10% more damage with spells for each charge the Spell Gem is missing.",
       "image": "/assets/siralim/images/creature/DjinnIllusionist/battle.png",
       "matched_names": [
-       "Djinn Illusionist",
-       "Illusionist Lamp"
+       "Djinn Illusionist"
       ],
       "matched_rules": []
      },
@@ -618,8 +579,7 @@
       "description": "If this creature has attacked at least one time this battle, its attacks deal 200% more damage.",
       "image": "/assets/siralim/images/creature/VanelinSeraph/battle.png",
       "matched_names": [
-       "Vanelin Seraph",
-       "Vanelin Symbol"
+       "Vanelin Seraph"
       ],
       "matched_rules": []
      },
@@ -639,8 +599,7 @@
       "description": "Your creatures' spells deal 50% of their damage using speed instead of intelligence. This trait does not stack.",
       "image": "/assets/siralim/images/creature/RavenLord/battle.png",
       "matched_names": [
-       "Raven Lord",
-       "Lord Claw"
+       "Raven Lord"
       ],
       "matched_rules": []
      },
@@ -651,8 +610,7 @@
       "description": "Your other creatures take 60% less damage while this creature is alive. Your other creatures take 40% more damage while this creature is dead. This trait does not stack.",
       "image": "/assets/siralim/images/creature/TranscendedPhoenix/battle.png",
       "matched_names": [
-       "Transcended Phoenix",
-       "Transcended Plume"
+       "Transcended Phoenix"
       ],
       "matched_rules": []
      }
@@ -1413,10 +1371,7 @@
       "name": "Toxdweller Slasher",
       "description": "",
       "image": "/assets/siralim/images/creature/ToxdwellerSlasher/battle.png",
-      "matched_names": [
-       "A Gift For You",
-       "Slasher Poison"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1425,10 +1380,7 @@
       "name": "Cerberus Gatewatcher",
       "description": "",
       "image": "/assets/siralim/images/creature/CerberusGatewatcher/battle.png",
-      "matched_names": [
-       "Abaddon's Boon",
-       "Gatewatcher Chain"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1437,10 +1389,7 @@
       "name": "Lunar Hemomancer",
       "description": "",
       "image": "/assets/siralim/images/creature/LunarHemomancer/battle.png",
-      "matched_names": [
-       "Abation",
-       "Lunar Blood Vial"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1449,10 +1398,7 @@
       "name": "Clairvoyant Spirit",
       "description": "",
       "image": "/assets/siralim/images/creature/ClairvoyantSpirit/battle.png",
-      "matched_names": [
-       "Abnegation",
-       "Clairvoyant Fluff"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1461,10 +1407,7 @@
       "name": "Glutinous Slime",
       "description": "",
       "image": "/assets/siralim/images/creature/GlutinousSlime/battle.png",
-      "matched_names": [
-       "Abomination",
-       "Glutinous Ooze"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1473,10 +1416,7 @@
       "name": "Fog Spirit",
       "description": "",
       "image": "/assets/siralim/images/creature/FogSpirit/battle.png",
-      "matched_names": [
-       "Absence of Light",
-       "Fog Fluff"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1485,10 +1425,7 @@
       "name": "Topaz Carbuncle",
       "description": "",
       "image": "/assets/siralim/images/creature/TopazCarbuncle/battle.png",
-      "matched_names": [
-       "Absolute Power",
-       "Topaz Trinket"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1497,10 +1434,7 @@
       "name": "Dryad Vindicator",
       "description": "",
       "image": "/assets/siralim/images/creature/DryadVindicator/battle.png",
-      "matched_names": [
-       "Absolution",
-       "Vindicator Dew"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1509,10 +1443,7 @@
       "name": "Stone Giant",
       "description": "",
       "image": "/assets/siralim/images/creature/StoneGiant/battle.png",
-      "matched_names": [
-       "Absorption",
-       "Stone Boulder"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1521,10 +1452,7 @@
       "name": "Abyssal Kraken",
       "description": "",
       "image": "/assets/siralim/images/creature/AbyssalKraken/battle.png",
-      "matched_names": [
-       "Abyssal Waters",
-       "Ghastly Sucker"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1533,10 +1461,7 @@
       "name": "Nihilist Sealer",
       "description": "",
       "image": "/assets/siralim/images/creature/NihilistSealer/battle.png",
-      "matched_names": [
-       "Accelerated Harvest",
-       "Ink of Eternity"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1545,10 +1470,7 @@
       "name": "Blobbarian",
       "description": "",
       "image": "/assets/siralim/images/creature/Blobbarian/battle.png",
-      "matched_names": [
-       "Acid Body",
-       "Blobbarian Gel"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1557,10 +1479,7 @@
       "name": "Spelljuggler Trapezist",
       "description": "",
       "image": "/assets/siralim/images/creature/SpelljugglerTrapezist/battle.png",
-      "matched_names": [
-       "Add to the Mix",
-       "Patched Ball"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1569,10 +1488,7 @@
       "name": "Cosmic Giant",
       "description": "",
       "image": "/assets/siralim/images/creature/CosmicGiant/battle.png",
-      "matched_names": [
-       "Admire the Gods",
-       "Cosmic Boulder"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1581,10 +1497,7 @@
       "name": "Marionette Evangelist",
       "description": "",
       "image": "/assets/siralim/images/creature/MarionetteEvangelist/battle.png",
-      "matched_names": [
-       "Adoration",
-       "Vestment Lace"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1593,10 +1506,7 @@
       "name": "Operatic Denizen",
       "description": "",
       "image": "/assets/siralim/images/creature/OperaticDenizen/battle.png",
-      "matched_names": [
-       "Adoring Fans",
-       "Opera Glasses"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1605,10 +1515,7 @@
       "name": "Demonic Voidlord",
       "description": "",
       "image": "/assets/siralim/images/creature/DemonicVoidlord/battle.png",
-      "matched_names": [
-       "Aether Eyes",
-       "Devil Heart"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1617,10 +1524,7 @@
       "name": "Glade Watcher",
       "description": "",
       "image": "/assets/siralim/images/creature/GladeWatcher/battle.png",
-      "matched_names": [
-       "Affluence",
-       "Glade Tears"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1629,10 +1533,7 @@
       "name": "Roofstalker Wight",
       "description": "",
       "image": "/assets/siralim/images/creature/RoofstalkerWight/battle.png",
-      "matched_names": [
-       "Afterlife",
-       "Roofstalker Rattle"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1641,10 +1542,7 @@
       "name": "Lugubrious Shambler",
       "description": "",
       "image": "/assets/siralim/images/creature/LugubriousShambler/battle.png",
-      "matched_names": [
-       "Aggravated Illness",
-       "Lugubrious Hook"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1653,10 +1551,7 @@
       "name": "Phase Marauder",
       "description": "",
       "image": "/assets/siralim/images/creature/PhaseMarauder/battle.png",
-      "matched_names": [
-       "Agility Aura",
-       "Marauder Prism"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1665,10 +1560,7 @@
       "name": "Ferocious Fiend",
       "description": "",
       "image": "/assets/siralim/images/creature/FerociousFiend/battle.png",
-      "matched_names": [
-       "Agitation",
-       "Ferocious Tooth"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1677,10 +1569,7 @@
       "name": "Iron Maiden",
       "description": "",
       "image": "/assets/siralim/images/creature/IronMaiden/battle.png",
-      "matched_names": [
-       "Agonizing Entrapment",
-       "Bloody Spike"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1689,10 +1578,7 @@
       "name": "Skeleton Marksman",
       "description": "",
       "image": "/assets/siralim/images/creature/SkeletonMarksman/battle.png",
-      "matched_names": [
-       "Aimed Shot",
-       "Marksman Bone"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1701,10 +1587,7 @@
       "name": "Obscene Blight",
       "description": "",
       "image": "/assets/siralim/images/creature/ObsceneBlight/battle.png",
-      "matched_names": [
-       "Alchemist's Fury",
-       "Corrupted Geode"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1713,10 +1596,7 @@
       "name": "Ryetrap",
       "description": "",
       "image": "/assets/siralim/images/creature/Ryetrap/battle.png",
-      "matched_names": [
-       "Alcoholism",
-       "Bottle of Ryetrap"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1725,10 +1605,7 @@
       "name": "Griffon Dreamfinder",
       "description": "",
       "image": "/assets/siralim/images/creature/GriffonDreamfinder/battle.png",
-      "matched_names": [
-       "All As One",
-       "Dreamfinder Beak"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1737,10 +1614,7 @@
       "name": "Arcane Familiar",
       "description": "",
       "image": "/assets/siralim/images/creature/ArcaneFamiliar/battle.png",
-      "matched_names": [
-       "All For One",
-       "Arcane Pinion"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1749,10 +1623,7 @@
       "name": "Shadow Cobra",
       "description": "",
       "image": "/assets/siralim/images/creature/ShadowCobra/battle.png",
-      "matched_names": [
-       "All Hope Is Lost",
-       "Cobra Black Hole"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1761,10 +1632,7 @@
       "name": "Skeleton Buccaneer",
       "description": "",
       "image": "/assets/siralim/images/creature/SkeletonBuccaneer/battle.png",
-      "matched_names": [
-       "All In",
-       "Buccaneer Bone"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1773,10 +1641,7 @@
       "name": "Djinn Illusionist",
       "description": "",
       "image": "/assets/siralim/images/creature/DjinnIllusionist/battle.png",
-      "matched_names": [
-       "Alleviation",
-       "Illusionist Lamp"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1785,10 +1650,7 @@
       "name": "Vanelin Seraph",
       "description": "",
       "image": "/assets/siralim/images/creature/VanelinSeraph/battle.png",
-      "matched_names": [
-       "Almost Easy",
-       "Vanelin Symbol"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1797,10 +1659,7 @@
       "name": "Raven Lord",
       "description": "",
       "image": "/assets/siralim/images/creature/RavenLord/battle.png",
-      "matched_names": [
-       "Alteration",
-       "Lord Claw"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1809,10 +1668,7 @@
       "name": "Transcended Phoenix",
       "description": "",
       "image": "/assets/siralim/images/creature/TranscendedPhoenix/battle.png",
-      "matched_names": [
-       "Alternate Reality",
-       "Transcended Plume"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1821,10 +1677,7 @@
       "name": "Dusk Crusader",
       "description": "",
       "image": "/assets/siralim/images/creature/DuskCrusader/battle.png",
-      "matched_names": [
-       "Amalgamy",
-       "Dusk Hammer"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1833,10 +1686,7 @@
       "name": "Nix Backstabber",
       "description": "",
       "image": "/assets/siralim/images/creature/NixBackstabber/battle.png",
-      "matched_names": [
-       "Ambush",
-       "Backstabber Mask"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1845,10 +1695,7 @@
       "name": "Amethyst Paragon",
       "description": "",
       "image": "/assets/siralim/images/creature/AmethystParagon/battle.png",
-      "matched_names": [
-       "Amethyst Attunement",
-       "Giant Amethyst"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1857,10 +1704,7 @@
       "name": "Angel Bat",
       "description": "",
       "image": "/assets/siralim/images/creature/AngelBat/battle.png",
-      "matched_names": [
-       "Amongst Gods",
-       "Angel Bat Wings"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1869,10 +1713,7 @@
       "name": "Piscacanth",
       "description": "",
       "image": "/assets/siralim/images/creature/Piscacanth/battle.png",
-      "matched_names": [
-       "Ancient Buffoonery",
-       "Electric Fossil"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1881,10 +1722,7 @@
       "name": "The First Spawn",
       "description": "",
       "image": "/assets/siralim/images/creature/TheFirstSpawn/battle.png",
-      "matched_names": [
-       "Ancient DNA",
-       "DNA Splicer"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1893,10 +1731,7 @@
       "name": "Draconic Strix",
       "description": "",
       "image": "/assets/siralim/images/creature/DraconicStrix/battle.png",
-      "matched_names": [
-       "Ancient Wisdom",
-       "Ancient Feather"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1905,10 +1740,7 @@
       "name": "Toxdweller Bloodbather",
       "description": "",
       "image": "/assets/siralim/images/creature/ToxdwellerBloodbather/battle.png",
-      "matched_names": [
-       "And You Get A Bomb",
-       "Bloodbather Poison"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1917,10 +1749,7 @@
       "name": "Stone Devil",
       "description": "",
       "image": "/assets/siralim/images/creature/StoneDevil/battle.png",
-      "matched_names": [
-       "Angel's Horror",
-       "Stone Bracer"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1929,9 +1758,7 @@
       "name": "Treasure Golem",
       "description": "",
       "image": "/assets/siralim/images/creature/TreasureGolem/battle.png",
-      "matched_names": [
-       "Animated Treasure"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1940,10 +1767,7 @@
       "name": "Ruby Carbuncle",
       "description": "",
       "image": "/assets/siralim/images/creature/RubyCarbuncle/battle.png",
-      "matched_names": [
-       "Annex",
-       "Ruby Trinket"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1952,10 +1776,7 @@
       "name": "Jingle Elf",
       "description": "",
       "image": "/assets/siralim/images/creature/JingleElf/battle.png",
-      "matched_names": [
-       "Annoying Bobblehead",
-       "Jingle Gift"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1964,10 +1785,7 @@
       "name": "Ceaseless Maker",
       "description": "",
       "image": "/assets/siralim/images/creature/CeaselessMaker/battle.png",
-      "matched_names": [
-       "Anomaly",
-       "Ceaseless Crown"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1976,10 +1794,7 @@
       "name": "The Heap",
       "description": "",
       "image": "/assets/siralim/images/creature/TheHeap/battle.png",
-      "matched_names": [
-       "Another Man's Trash",
-       "Pile of Garbage"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -1988,10 +1803,7 @@
       "name": "Heart Luckmantria",
       "description": "",
       "image": "/assets/siralim/images/creature/HeartLuckmantria/battle.png",
-      "matched_names": [
-       "Ante",
-       "Torn Card (Heart)"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2000,10 +1812,7 @@
       "name": "Centaur Raider",
       "description": "",
       "image": "/assets/siralim/images/creature/CentaurRaider/battle.png",
-      "matched_names": [
-       "Anticipation",
-       "Raider Tuft"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2012,10 +1821,7 @@
       "name": "Forsaken Plaguebearer",
       "description": "",
       "image": "/assets/siralim/images/creature/ForsakenPlaguebearer/battle.png",
-      "matched_names": [
-       "Anxiety",
-       "Plaguebearer Pincer"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2024,10 +1830,7 @@
       "name": "Kapre",
       "description": "",
       "image": "/assets/siralim/images/creature/Kapre/battle.png",
-      "matched_names": [
-       "Any Given Sin",
-       "Particle of Kapre"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2036,10 +1839,7 @@
       "name": "Water Priest",
       "description": "",
       "image": "/assets/siralim/images/creature/WaterPriest/battle.png",
-      "matched_names": [
-       "Apostle of Water",
-       "Water Rod"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2048,10 +1848,7 @@
       "name": "Innocent Shambler",
       "description": "",
       "image": "/assets/siralim/images/creature/InnocentShambler/battle.png",
-      "matched_names": [
-       "Appetite For Eschar",
-       "Innocent Hook"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2060,10 +1857,7 @@
       "name": "Undying Chimera",
       "description": "",
       "image": "/assets/siralim/images/creature/UndyingChimera/battle.png",
-      "matched_names": [
-       "Appreciation For Ancestry",
-       "Forbidden Recipe"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2072,10 +1866,7 @@
       "name": "Spider Occultist",
       "description": "",
       "image": "/assets/siralim/images/creature/SpiderOccultist/battle.png",
-      "matched_names": [
-       "Apprenticeship",
-       "Spider Orb"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2084,10 +1875,7 @@
       "name": "Woolly Arachnalisk",
       "description": "",
       "image": "/assets/siralim/images/creature/WoollyArachnalisk/battle.png",
-      "matched_names": [
-       "Arachnophobia",
-       "Woolly Mandible"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2096,10 +1884,7 @@
       "name": "Zealot Occultist",
       "description": "",
       "image": "/assets/siralim/images/creature/ZealotOccultist/battle.png",
-      "matched_names": [
-       "Arcane Brilliance",
-       "Zealot Orb"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2108,10 +1893,7 @@
       "name": "Lucanian Armiger",
       "description": "",
       "image": "/assets/siralim/images/creature/LucanianArmiger/battle.png",
-      "matched_names": [
-       "Armiger Strike",
-       "Armiger's Token"
-      ],
+      "matched_names": [],
       "matched_rules": []
      },
      {
@@ -2120,10 +1902,7 @@
       "name": "Djinn Arcanomancer",
       "description": "",
       "image": "/assets/siralim/images/creature/DjinnArcanomancer/battle.png",
-      "matched_names": [
-       "Ascendancy",
-       "Arcanomancer Lamp"
-      ],
+      "matched_names": [],
       "matched_rules": []
      }
     ],
@@ -2231,7 +2010,6 @@
       "description": "Socket an Artifact's Trait Slot with this item to gain this trait:\n\nUrh Harbinger:\nYour creatures have 15% more attack, intelligence, defense, and speed for each turn they've taken in the current battle. This trait does not stack.",
       "image": "/assets/siralim/images/item/material/AaxerSinew.png",
       "matched_names": [
-       "Urh Harbinger",
        "Aaxer Apocalypse"
       ],
       "matched_rules": []
@@ -2318,8 +2096,7 @@
       "description": "After your Griffons receive a buff, they share a copy of that buff with all the Griffons fighting on your side. This trait does not stack.",
       "image": "/assets/siralim/images/creature/GriffonDreamfinder/battle.png",
       "matched_names": [
-       "Griffon Dreamfinder",
-       "Dreamfinder Beak"
+       "Griffon Dreamfinder"
       ],
       "matched_rules": [
        {
@@ -2371,9 +2148,7 @@
       "name": "Andrick's Royal Decree",
       "description": "After your creatures gain a minion, they also gain a random buff. This trait does not stack.",
       "image": "/assets/siralim/images/item/material/AndricksTatteredGarb.png",
-      "matched_names": [
-       "Andrick's Tattered Garb"
-      ],
+      "matched_names": [],
       "matched_rules": [
        {
         "entity_id": "trait:578",
@@ -2514,8 +2289,7 @@
       "description": "After your creatures are resurrected by Rebirth, they gain Mending, Repelling, and Shelled.",
       "image": "/assets/siralim/images/creature/IgneousOssein/battle.png",
       "matched_names": [
-       "Igneous Ossein",
-       "Igneous Fossil"
+       "Igneous Ossein"
       ],
       "matched_rules": [
        {
@@ -2533,9 +2307,7 @@
       "name": "At Peace",
       "description": "After your creatures are resurrected, they gain a Barrier equal to 100% of the amount of Health they resurrected with. This trait does not stack.",
       "image": "/assets/siralim/images/item/material/AngelicTears.png",
-      "matched_names": [
-       "Angelic Tears"
-      ],
+      "matched_names": [],
       "matched_rules": [
        {
         "entity_id": "trait:1707",
@@ -2553,8 +2325,7 @@
       "description": "After this creature damages an enemy, it gains 50% of that damage as a Barrier.",
       "image": "/assets/siralim/images/creature/CelestialScarapin/battle.png",
       "matched_names": [
-       "Celestial Scarapin",
-       "Chitinous Feather"
+       "Celestial Scarapin"
       ],
       "matched_rules": [
        {
@@ -2573,8 +2344,7 @@
       "description": "After this creature kills a creature, your creatures gain a random buff for each buff, debuff, and minion the target had before it died.",
       "image": "/assets/siralim/images/creature/ShadowCarnage/battle.png",
       "matched_names": [
-       "Shadow Carnage",
-       "Shadow Exoskeleton"
+       "Shadow Carnage"
       ],
       "matched_rules": [
        {
@@ -2644,8 +2414,7 @@
       "description": "After your creatures are healed, they gain a Barrier that absorbs damage equal to 50% of the amount of health recovered. This trait does not stack.",
       "image": "/assets/siralim/images/creature/ExaltedSpirit/battle.png",
       "matched_names": [
-       "Exalted Spirit",
-       "Exalted Fluff"
+       "Exalted Spirit"
       ],
       "matched_rules": [
        {
@@ -2681,8 +2450,7 @@
       "description": "After this creature attacks, it gains a random buff and afflicts its target with a random debuff.",
       "image": "/assets/siralim/images/creature/MasochistWitch/battle.png",
       "matched_names": [
-       "Masochist Witch",
-       "Witch Stake"
+       "Masochist Witch"
       ],
       "matched_rules": [
        {
@@ -2718,8 +2486,7 @@
       "description": "After your creatures are healed by their Leeching buff, they gain a Barrier that absorbs damage equal to 50% of the amount recovered. This trait does not stack.",
       "image": "/assets/siralim/images/creature/OozingLeech/battle.png",
       "matched_names": [
-       "Oozing Leech",
-       "Oozing Cyst"
+       "Oozing Leech"
       ],
       "matched_rules": [
        {
@@ -2772,8 +2539,7 @@
       "description": "After this creature provokes, your creatures gain Berserk and Savage.",
       "image": "/assets/siralim/images/creature/DestroyerFiend/battle.png",
       "matched_names": [
-       "Destroyer Fiend",
-       "Destroyer Tooth"
+       "Destroyer Fiend"
       ],
       "matched_rules": [
        {
@@ -2792,8 +2558,7 @@
       "description": "When an adjacent creature would take attack or spell damage, or gain a buff or debuff, this creature becomes the new target instead.",
       "image": "/assets/siralim/images/creature/FeetAnimation/battle.png",
       "matched_names": [
-       "Feet Animation",
-       "Blue Shackle"
+       "Feet Animation"
       ],
       "matched_rules": [
        {
@@ -2812,8 +2577,7 @@
       "description": "Your creatures start battles with Arcane. At the end of your creatures' turns, they have a 30% chance to gain Arcane.",
       "image": "/assets/siralim/images/creature/RunicGrimoire/battle.png",
       "matched_names": [
-       "Runic Grimoire",
-       "Runic Parchment"
+       "Runic Grimoire"
       ],
       "matched_rules": [
        {
@@ -2856,8 +2620,7 @@
       "description": "After this creature dodges an attack, it gains a Barrier that absorbs damage equal to 50% of its speed. In addition, this creature has an independent 50% chance to dodge attacks.",
       "image": "/assets/siralim/images/creature/AspectofTime/battle.png",
       "matched_names": [
-       "Aspect of Time",
-       "Time Figment"
+       "Aspect of Time"
       ],
       "matched_rules": [
        {
@@ -2876,8 +2639,7 @@
       "description": "After this creature defends, it gains a Barrier that absorbs damage equal to 100% of its Maximum health. If this creature already has a Barrier, it gives it to a random ally instead.",
       "image": "/assets/siralim/images/creature/VernalWolpertinger/battle.png",
       "matched_names": [
-       "Vernal Wolpertinger",
-       "Gummy Egg"
+       "Vernal Wolpertinger"
       ],
       "matched_rules": [
        {
@@ -2903,8 +2665,7 @@
       "description": "After your creatures gain a buff, they gain an additional random buff, but their buffs only last for 1 turn. This trait does not stack.",
       "image": "/assets/siralim/images/creature/AmphisbaenaProspector/battle.png",
       "matched_names": [
-       "Amphisbaena Prospector",
-       "Prospector Cord"
+       "Amphisbaena Prospector"
       ],
       "matched_rules": [
        {
@@ -2939,9 +2700,7 @@
       "name": "Ceaseless Vitality",
       "description": "At the start of this creature's turn, it recovers 20% Health and gains Shelled.",
       "image": "/assets/siralim/images/item/material/CeaselessHeart.png",
-      "matched_names": [
-       "Ceaseless Heart"
-      ],
+      "matched_names": [],
       "matched_rules": [
        {
         "entity_id": "trait:558",
@@ -2976,8 +2735,7 @@
       "description": "When your creatures buff an enemy, they debuff them instead. When your creatures debuff an ally, they buff them instead. This trait does not stack.",
       "image": "/assets/siralim/images/creature/ChaosShapeshifter/battle.png",
       "matched_names": [
-       "Chaos Shapeshifter",
-       "Chaos Plasma"
+       "Chaos Shapeshifter"
       ],
       "matched_rules": [
        {
@@ -3013,8 +2771,7 @@
       "description": "After this creature attacks, it gives a random ally 2 random buffs.",
       "image": "/assets/siralim/images/creature/Pegasus/battle.png",
       "matched_names": [
-       "Pegasus",
-       "Pegasus Horseshoe"
+       "Pegasus"
       ],
       "matched_rules": [
        {
@@ -3050,8 +2807,7 @@
       "description": "After this creature gains a buff, your other creatures that don't have this trait gain a copy of that buff as well.",
       "image": "/assets/siralim/images/creature/EctoplasmicSlime/battle.png",
       "matched_names": [
-       "Ectoplasmic Slime",
-       "Ectoplasmic Ooze"
+       "Ectoplasmic Slime"
       ],
       "matched_rules": [
        {
@@ -3274,8 +3030,7 @@
       "description": "After your Diabolic Horde receive a buff, they share a copy of that buff with all the Diabolic Horde fighting on your side.",
       "image": "/assets/siralim/images/creature/DiabolicInsurgent/battle.png",
       "matched_names": [
-       "Diabolic Insurgent",
-       "Insurgent Flag"
+       "Diabolic Insurgent"
       ],
       "matched_rules": [
        {
@@ -3311,8 +3066,7 @@
       "description": "After this creature provokes, your other creatures gain a copy of this creature's buffs.",
       "image": "/assets/siralim/images/creature/DryadWarden/battle.png",
       "matched_names": [
-       "Dryad Warden",
-       "Warden Dew"
+       "Dryad Warden"
       ],
       "matched_rules": [
        {
@@ -3382,8 +3136,7 @@
       "description": "At the start of battle, this creature and creatures adjacent to it gain Invisible.",
       "image": "/assets/siralim/images/creature/Bashcloak/battle.png",
       "matched_names": [
-       "Bashcloak",
-       "Ghostly Ear"
+       "Bashcloak"
       ],
       "matched_rules": [
        {
@@ -3717,8 +3470,7 @@
       "description": "After an enemy is healed, this creature gains Maximum health equal to 30% of the amount healed.",
       "image": "/assets/siralim/images/creature/StoneGiant/battle.png",
       "matched_names": [
-       "Stone Giant",
-       "Stone Boulder"
+       "Stone Giant"
       ],
       "matched_rules": [
        {
@@ -3737,8 +3489,7 @@
       "description": "At the start of this creature's turn, it gains 30% Maximum health plus 20% of the total amount of Maximum health it has received in the current battle.",
       "image": "/assets/siralim/images/creature/BattleClockwork/battle.png",
       "matched_names": [
-       "Battle Clockwork",
-       "Neural Health Implant"
+       "Battle Clockwork"
       ],
       "matched_rules": [
        {
@@ -3839,8 +3590,7 @@
       "description": "At the end of this creature's turn, it gains 35% Current and Maximum health and provokes.",
       "image": "/assets/siralim/images/creature/Walken/battle.png",
       "matched_names": [
-       "Walken",
-       "Particle of Walken"
+       "Walken"
       ],
       "matched_rules": [
        {
@@ -3859,8 +3609,7 @@
       "description": "After this creature is resurrected, it gains 100% Maximum health.",
       "image": "/assets/siralim/images/creature/AspenEnt/battle.png",
       "matched_names": [
-       "Aspen Ent",
-       "Aspen Branch"
+       "Aspen Ent"
       ],
       "matched_rules": [
        {
@@ -3947,8 +3696,7 @@
       "description": "When your creatures are resurrected, they are resurrected with 100% additional health. If this amount exceeds their Maximum health, their Maximum health increases by an amount equal to the difference. This trait does not stack.",
       "image": "/assets/siralim/images/creature/DuskOssein/battle.png",
       "matched_names": [
-       "Dusk Ossein",
-       "Shadow Fossil"
+       "Dusk Ossein"
       ],
       "matched_rules": [
        {
@@ -4001,8 +3749,7 @@
       "description": "After your creatures' Barrier buffs are damaged and destroyed, they gain 50% of the original strength of the Barrier as Maximum health. This trait does not stack.",
       "image": "/assets/siralim/images/creature/KolossChampion/battle.png",
       "matched_names": [
-       "Koloss Champion",
-       "Bastard Blade"
+       "Koloss Champion"
       ],
       "matched_rules": [
        {
@@ -4021,8 +3768,7 @@
       "description": "After your creatures gain attack, intelligence, defense, or speed, they gain 20% of that amount as Maximum health as well. This trait does not stack.",
       "image": "/assets/siralim/images/creature/BestialKoloss/battle.png",
       "matched_names": [
-       "Bestial Koloss",
-       "Dull Blade"
+       "Bestial Koloss"
       ],
       "matched_rules": [
        {
@@ -4057,9 +3803,7 @@
       "name": "Lithos Evolution",
       "description": "At the start of your creatures' turns, they gain 10% Maximum Health. This trait does not stack.",
       "image": "/assets/siralim/images/item/material/LithosSinew.png",
-      "matched_names": [
-       "Lithos Sinew"
-      ],
+      "matched_names": [],
       "matched_rules": [
        {
         "entity_id": "trait:1716",
@@ -4128,8 +3872,7 @@
       "description": "After your creatures are resurrected, they gain 50% Maximum health. This trait does not stack.",
       "image": "/assets/siralim/images/creature/WarGiant/battle.png",
       "matched_names": [
-       "War Giant",
-       "War Boulder"
+       "War Giant"
       ],
       "matched_rules": [
        {
@@ -4165,8 +3908,7 @@
       "description": "After your creatures are healed, they gain 5% of that amount as Maximum health as well. This trait does not stack.",
       "image": "/assets/siralim/images/creature/KolossDoombringer/battle.png",
       "matched_names": [
-       "Koloss Doombringer",
-       "Imperfect Blade"
+       "Koloss Doombringer"
       ],
       "matched_rules": [
        {
@@ -5191,8 +4933,7 @@
       "description": "When your creatures buff an enemy, they debuff them instead. When your creatures debuff an ally, they buff them instead. This trait does not stack.",
       "image": "/assets/siralim/images/creature/ChaosShapeshifter/battle.png",
       "matched_names": [
-       "Chaos Shapeshifter",
-       "Chaos Plasma"
+       "Chaos Shapeshifter"
       ],
       "matched_rules": [
        {
@@ -5280,8 +5021,7 @@
       "description": "After this creature takes damage from an attack or spell, it gains a random buff. After this creature is healed, it gains a random debuff. After this creature takes damage from an attack or spell while it has at least 15 buffs and debuffs, it deals damage to enemies equal to 50% of its lowest stat (other than health).",
       "image": "/assets/siralim/images/creature/TormentedBunny/battle.png",
       "matched_names": [
-       "Tormented Bunny",
-       "Unlucky Rabbit's Foot"
+       "Tormented Bunny"
       ],
       "matched_rules": [
        {

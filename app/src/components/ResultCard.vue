@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { RouterLink } from "vue-router";
-import EffectText from "./EffectText.vue";
-import IdentityLine from "./IdentityLine.vue";
-import ObjectCell from "./ObjectCell.vue";
+import CellPlate from "./CellPlate.vue";
 import ObjectSummary from "./ObjectSummary.vue";
 import { component } from "./components";
 import { kindNames, objectRoute, type Displayable, type Hit } from "./presentation";
@@ -14,94 +12,137 @@ const props = defineProps<{
     kind: string;
     name: string;
     description?: string;
-    segments?: unknown[];
-    effects?: { segments?: unknown[]; description?: string }[];
+    segments?: { text: string }[];
+    effects?: { name?: string; segments?: { text: string }[]; description?: string }[];
     matched_names?: string[];
     matched_rules?: unknown[];
   };
-  /** One fixed height with a clamped effect; a tap opens the full text and sources in place. */
+  /** A clamped effect; a tap opens the full text and sources in place. */
   compact?: boolean;
+  /** A tap on the card belongs to its list, so the clamped effect stays closed. */
+  fixed?: boolean;
   /** The name opens the object page. */
   link?: boolean;
-  added?: boolean;
+  /** Already in the tray or team; a count above one is shown in place of the check. */
+  added?: boolean | number;
   selected?: boolean;
-  /** The muted line under the name; defaults to the names found with it, or the kind. */
+  /** The muted line beside the name; when left out, the names found with it, or the kind. */
   line?: string;
   /** Replaces that line with a fact about this item in the team. */
   note?: { text: string; refused?: boolean } | null;
 }>();
+defineSlots<{
+  /** Takes the plate's place, for a plate that is also a key. */
+  plate?: () => unknown;
+  /** An action at the end of the head. */
+  default?: () => unknown;
+}>();
 
 const open = ref(false);
-const line = computed(
-  () => props.line || props.item.matched_names?.join(" · ") || kindNames[props.item.kind] || "",
-);
 const hits = computed(() => (props.item.matched_rules ?? []) as Hit[]);
-const effect = computed(() => props.item.effects?.[0] ?? props.item);
+/**
+ * A Specialization's effects are its Perks, so its card shows how it plays instead: the last
+ * paragraph of its description, after the lore.
+ */
+const effect = computed(() =>
+  props.item.kind === "specialization"
+    ? { name: "", description: props.item.description?.split("\n\n").at(-1) ?? "" }
+    : (props.item.effects?.[0] ?? props.item),
+);
+/** The Trait a creature or material carries, which titles its effect. */
+const effectName = computed(() =>
+  effect.value.name !== props.item.name && props.item.kind !== "relic" ? effect.value.name : "",
+);
+const line = computed(() => {
+  if (props.line !== undefined) return props.line;
+  const names = new Set([effectName.value, ...(props.item.matched_names ?? [])]);
+  names.delete("");
+  names.delete(undefined);
+  return [...names].join(" · ") || kindNames[props.item.kind] || "";
+});
+const preview = computed(
+  () => effect.value.segments?.map((s) => s.text).join("") ?? effect.value.description ?? "",
+);
 /** The page has the sources, which the list data leaves out. */
 const full = computed(() => (open.value ? (component(props.item.id) ?? props.item) : props.item));
 
 function toggle(event: MouseEvent) {
-  if (!props.compact) return;
+  if (!props.compact || props.fixed) return;
   if ((event.target as Element).closest("a, button, summary, select, input, label")) return;
   open.value = !open.value;
 }
 </script>
 
 <template>
-  <ObjectCell
-    tag="article"
-    :class="['result-card', { compact, open }]"
-    :data="item"
-    :added="added"
-    :selected="selected"
-    @click="toggle"
-  >
-    <template #label>
-      <IdentityLine :data="item" :identity="false">
+  <article :class="['result-card', { compact, open, selected, fixed }]" @click="toggle">
+    <div class="result-head">
+      <slot name="plate"><CellPlate :data="item" :added="added" /></slot>
+      <div class="result-titles">
         <RouterLink v-if="link" class="result-name" :to="objectRoute(item.id, hits)">{{
           item.name
         }}</RouterLink>
         <strong v-else class="result-name plain">{{ item.name }}</strong>
-      </IdentityLine>
-    </template>
-    <template #detail>
-      <small v-if="note" :class="['result-note', { refused: note.refused }]">{{ note.text }}</small>
-      <small v-else>{{ line }}</small>
-      <ObjectSummary
-        v-if="open || !compact"
-        :data="full as never"
-        :limit="open ? Infinity : 2"
-        :links="!!link"
-        :sources="open || ['creature', 'material'].includes(item.kind)"
-      />
-      <p v-else class="result-effect">
-        <EffectText
-          :text="effect.description ?? ''"
-          :segments="effect.segments as never"
-          :context-ids="[item.id]"
-        />
-      </p>
-    </template>
-    <template v-if="$slots.default" #aside><slot /></template>
-  </ObjectCell>
+        <small v-if="note" :class="['result-note', { refused: note.refused }]">{{
+          note.text
+        }}</small>
+        <small v-else-if="line">{{ line }}</small>
+      </div>
+      <div v-if="$slots.default" class="result-action"><slot /></div>
+    </div>
+    <ObjectSummary
+      v-if="open || !compact"
+      :data="full as never"
+      :limit="open ? Infinity : 2"
+      :links="!!link"
+      :titled="props.line ? '' : effectName"
+      :sources="open || ['creature', 'material'].includes(item.kind)"
+    />
+    <p v-else-if="preview" class="result-effect">{{ preview }}</p>
+  </article>
 </template>
 
 <style scoped>
-.result-card :deep(.cell-detail > small) {
-  display: block;
-  margin-top: 4px;
+.result-card {
+  display: grid;
+  gap: var(--space-8);
+  min-width: 0;
+  padding: var(--space-12);
+  background: var(--cell);
+  border: 1px solid transparent;
+  color: var(--text);
+}
+.result-card.selected {
+  background: var(--raised);
+  border-color: var(--accent);
+  outline: 1px solid var(--strong);
+  outline-offset: -4px;
+}
+.result-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-width: 0;
+}
+.result-titles {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+.result-titles > small {
   color: var(--muted);
   font-size: var(--fs-13);
 }
-.result-card :deep(.cell-detail > small.result-note) {
+.result-titles > small.result-note {
   color: var(--placed);
 }
-.result-card :deep(.cell-detail > small.result-note.refused) {
+.result-titles > small.result-note.refused {
   color: var(--danger-text);
 }
+.result-action {
+  flex: none;
+}
 .result-name {
-  display: inline-block;
-  padding-block: 4px;
   font-size: var(--fs-15);
   font-weight: 700;
   text-decoration: underline;
@@ -112,34 +153,18 @@ function toggle(event: MouseEvent) {
   text-decoration: none;
 }
 .result-card :deep(.object-summary) {
-  margin-top: 4px;
+  min-width: 0;
 }
 .result-card :deep(.route-row) {
   font-size: var(--fs-12);
 }
-/* 68px plate, 6px above and below: name 20 + line 16 + two effect lines 32 fill its height. */
 .result-card.compact {
-  gap: 0 var(--space-8);
-  padding: 6px var(--space-8);
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-12);
   cursor: pointer;
 }
-.result-card.compact > :deep(.cell-aside) {
-  align-self: center;
-}
-.result-card.compact:not(.open) .result-name {
-  display: block;
-  overflow: hidden;
-  padding-block: 0;
-  line-height: 20px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.result-card.compact:not(.open) :deep(.cell-detail > small) {
-  margin-top: 0;
-  overflow: hidden;
-  line-height: 16px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.result-card.compact .result-name {
+  text-decoration: none;
 }
 .result-effect {
   display: -webkit-box;
@@ -151,7 +176,46 @@ function toggle(event: MouseEvent) {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
-.result-effect :deep(.inline-ref) {
-  pointer-events: none;
+/* A card chosen whole: the plate spans the name line and the full effect beside it. */
+.result-card.fixed {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--space-12);
+}
+.result-card.fixed:has(> .result-head > .result-action) {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.fixed > .result-head {
+  display: contents;
+}
+.fixed > .result-head > :first-child {
+  grid-row: 1 / span 2;
+}
+.fixed .result-titles,
+.fixed > .result-effect {
+  grid-column: 2;
+}
+.fixed .result-action {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+.fixed .result-titles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  align-self: end;
+  gap: 0 var(--space-8);
+}
+.fixed .result-titles > small {
+  font-size: var(--fs-12);
+}
+.fixed > .result-effect {
+  display: block;
+  align-self: start;
+  overflow: visible;
+  color: color-mix(in srgb, var(--text) 62%, var(--muted));
+  line-height: 19px;
+  -webkit-line-clamp: unset;
 }
 </style>

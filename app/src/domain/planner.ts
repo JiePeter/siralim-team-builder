@@ -2,6 +2,7 @@
 // digits or `_` each, `s` a Specialization code, `a` three-letter Anointment codes and `r` two-letter
 // Relic codes or `_`.
 import { t } from "@/i18n";
+import { newUid } from "./values";
 import {
   PARTY_SIZE,
   TeamError,
@@ -39,7 +40,7 @@ export function teamFromLink(pack: PlannerPack, text: string): { team: Team; dro
     if (!id) dropped++;
     return !!id;
   };
-  const equipment = (id: string): Equipment => ({ uid: crypto.randomUUID(), id });
+  const equipment = (id: string): Equipment => ({ uid: newUid(), id });
   const team = newTeam();
   const codes = chunks(parts, 6);
   team.slots = Array.from({ length: PARTY_SIZE }, (_, i): Slot => {

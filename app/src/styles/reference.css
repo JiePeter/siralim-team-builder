@@ -143,6 +143,9 @@
 .route-facts .pill {
   margin: 0;
 }
+.object-link .route-facts {
+  margin: 0;
+}
 .route-row p {
   margin: 6px 0;
   font-size: var(--fs-13);
@@ -173,10 +176,6 @@
   border-top: 0;
 }
 
-.creature-facts {
-  margin: 6px 0 2px;
-  font-size: var(--fs-13);
-}
 dl.creature-stats {
   display: flex;
   flex-wrap: wrap;
@@ -197,22 +196,6 @@ dl.creature-stats {
   font: 400 16px / 1 var(--pixel-font);
   font-variant-numeric: tabular-nums;
 }
-.creature-origins {
-  color: var(--text);
-}
-.creature-origins > h3 {
-  margin: 16px 0 2px;
-}
-.creature-origins .route-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  padding: 6px 0;
-}
-.creature-origins .route-facts {
-  margin: 0;
-}
 
 .family-switcher {
   display: grid;
@@ -224,9 +207,12 @@ dl.creature-stats {
 
 @media (max-width: 767px) {
   dl.creature-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-12) var(--space-8);
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+  .creature-stats > div {
+    min-width: 0;
   }
   .family-switcher {
     display: flex;
@@ -276,15 +262,21 @@ dl.creature-stats {
   align-items: flex-start;
 }
 .perk-title {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 10px;
+  align-items: center;
   min-width: 0;
+}
+.perk-title > .game-sprite {
+  grid-row: 1 / span 2;
+}
+.perk-title > strong,
+.perk-title > .muted {
+  grid-column: 2;
 }
 .perk-option .add-control {
   flex: none;
-}
-.perk-option .section-head strong {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
 }
 .perk-option p {
   margin: 8px 0 0;
@@ -299,11 +291,6 @@ dl.creature-stats {
 .realm-creatures article {
   padding: 10px 0;
   border-bottom: 1px solid var(--line);
-}
-.realm-depth {
-  color: var(--muted);
-  font-size: var(--fs-12);
-  white-space: nowrap;
 }
 .spell-facts {
   display: flex;
@@ -385,23 +372,9 @@ dl.creature-stats {
 .god-shop > .section-head small {
   color: var(--muted);
 }
-.god-shop .shop-offer-heading {
-  align-items: flex-start;
-}
 .shop-offer {
   padding: 16px 0;
   border-bottom: 1px solid var(--line);
-}
-.shop-offer-heading {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 20px;
-}
-.shop-offer-heading > small {
-  color: var(--muted);
-  font-size: var(--fs-12);
 }
 .shop-offer p {
   margin: 6px 0 0;

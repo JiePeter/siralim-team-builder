@@ -50,7 +50,6 @@ export default {
     thisTrait: "This trait",
     nameList: "{names} and {count} more",
     nameSeparator: ", ",
-    items: "{n} item | {n} items",
     spellGemCount: "{n} Spell Gem | {n} Spell Gems",
     unstacked: "{trait} does not stack: only Slot {n} counts",
     replacedCertain: "{owner} stops {listeners}",

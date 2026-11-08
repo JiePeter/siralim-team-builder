@@ -15,7 +15,7 @@ export default {
     character: "Character",
     clearCharacter: "Clear Character",
     shortLabels: { base: "Pri", fusion: "Fus", artifact: "Art", nether: "Net" },
-    keys: { details: "Details", swap: "Swap", tray: "To tray", replace: "Replace", move: "Move" },
+    keys: { swap: "Swap", tray: "To tray", replace: "Replace", move: "Move" },
     properties: "Properties",
     gemLimit: "A Spell Gem can have at most {max} properties",
     artifact: {
@@ -27,6 +27,7 @@ export default {
       trick: "Trick",
       dialogTitle: "Artifact · Trait",
       spellSlot: "Spell Slot",
+      spell: "Spell",
       types: { Sword: "Sword", Staff: "Staff", Helmet: "Helmet", Shield: "Shield", Boots: "Boots" },
       triggers: {
         Sword: "25% on attack",

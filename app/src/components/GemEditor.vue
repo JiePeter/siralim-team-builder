@@ -9,7 +9,6 @@ import GameSprite from "./GameSprite.vue";
 import IdentityLine from "./IdentityLine.vue";
 import ObjectLink from "./ObjectLink.vue";
 import { component } from "./components";
-import { routeView } from "./presentation";
 import { toastError } from "./toast";
 
 const props = defineProps<{
@@ -54,12 +53,11 @@ const variantKeys = (p: GemProperty) => {
     icon: v.class && classIcons[v.class],
   }));
 };
-const cost = (p: GemProperty) =>
-  p.routes
-    .map((r) => routeView(r))
-    .filter((v) => v !== null)
-    .map((v) => [v.title, ...v.facts].join(" · "))
-    .join(" · ");
+/** What the property does, when its wording says more than its name. */
+const effectOf = (p: GemProperty) => {
+  const labels = p.variants.length > 1 ? [] : p.variants.map((v) => v.label);
+  return labels.filter((label) => label !== p.name).join(" · ");
+};
 /** Only one stat can set a spell's potency. */
 const setsPotency = (p: GemProperty | undefined) =>
   !!p?.game_property_ids.some((id) => index.rules.potency_sources.includes(id));
@@ -112,7 +110,7 @@ function chooseVariant(p: GemProperty, id: number) {
         <GameSprite :data="p" />
         <span class="gem-text">
           <strong>{{ p.name }}</strong>
-          <small>{{ cost(p) }}</small>
+          <small v-if="effectOf(p)">{{ effectOf(p) }}</small>
         </span>
         <i v-if="isChosen(p)" class="icon icon-check"></i>
       </button>

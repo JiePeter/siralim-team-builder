@@ -1,6 +1,7 @@
 // Share links are `#team=<code>`, where code is the team as a bit stream encoded as unpadded
 // base64url. Each field takes only the bits its values need. Name and notes follow as UTF-8 text.
 import { t } from "@/i18n";
+import { newUid } from "./values";
 import { PARTY_SIZE, itemId, newTeam, type ArtifactConfig, type Equipment } from "./team";
 import type { EquipmentRef, Slot, Team } from "./team";
 
@@ -155,7 +156,7 @@ function writeBody(out: BitWriter, ref: EquipmentRef) {
 }
 
 function readBody(input: BitReader, id: string): Equipment {
-  const item: Equipment = { uid: crypto.randomUUID(), id, properties: [] };
+  const item: Equipment = { uid: newUid(), id, properties: [] };
   const kind = id.split(":")[0];
   if (kind === "spell") {
     const count = input.bits(PROPERTY_COUNT_BITS);

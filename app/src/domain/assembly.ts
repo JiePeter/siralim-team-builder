@@ -1,5 +1,6 @@
 // Independent equipment instances: moving consumes a pool item; copying clones its configuration.
 import { t } from "@/i18n";
+import { newUid } from "./values";
 import {
   BLANK_ARTIFACT,
   isCharacterPart,
@@ -52,13 +53,11 @@ export interface CharacterDefinitions {
 }
 
 export function newInstance(id: string, properties: string[] = []): Equipment {
-  return { uid: crypto.randomUUID(), id, properties: [...properties] };
+  return { uid: newUid(), id, properties: [...properties] };
 }
 
 export function cloneInstance(item: EquipmentRef): Equipment {
-  return typeof item === "string"
-    ? newInstance(item)
-    : { ...structuredClone(item), uid: crypto.randomUUID() };
+  return typeof item === "string" ? newInstance(item) : { ...structuredClone(item), uid: newUid() };
 }
 
 /** Ranks of `perks` with every non-Ascension Perk at its maximum. */
