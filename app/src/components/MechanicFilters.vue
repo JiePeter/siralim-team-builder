@@ -6,14 +6,17 @@ import { t } from "@/i18n";
 import { useFillStore } from "@/stores/fill";
 import { MECHANIC_SEARCH, useSearchStore } from "@/stores/search";
 import { blankCondition, type Condition } from "@/domain/discovery";
+import { DIALOG_ACTIONS } from "./dialog";
 import FacetOptions from "./FacetOptions.vue";
 import { filterState } from "./filters";
 
 /** Which page's mechanic query the rows edit; the provided one by default. */
 const props = defineProps<{ fill?: boolean }>();
 const search = props.fill ? undefined : inject(MECHANIC_SEARCH, useSearchStore)();
-const store = search ?? useFillStore();
+const fillQuery = search ? undefined : useFillStore();
+const store = search ?? fillQuery!;
 const { conditions, scope, facets } = storeToRefs(store);
+const dialogActions = inject(DIALOG_ACTIONS, null);
 const phone = useMediaQuery("(max-width: 767px)");
 const rows = ref<HTMLElement | null>(null);
 
@@ -52,12 +55,32 @@ function clear() {
   conditions.value = [blankCondition()];
   scope.value = "action";
   if (search) search.filtersOpened = false;
+  if (fillQuery) fillQuery.mechanism = "";
   store.run();
 }
 </script>
 
 <template>
-  <section class="mechanism-filters" :aria-label="t('search.mechanic.filters')">
+  <section
+    class="mechanism-filters"
+    :class="{ 'in-sheet': fill }"
+    :aria-label="t('search.mechanic.filters')"
+  >
+    <Teleport
+      v-if="fill && dialogActions && (state.showClear || fillQuery?.mechanism)"
+      defer
+      :to="`#${dialogActions}`"
+    >
+      <button
+        type="button"
+        class="clear"
+        :aria-label="t('search.mechanic.clear')"
+        :title="t('search.mechanic.clear')"
+        @click="clear"
+      >
+        <i class="icon icon-trash"></i>
+      </button>
+    </Teleport>
     <div v-show="!state.collapsed" ref="rows">
       <div v-for="(condition, index) in conditions" :key="index" class="mechanism-row">
         <select
@@ -80,7 +103,7 @@ function clear() {
           :aria-label="t('search.mechanic.remove', { n: index + 1 })"
           @click="remove(index)"
         >
-          <i class="icon icon-close"></i>
+          <i class="icon" :class="fill ? 'icon-minus' : 'icon-close'"></i>
         </button>
         <template v-if="condition.category">
           <select
@@ -127,7 +150,7 @@ function clear() {
         <option value="component">{{ t("search.mechanic.component") }}</option>
       </select>
       <button
-        v-if="state.showClear"
+        v-if="state.showClear && !fill"
         type="button"
         class="clear"
         :aria-label="t('search.mechanic.clear')"
@@ -183,8 +206,18 @@ function clear() {
 .mechanism-toolbar.end {
   justify-content: flex-end;
 }
-.mechanism-toolbar.end .clear {
-  margin-left: 0;
+.mechanism-toolbar:empty {
+  display: none;
+}
+.in-sheet {
+  max-height: none;
+  margin: 0;
+  overflow: visible;
+}
+.in-sheet .mechanism-row:last-child {
+  margin-bottom: var(--space-12);
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 .mechanism-toolbar button {
   font-size: var(--fs-13);

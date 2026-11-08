@@ -49,7 +49,7 @@ export function optionGroups(options: Option[], selected: string, namespace = ""
 export function conditionSummaries(
   conditions: Condition[],
   rows: DiscoveryResult["facets"]["conditions"],
-): string[] {
+): { index: number; label: string }[] {
   const label = (options: Option[], selected: string, namespace: string) =>
     optionGroups(options, selected, namespace)
       .flatMap((group) => group.options)
@@ -59,13 +59,16 @@ export function conditionSummaries(
     if (!category) return [];
     const row = rows[index] ?? { categories: [], relations: [], values: [] };
     return [
-      [
-        label(row.categories, category, "category"),
-        relation && label(row.relations, relation, `${category}-relation`),
-        value && label(row.values, value, `${category}-value`),
-      ]
-        .filter(Boolean)
-        .join(" · "),
+      {
+        index,
+        label: [
+          label(row.categories, category, "category"),
+          relation && label(row.relations, relation, `${category}-relation`),
+          value && label(row.values, value, `${category}-value`),
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      },
     ];
   });
 }

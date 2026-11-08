@@ -1,10 +1,13 @@
 export default {
   fill: {
-    fromTray: "Suggest from tray",
+    source: "Result scope",
+    fromTray: "From tray",
     allInteractions: "All interactions",
     allTargets: "All targets",
     emptyTray: "Add components to the tray, or choose a trigger condition to find components.",
-    chooseCondition: "Choose a trigger condition to find components.",
+    chooseCondition: "Choose a mechanic or enter a name to find components.",
+    removeFilter: "Remove {name}",
+    view: "View {n}",
     loading: "Loading…",
     failed: "Suggestions could not be loaded.",
     none: "Nothing connects to the tray yet.",
