@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { RouterLink } from "vue-router";
+import type { Effect } from "@/data";
 import CellPlate from "./CellPlate.vue";
 import ObjectSummary from "./ObjectSummary.vue";
 import { component } from "./components";
-import { kindNames, objectRoute, type Displayable, type Hit } from "./presentation";
+import {
+  carriedEffect,
+  kindNames,
+  objectRoute,
+  playText,
+  type Displayable,
+  type SummaryData,
+} from "./presentation";
 
 const props = defineProps<{
-  item: Displayable & {
-    id: string;
-    kind: string;
-    name: string;
-    description?: string;
-    segments?: { text: string }[];
-    effects?: { name?: string; segments?: { text: string }[]; description?: string }[];
-    matched_names?: string[];
-    matched_rules?: unknown[];
-  };
+  item: Displayable & SummaryData & { matched_names?: string[] };
   /** A clamped effect; a tap opens the full text and sources in place. */
   compact?: boolean;
   /** A tap on the card belongs to its list, so the clamped effect stays closed. */
@@ -39,15 +38,12 @@ defineSlots<{
 }>();
 
 const open = ref(false);
-const hits = computed(() => (props.item.matched_rules ?? []) as Hit[]);
-/**
- * A Specialization's effects are its Perks, so its card shows how it plays instead: the last
- * paragraph of its description, after the lore.
- */
-const effect = computed(() =>
+const hits = computed(() => props.item.matched_rules ?? []);
+/** A Specialization's effects are its Perks, so its card shows how it plays instead. */
+const effect = computed<Partial<Pick<Effect, "name" | "description" | "segments">>>(() =>
   props.item.kind === "specialization"
-    ? { name: "", description: props.item.description?.split("\n\n").at(-1) ?? "" }
-    : (props.item.effects?.[0] ?? props.item),
+    ? { name: "", description: playText(props.item) }
+    : (carriedEffect(props.item) ?? props.item),
 );
 /** The Trait a creature or material carries, which titles its effect. */
 const effectName = computed(() =>
@@ -91,7 +87,7 @@ function toggle(event: MouseEvent) {
     </div>
     <ObjectSummary
       v-if="open || !compact"
-      :data="full as never"
+      :data="full"
       :limit="open ? Infinity : 2"
       :links="!!link"
       :titled="props.line ? '' : effectName"

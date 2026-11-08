@@ -19,6 +19,8 @@ export const useFillStore = defineStore("fill", () => {
   const fromTray = ref(true);
   const q = ref("");
   const kind = ref("");
+  /** The component group the tray's suggestions are showing. */
+  const suggestedKind = ref<string | null>(null);
   /** The relationship the tray's suggestions are narrowed to. */
   const mechanism = ref("");
   const items = shallowRef<SearchItem[]>([]);
@@ -92,6 +94,7 @@ export const useFillStore = defineStore("fill", () => {
     fromTray,
     q,
     kind,
+    suggestedKind,
     mechanism,
     items,
     total,

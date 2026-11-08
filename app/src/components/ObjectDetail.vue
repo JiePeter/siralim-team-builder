@@ -1,14 +1,29 @@
 <script setup lang="ts">
-import { computed, reactive, shallowRef, watch } from "vue";
+import { computed } from "vue";
 import { RouterLink } from "vue-router";
-import { object, type Offer, type ObjectPage, type ObjectSummary, type Route } from "@/data";
+import { computedAsync } from "@vueuse/core";
+import { object, type Offer, type ObjectPage, type Route, type Section } from "@/data";
 import { className, i18n, t } from "@/i18n";
 import AddButton from "./AddButton.vue";
 import CellPlate from "./CellPlate.vue";
 import CreatureStats from "./CreatureStats.vue";
 import DetailItem from "./DetailItem.vue";
+import DetailNames from "./DetailNames.vue";
 import EffectText from "./EffectText.vue";
-import { hitPerks, hitRanks, kindNames, objectRoute, routeView, type Hit } from "./presentation";
+import LimitedList from "./LimitedList.vue";
+import {
+  carriedEffect,
+  classOf,
+  hitPerks,
+  hitRanks,
+  kindNames,
+  objectRoute,
+  playText,
+  raceOf,
+  requirementFacts,
+  routeView,
+  type Hit,
+} from "./presentation";
 
 const props = withDefaults(
   defineProps<{
@@ -20,8 +35,6 @@ const props = withDefaults(
   { hits: () => [], preview: false },
 );
 
-/** Name lists show this many before the rest are asked for. */
-const LIST_LIMIT = 24;
 /** A god's shop shows its first offers before the rest are asked for. */
 const OFFER_LIMIT = 6;
 const addableKinds = new Set(["creature", "trait", "material", "spell", "relic", "specialization"]);
@@ -33,37 +46,23 @@ const ranks = computed(() => hitRanks(props.hits));
 const perks = computed(() => hitPerks(props.hits));
 const listSeparator = computed(() => (i18n.global.locale.value.startsWith("zh") ? "、" : ", "));
 
-const expanded = reactive<Record<string, boolean>>({});
-const partner = shallowRef<ObjectPage | null>(null);
-const carriers = shallowRef<ObjectPage[]>([]);
-
-let version = 0;
-watch(
-  () => props.data.id,
-  async () => {
-    const current = ++version;
-    for (const key of Object.keys(expanded)) delete expanded[key];
-    partner.value = null;
-    carriers.value = [];
-    const data = props.data;
-    // A God and its Realm read as one page: the Realm brings its creatures, the God its shop.
-    const partnerId =
-      data.kind === "realm"
-        ? data.related?.find((r) => r.kind === "god")?.id
-        : data.kind === "god"
-          ? data.god_contents?.realms?.[0]?.id
-          : undefined;
-    if (partnerId) {
-      const found = await object(partnerId).catch(() => null);
-      if (current === version) partner.value = found;
-    }
-    if (data.kind === "trait" && data.options?.length) {
-      const found = await Promise.all(data.options.map((o) => object(o.id).catch(() => null)));
-      if (current === version) carriers.value = found.filter((c): c is ObjectPage => !!c);
-    }
-  },
-  { immediate: true },
-);
+// A God and its Realm read as one page: the Realm brings its creatures, the God its shop.
+const partner = computedAsync<ObjectPage | null>(() => {
+  const data = props.data;
+  const partnerId =
+    data.kind === "realm"
+      ? data.related?.find((r) => r.kind === "god")?.id
+      : data.kind === "god"
+        ? data.god_contents?.realms?.[0]?.id
+        : undefined;
+  return partnerId ? object(partnerId).catch(() => null) : null;
+}, null);
+const carriers = computedAsync<ObjectPage[]>(async () => {
+  const data = props.data;
+  if (data.kind !== "trait" || !data.options?.length) return [];
+  const found = await Promise.all(data.options.map((o) => object(o.id).catch(() => null)));
+  return found.filter((c): c is ObjectPage => !!c);
+}, []);
 
 const god = computed(() => (kind.value === "god" ? props.data : partner.value));
 const realm = computed(() => (kind.value === "realm" ? props.data : partner.value));
@@ -97,18 +96,15 @@ const godParts = computed(() => {
 const identity = computed(() => {
   const data = props.data;
   if (!["creature", "trait", "spell"].includes(kind.value)) return null;
-  const cls = data.classification?.[0]?.class ?? data.attrs.class ?? "";
-  const race =
-    kind.value === "spell" ? "" : (data.classification?.[0]?.race ?? data.attrs.race ?? "");
+  const cls = classOf(data);
   return {
     classIcon: data.attrs.class_icon,
     className: cls ? className(cls) : "",
     raceIcon: kind.value === "creature" ? data.attrs.race_icon : undefined,
-    race,
+    race: kind.value === "spell" ? "" : raceOf(data),
   };
 });
 
-const lastParagraph = (text: string) => text.split("\n\n").pop() ?? text;
 /** The effect shown in the head; pages whose text belongs to a part below leave it out. */
 const headEffect = computed(
   () =>
@@ -127,17 +123,14 @@ const headEffect = computed(
 
 const purchaseMethods = ["purchase", "shop_source", "purchase_inscription_then_craft"];
 const routes = computed<Route[]>(() => (props.data.routes ?? []).filter((r) => r.location_name));
-function routeTerms(list: Route[]): string[] {
+function routeTerms(list: Route[], options?: { price?: boolean }): string[] {
   const priced = list.find((r) => r.requirements?.cost);
   const req = priced?.requirements ?? list[0]?.requirements ?? {};
   const depths = [...new Set(list.map((r) => r.requirements?.source_realm_depth).filter(Boolean))];
   return [
-    req.cost ? `${req.cost} ${req.currency ?? ""}`.trim() : "",
-    req.favor_rank ? t("tray.route.favor", { rank: req.favor_rank }) : "",
-    req.rank ? t("tray.route.rank", { rank: req.rank }) : "",
-    req.project_required ? t("tray.route.projectRequired") : "",
-    depths.length ? t("tray.route.realmDepth", { depth: depths.join("/") }) : "",
-  ].filter(Boolean);
+    ...requirementFacts(req, options),
+    ...(depths.length ? [t("tray.route.realmDepth", { depth: depths.join("/") })] : []),
+  ];
 }
 const found = computed(() => {
   const list = routes.value;
@@ -158,7 +151,7 @@ function carrierSource(carrier: ObjectPage): string {
   if (route)
     return [
       `${t("reference.boughtAt")} ${route.location_name}`,
-      ...routeTerms([route]).filter((term) => !term.startsWith(String(route.requirements?.cost))),
+      ...routeTerms([route], { price: false }),
     ].join(" · ");
   const from = carrier.creatures?.map((c) => c.name).join(listSeparator.value);
   return from ? `${t("reference.from")} ${from}` : "";
@@ -178,10 +171,7 @@ const traitPartner = computed(() => {
   if (kind.value === "material") {
     const creature = props.data.creatures?.[0];
     if (!creature) return null;
-    const c = creature.classification?.[0];
-    const note = [className(c?.class ?? creature.attrs.class ?? ""), c?.race ?? creature.attrs.race]
-      .filter(Boolean)
-      .join(" · ");
+    const note = [className(classOf(creature)), raceOf(creature)].filter(Boolean).join(" · ");
     return { item: creature, label: kindNames.creature, note };
   }
   return null;
@@ -210,21 +200,26 @@ const variants = computed(
     (props.data.attrs.variants as { id: number; label: string; image: string }[] | undefined) ?? [],
 );
 
-type Item = ObjectSummary & { matched_rules?: { rank?: number | null }[] };
+type Item = Section["items"][number];
 /** Lists of creatures or Spell Gems on a race or class page read as names. */
 const nameKinds = new Set(["creature", "spell"]);
 const sections = computed(() =>
-  (props.data.sections ?? [])
+  [
+    {
+      title: t("reference.drops"),
+      items: kind.value === "acquisition_source" ? (props.data.products ?? []) : [],
+    },
+    ...(props.data.sections ?? []),
+  ]
     .filter((s) => s.items.length)
-    .map((s) => {
-      const items = s.items as Item[];
+    .map(({ title, items }: { title: string; items: Item[] }) => {
       const style =
         items[0]?.kind === "card_set"
           ? "tiers"
           : ["race", "class"].includes(kind.value) && items.every((i) => nameKinds.has(i.kind))
             ? "names"
             : "items";
-      return { title: s.title, items, style };
+      return { title, items, style };
     }),
 );
 
@@ -232,20 +227,19 @@ function itemLevel(item: Item): string {
   const rank = item.matched_rules?.[0]?.rank;
   return item.kind === "relic" && rank ? t("reference.level", { rank }) : "";
 }
-function itemFaint(item: Item): string {
+function itemFaint(item: Omit<Item, "routes">): string {
   if (item.kind === "relic") return kindNames.relic ?? "";
-  const effect = item.effects?.[0];
+  const effect = carriedEffect(item);
   if (effect?.name && effect.name !== item.name) return effect.name;
+  // A Trait's attrs name a race that its row leaves out.
   return item.classification?.[0]?.race ?? "";
 }
-function itemText(item: Item) {
+function itemText(item: Omit<Item, "routes">) {
   const rank = item.matched_rules?.[0]?.rank;
   if (item.kind === "relic" && rank) return item.effects?.find((e) => e.rank === rank) ?? null;
-  const effect = item.effects?.[0];
+  const effect = carriedEffect(item);
   return effect?.description ? effect : item.description ? item : null;
 }
-const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
-  expanded[key] || list.length <= limit ? list : list.slice(0, limit);
 </script>
 
 <template>
@@ -300,7 +294,7 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
           }}</span>
         </div>
         <p v-else-if="kind === 'specialization' && data.description" class="detail-note">
-          {{ lastParagraph(data.description) }}
+          {{ playText(data) }}
         </p>
       </div>
       <div v-if="found" class="detail-found">
@@ -348,7 +342,7 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
 
     <section v-if="family.length" class="detail-section">
       <h2>
-        {{ t("reference.raceCreatures", { race: data.classification?.[0]?.race ?? "" })
+        {{ t("reference.raceCreatures", { race: raceOf(data) })
         }}<span class="detail-count">{{ family.length }}</span>
       </h2>
       <nav
@@ -427,39 +421,29 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
       <h2>
         {{ t("reference.shop") }}<span class="detail-count">{{ offers.length }}</span>
       </h2>
-      <div class="detail-grid three detail-offers">
-        <div
-          v-for="offer in shown('offers', offers, OFFER_LIMIT)"
-          :key="offer.id"
-          class="detail-offer"
-        >
-          <span v-if="offer.requirements.favor_rank" class="detail-favor">{{
-            t("tray.route.favor", { rank: offer.requirements.favor_rank })
-          }}</span>
-          <DetailItem
-            :item="offer.item"
-            :addable="addableKinds.has(offer.item.kind)"
-            :faint="itemFaint(offer.item as Item)"
-          >
-            <small>{{ offerFacts(offer) }}</small>
-          </DetailItem>
-          <p v-if="itemText(offer.item as Item)">
-            <EffectText
-              :text="itemText(offer.item as Item)!.description"
-              :segments="itemText(offer.item as Item)!.segments ?? []"
-              :context-ids="contextIds"
-            />
-          </p>
+      <LimitedList v-slot="{ shown }" :items="offers" :limit="OFFER_LIMIT">
+        <div class="detail-grid three detail-offers">
+          <div v-for="offer in shown" :key="offer.id" class="detail-offer">
+            <span v-if="offer.requirements.favor_rank" class="detail-favor">{{
+              t("tray.route.favor", { rank: offer.requirements.favor_rank })
+            }}</span>
+            <DetailItem
+              :item="offer.item"
+              :addable="addableKinds.has(offer.item.kind)"
+              :faint="itemFaint(offer.item)"
+            >
+              <small>{{ offerFacts(offer) }}</small>
+            </DetailItem>
+            <p v-if="itemText(offer.item)">
+              <EffectText
+                :text="itemText(offer.item)!.description"
+                :segments="itemText(offer.item)!.segments ?? []"
+                :context-ids="contextIds"
+              />
+            </p>
+          </div>
         </div>
-      </div>
-      <button
-        v-if="!expanded.offers && offers.length > OFFER_LIMIT"
-        type="button"
-        class="detail-more"
-        @click="expanded.offers = true"
-      >
-        {{ t("reference.showAll", { n: offers.length }) }}
-      </button>
+      </LimitedList>
     </section>
 
     <section v-for="part in godParts" :key="part.key" class="detail-section">
@@ -480,41 +464,12 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
       <h2>
         {{ kindNames.creature }}<span class="detail-count">{{ realmCreatures.length }}</span>
       </h2>
-      <div class="detail-names">
-        <RouterLink v-for="c in shown('realm', realmCreatures)" :key="c.id" :to="objectRoute(c.id)">
-          <CellPlate :data="c" compact /><span>{{ c.name }}</span>
-        </RouterLink>
-      </div>
-      <button
-        v-if="!expanded.realm && realmCreatures.length > LIST_LIMIT"
-        type="button"
-        class="detail-more"
-        @click="expanded.realm = true"
-      >
-        {{ t("reference.showAll", { n: realmCreatures.length }) }}
-      </button>
+      <DetailNames :items="realmCreatures" />
     </section>
 
     <section v-if="variants.length" class="detail-section">
       <div class="detail-variants">
         <div v-for="v in variants" :key="v.id"><img :src="v.image" alt="" />{{ v.label }}</div>
-      </div>
-    </section>
-
-    <section v-if="kind === 'acquisition_source' && data.products?.length" class="detail-section">
-      <h2>
-        {{ t("reference.drops") }}<span class="detail-count">{{ data.products.length }}</span>
-      </h2>
-      <div class="detail-grid two">
-        <DetailItem
-          v-for="item in data.products"
-          :key="item.id"
-          :item="item"
-          :addable="addableKinds.has(item.kind)"
-          :faint="itemFaint(item)"
-          :text="itemText(item)"
-          :context-ids="contextIds"
-        />
       </div>
     </section>
 
@@ -533,25 +488,7 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
           /></span>
         </div>
       </div>
-      <template v-else-if="section.style === 'names'">
-        <div class="detail-names">
-          <RouterLink
-            v-for="item in shown(section.title, section.items)"
-            :key="item.id"
-            :to="objectRoute(item.id)"
-          >
-            <CellPlate :data="item" compact /><span>{{ item.name }}</span>
-          </RouterLink>
-        </div>
-        <button
-          v-if="!expanded[section.title] && section.items.length > LIST_LIMIT"
-          type="button"
-          class="detail-more"
-          @click="expanded[section.title] = true"
-        >
-          {{ t("reference.showAll", { n: section.items.length }) }}
-        </button>
-      </template>
+      <DetailNames v-else-if="section.style === 'names'" :items="section.items" />
       <div v-else class="detail-grid two">
         <DetailItem
           v-for="item in section.items"
@@ -706,28 +643,6 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
   font-size: 14px;
   line-height: 21px;
 }
-.detail-head :deep(.creature-stats) {
-  grid-area: stats;
-  display: grid;
-  grid-template-columns: repeat(5, auto);
-  gap: 2px 14px;
-  margin: 0;
-  padding: 10px 14px;
-  background: var(--raised);
-}
-.detail-head :deep(.creature-stats > div) {
-  display: contents;
-}
-.detail-head :deep(.creature-stats dt) {
-  grid-row: 1;
-  color: var(--muted);
-  font-size: 11px;
-}
-.detail-head :deep(.creature-stats dd) {
-  grid-row: 2;
-  margin: 0;
-  font: 400 13px / 1 var(--pixel-font);
-}
 
 /* sections */
 .detail-section {
@@ -780,8 +695,7 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px 16px;
 }
-.detail-family a,
-.detail-names a {
+.detail-family a {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -790,8 +704,7 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
   font-size: var(--fs-13);
   text-decoration: none;
 }
-.detail-family a > span,
-.detail-names a > span {
+.detail-family a > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -830,30 +743,16 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
   width: 46px;
   height: 46px;
 }
-.detail-family:not(.tiles) :deep(.cell-plate),
-.detail-names :deep(.cell-plate) {
+.detail-family:not(.tiles) :deep(.cell-plate) {
   width: 32px;
   height: 32px;
 }
-.detail-family:not(.tiles) :deep(.cell-plate > img),
-.detail-names :deep(.cell-plate > img) {
+.detail-family:not(.tiles) :deep(.cell-plate > img) {
   width: 28px;
   height: 28px;
 }
-.detail-family :deep(.plate-badge),
-.detail-names :deep(.plate-badge) {
+.detail-family :deep(.plate-badge) {
   display: none;
-}
-.detail-names {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px 16px;
-}
-.detail-more {
-  justify-self: start;
-  min-height: 32px;
-  padding: 0 12px;
-  font-size: var(--fs-13);
 }
 
 .detail-grid {
@@ -957,14 +856,8 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
       "plate stats"
       "plate found";
   }
-  .detail-head.with-stats :deep(.creature-stats) {
-    justify-self: start;
-  }
   .detail-grid.three {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .detail-names {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -982,10 +875,6 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
       "found found"
       "effect effect";
     gap: 10px 14px;
-  }
-  .detail-head :deep(.creature-stats) {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    text-align: center;
   }
   .detail-titles {
     align-self: center;
@@ -1028,12 +917,6 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
   .detail-family.tiles :deep(.cell-plate > img) {
     width: 28px;
     height: 28px;
-  }
-  .detail-names,
-  .detail-grid.two,
-  .detail-ranks,
-  .detail-variants {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .detail-grid.two,
   .detail-ranks,

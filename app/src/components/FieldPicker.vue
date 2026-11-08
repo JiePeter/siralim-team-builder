@@ -320,16 +320,6 @@ const blocked = (id: string) => here(id) || !!refusal(id) || (unique.value && !!
   min-height: var(--field);
   padding: 0 var(--space-12);
 }
-.filter-toggle[aria-expanded="true"] {
-  background: var(--ground);
-  border-color: var(--accent);
-}
-.filter-toggle.active,
-.filter-toggle.active:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
-}
 .filter-count {
   margin-left: var(--space-8);
   font: 400 16px / 1 var(--pixel-font);

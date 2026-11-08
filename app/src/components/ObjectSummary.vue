@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
-import type { Effect, ObjectSummary } from "@/data";
+import { createReusableTemplate } from "@vueuse/core";
+import type { Effect } from "@/data";
 import { className, t } from "@/i18n";
 import EffectText from "./EffectText.vue";
 import IdentityIcon from "./IdentityIcon.vue";
 import RouteCard from "./RouteCard.vue";
-import { hitRanks, objectRoute, type Hit } from "./presentation";
+import { hitRanks, objectRoute, type SummaryData } from "./presentation";
 
 type SummaryEffect = Pick<Effect, "id" | "name" | "description" | "segments"> &
   Partial<Pick<Effect, "label" | "rank">>;
 
+const [DefineEffect, ReuseEffect] = createReusableTemplate<{ effect: SummaryEffect }>({
+  inheritAttrs: false,
+});
+
 const props = withDefaults(
   defineProps<{
-    data: Partial<ObjectSummary> &
-      Pick<ObjectSummary, "id" | "kind" | "name"> & { matched_rules?: Hit[] };
+    data: SummaryData;
     limit?: number;
     links?: boolean;
     sources?: boolean;
@@ -78,35 +82,8 @@ const effectContext = (e: SummaryEffect) => [props.data.id, e.id];
 
 <template>
   <div class="object-summary">
-    <div v-if="showFacts" class="summary-facts">
-      <IdentityIcon
-        v-if="spellGem"
-        :id="links ? data.attrs?.class_id : null"
-        :src="data.attrs?.class_icon"
-        :label="className(data.attrs?.class ?? '') || t('reference.spell')"
-      />{{ (data.facts || []).join(" · ") }}
-    </div>
-    <div
-      v-for="e in first"
-      :key="e.id + (e.label ?? '')"
-      :class="['summary-effect', { 'effect-hit': ranks.has(Number(e.rank)) }]"
-    >
-      <small v-if="e.label">{{ e.label }}</small>
-      <strong v-if="named(e)">
-        <RouterLink v-if="links" class="link" :to="objectRoute(e.id)">{{ e.name }}</RouterLink>
-        <template v-else>{{ e.name }}</template>
-      </strong>
-      <p>
-        <EffectText :text="e.description" :segments="e.segments" :context-ids="effectContext(e)" />
-      </p>
-    </div>
-    <details v-if="rest.length" class="summary-more">
-      <summary>{{ moreLabel }}</summary>
-      <div
-        v-for="e in rest"
-        :key="e.id + (e.label ?? '')"
-        :class="['summary-effect', { 'effect-hit': ranks.has(Number(e.rank)) }]"
-      >
+    <DefineEffect v-slot="{ effect: e }">
+      <div :class="['summary-effect', { 'effect-hit': ranks.has(Number(e.rank)) }]">
         <small v-if="e.label">{{ e.label }}</small>
         <strong v-if="named(e)">
           <RouterLink v-if="links" class="link" :to="objectRoute(e.id)">{{ e.name }}</RouterLink>
@@ -120,6 +97,19 @@ const effectContext = (e: SummaryEffect) => [props.data.id, e.id];
           />
         </p>
       </div>
+    </DefineEffect>
+    <div v-if="showFacts" class="summary-facts">
+      <IdentityIcon
+        v-if="spellGem"
+        :id="links ? data.attrs?.class_id : null"
+        :src="data.attrs?.class_icon"
+        :label="className(data.attrs?.class ?? '') || t('reference.spell')"
+      />{{ (data.facts || []).join(" · ") }}
+    </div>
+    <ReuseEffect v-for="e in first" :key="e.id + (e.label ?? '')" :effect="e" />
+    <details v-if="rest.length" class="summary-more">
+      <summary>{{ moreLabel }}</summary>
+      <ReuseEffect v-for="e in rest" :key="e.id + (e.label ?? '')" :effect="e" />
     </details>
     <template v-if="sources">
       <RouteCard v-for="route in data.routes || []" :key="route.id" :route="route" />

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import CellPlate from "./CellPlate.vue";
-import type { Displayable } from "./presentation";
+import { carriedEffect, type Displayable } from "./presentation";
 
 const props = withDefaults(
   defineProps<{
@@ -27,11 +27,11 @@ const props = withDefaults(
 /** A creature or material names the Trait it carries beside its own name. */
 const trait = computed(() =>
   props.line === null && props.data && ["creature", "material"].includes(props.data.kind)
-    ? props.data.effects[0]
+    ? carriedEffect(props.data)
     : undefined,
 );
 const text = computed(
-  () => props.line ?? props.data?.effects[0]?.description ?? props.data?.description ?? "",
+  () => props.line ?? carriedEffect(props.data)?.description ?? props.data?.description ?? "",
 );
 </script>
 

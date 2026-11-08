@@ -1,9 +1,12 @@
 import type { RouteLocationRaw } from "vue-router";
-import { useMediaQuery, useStorage } from "@vueuse/core";
-import type { Attrs, Classification, Route } from "@/data";
+import { createSharedComposable, useMediaQuery, useStorage } from "@vueuse/core";
+import type { Attrs, Classification, ObjectSummary, Route } from "@/data";
 import { t } from "@/i18n";
 
 export const usePhone = () => useMediaQuery("(max-width: 767px)");
+
+/** The width at which the tray sits beside the page. */
+export const useSidebar = createSharedComposable(() => useMediaQuery("(min-width: 1100px)"));
 
 /** Whether Nether Stone fields are shown, kept across visits. */
 export const useShowNether = () => useStorage("siralim-planner.show-nether", false);
@@ -65,6 +68,10 @@ export interface Hit {
   rank?: number | null;
 }
 
+/** What an effect summary reads from any object shape in the pack. */
+export type SummaryData = Partial<ObjectSummary> &
+  Pick<ObjectSummary, "id" | "kind" | "name"> & { matched_rules?: Hit[] };
+
 /**
  * The game draws a Spell Gem by its class and how many properties it holds (up to 3); the pack
  * gives every Spell Gem the category icon instead.
@@ -84,6 +91,20 @@ export function frameOf(data: Displayable | null | undefined): string {
 
 export function classOf(data: Displayable | null | undefined): string {
   return data?.classification?.[0]?.class || data?.attrs?.class || "";
+}
+
+export function raceOf(data: Displayable | null | undefined): string {
+  return data?.classification?.[0]?.race || data?.attrs?.race || "";
+}
+
+/** How a Specialization plays: the last paragraph of its description, after the lore. */
+export function playText(data: { description?: string }): string {
+  return data.description?.split("\n\n").at(-1) ?? "";
+}
+
+/** The first effect; on a creature or material, the Trait it carries. */
+export function carriedEffect<E>(data: { effects?: E[] } | null | undefined): E | undefined {
+  return data?.effects?.[0];
 }
 
 export function normalizeHits(hits: Hit[]): Hit[] {
@@ -128,20 +149,30 @@ export interface RouteView {
   facts: string[];
 }
 
+const present = (value: unknown) =>
+  value !== undefined && value !== null && String(value).trim() !== "";
+
+/** What a route asks for, price first; `target` adds what the route is used on. */
+export function requirementFacts(
+  req: Route["requirements"],
+  { price = true, target = false } = {},
+): string[] {
+  const facts: string[] = [];
+  if (price && present(req.cost)) facts.push(`${req.cost} ${req.currency ?? ""}`.trim());
+  if (present(req.favor_rank)) facts.push(t("tray.route.favor", { rank: req.favor_rank }));
+  if (present(req.rank)) facts.push(t("tray.route.rank", { rank: req.rank }));
+  if (req.project_required) facts.push(t("tray.route.projectRequired"));
+  if (target && req.target) facts.push(String(req.target));
+  return facts;
+}
+
 export function routeView(
   route: Pick<Route, "method" | "requirements"> & Partial<Route>,
 ): RouteView | null {
   const req = route.requirements || {},
     method = route.method;
   const place = route.location_name;
-  const facts: string[] = route.via ? [route.via] : [];
-  const present = (value: unknown) =>
-    value !== undefined && value !== null && String(value).trim() !== "";
-  if (present(req.cost)) facts.push(`${req.cost} ${req.currency ?? ""}`.trim());
-  if (present(req.favor_rank)) facts.push(t("tray.route.favor", { rank: req.favor_rank }));
-  if (present(req.rank)) facts.push(t("tray.route.rank", { rank: req.rank }));
-  if (req.project_required) facts.push(t("tray.route.projectRequired"));
-  if (req.target) facts.push(String(req.target));
+  const facts = [...(route.via ? [route.via] : []), ...requirementFacts(req, { target: true })];
   if (method === "realm_encounter" || method === "realm_interaction") {
     if (present(req.source_realm_depth))
       facts.push(t("tray.route.realmDepth", { depth: req.source_realm_depth }));

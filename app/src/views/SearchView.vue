@@ -168,16 +168,6 @@ onMounted(() => {
 .filter-toggle {
   display: none;
 }
-.filter-toggle[aria-expanded="true"] {
-  background: var(--ground);
-  border-color: var(--accent);
-}
-.filter-toggle.active,
-.filter-toggle.active:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
-}
 .filter-count {
   margin-left: var(--space-8);
   font: 400 16px / 1 var(--pixel-font);

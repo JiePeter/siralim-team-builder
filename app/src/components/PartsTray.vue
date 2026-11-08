@@ -13,7 +13,7 @@ import PreviewDialog from "./PreviewDialog.vue";
 import PropertyPills from "./PropertyPills.vue";
 import { canPlace, shownAs } from "./assembly";
 import { component } from "./components";
-import { kindGroup, kindGroups, useShowNether } from "./presentation";
+import { carriedEffect, kindGroup, kindGroups, useShowNether } from "./presentation";
 import { dragged, draggedSelection, useDragSource } from "./dragging";
 import { attempt, toast } from "./toast";
 import { flashed, lineKey, selected, startPlacing, trayOpen, useEntity } from "./tray";
@@ -98,7 +98,9 @@ const name = (line: Line) => component(line.shown)?.name ?? "";
 /** The trait a creature or material line carries, named after it. */
 const traitName = (line: Line) => {
   const data = component(line.shown);
-  return data && ["creature", "material"].includes(data.kind) ? data.effects[0]?.name : undefined;
+  return data && ["creature", "material"].includes(data.kind)
+    ? carriedEffect(data)?.name
+    : undefined;
 };
 const inBuild = (line: Line) =>
   line.placed > 1

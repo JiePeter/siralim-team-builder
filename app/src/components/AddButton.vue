@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, toRef, useId } from "vue";
 import { useRouter } from "vue-router";
-import { createSharedComposable, useMediaQuery } from "@vueuse/core";
 import { useTeamStore } from "@/stores/team";
 import { t } from "@/i18n";
 import CellPlate from "./CellPlate.vue";
 import FloatingMenu from "./FloatingMenu.vue";
-import type { Displayable } from "./presentation";
+import { useSidebar, type Displayable } from "./presentation";
 import { perkBase, selectionLabel, useCatalog, type Candidate } from "./selection";
 import { attempt, toast } from "./toast";
 import { burst, flash, trayOpen, usePlacement } from "./tray";
@@ -19,8 +18,6 @@ const props = defineProps<{
   /** The key is this plate, which marks whether and how often the component is already added. */
   plate?: Displayable;
 }>();
-
-const useSidebar = createSharedComposable(() => useMediaQuery("(min-width: 1100px)"));
 
 const store = useTeamStore();
 const router = useRouter();

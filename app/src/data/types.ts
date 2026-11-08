@@ -107,7 +107,7 @@ export interface Offer {
 
 export interface Section {
   title: string;
-  items: (ObjectSummary & { matched_rules?: unknown[] })[];
+  items: (ObjectSummary & { matched_rules?: { rank?: number | null }[] })[];
 }
 
 export interface ObjectPage {

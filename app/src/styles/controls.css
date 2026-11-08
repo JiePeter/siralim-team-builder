@@ -327,6 +327,20 @@ button[aria-pressed="true"]:not(.object-cell) {
   border-color: var(--accent);
   color: var(--text);
 }
+/* A filter key: outlined while its panel is open, filled while any filter applies. */
+button.filter-toggle[aria-expanded="true"] {
+  background: var(--ground);
+  border-color: var(--accent);
+}
+button.filter-toggle.active,
+button.filter-toggle.active:hover,
+button.fill-filter.active,
+button.fill-filter.active:hover {
+  --focus-ink: var(--on-accent);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
 .icon-button {
   width: var(--control);
   min-width: var(--control);
