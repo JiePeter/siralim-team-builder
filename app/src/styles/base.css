@@ -23,6 +23,11 @@ body {
   caret-color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
 ::selection {
   background: var(--selection);
   color: #fff;

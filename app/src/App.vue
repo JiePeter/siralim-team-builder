@@ -342,6 +342,7 @@ nav .active::after {
 }
 .frame {
   display: grid;
+  flex: 1;
   grid-template-columns: minmax(0, 1fr);
 }
 .tray-side {
