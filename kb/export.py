@@ -186,6 +186,22 @@ def artifact_formulas():
     return data["properties"], data["primary"]
 
 
+ENCHANTMENT_VALUES = ROOT / "data/annotations/enchantment-values.json"
+# The placeholder the game's property labels use for their amount, in every locale.
+AMOUNT = re.compile(r"(?<![A-Za-z])x(?![A-Za-z])")
+
+
+def with_enchantment_values(properties):
+    """Each property's label with its highest amount in place of x, where a source gives one."""
+    values = json.loads(ENCHANTMENT_VALUES.read_text(encoding="utf-8"))["values"]
+    for prop in properties:
+        for variant in prop["variants"]:
+            value = values.get(str(variant["id"]))
+            if value is not None:
+                variant["label"] = AMOUNT.sub(str(value), variant["label"], count=1)
+    return properties
+
+
 BASE_ANOINTMENTS = 5
 ANOINTMENT_BONUS = re.compile(
     r"equip (\d+) additional Anointments(?:, or (\d+) if you've ascended all other)?"
@@ -634,7 +650,7 @@ def export(out, knowledge, objects=None, owners=None, state=None, log=lambda lin
     write("team-rules.json", rules)
     with database(DEFAULT_DB) as english:
         write("planner.json", planner_pack(english))
-    write("gem-properties.json", knowledge.gem_properties())
+    write("gem-properties.json", with_enchantment_values(knowledge.gem_properties()))
 
     engine = knowledge.mechanics()
     if owners is None:
