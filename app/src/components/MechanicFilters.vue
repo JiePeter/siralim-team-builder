@@ -11,12 +11,15 @@ import { filterState } from "./filters";
 
 /** Which page's mechanic query the rows edit; the provided one by default. */
 const props = defineProps<{ fill?: boolean }>();
-const store = props.fill ? useFillStore() : inject(MECHANIC_SEARCH, useSearchStore)();
-const { conditions, scope, facets, filtersOpened } = storeToRefs(store);
+const search = props.fill ? undefined : inject(MECHANIC_SEARCH, useSearchStore)();
+const store = search ?? useFillStore();
+const { conditions, scope, facets } = storeToRefs(store);
 const phone = useMediaQuery("(max-width: 767px)");
 const rows = ref<HTMLElement | null>(null);
 
-const state = computed(() => filterState(conditions.value, phone.value, filtersOpened.value));
+const state = computed(() =>
+  filterState(conditions.value, phone.value && !!search, search?.filtersOpened ?? false),
+);
 const facetRow = (index: number) =>
   facets.value.conditions[index] ?? { categories: [], relations: [], values: [] };
 
@@ -36,7 +39,7 @@ function remove(index: number) {
 
 async function add() {
   if (state.value.collapsed) {
-    filtersOpened.value = true;
+    search!.filtersOpened = true;
     await nextTick();
     rows.value?.querySelector("select")?.focus();
     return;
@@ -48,14 +51,18 @@ async function add() {
 function clear() {
   conditions.value = [blankCondition()];
   scope.value = "action";
-  filtersOpened.value = false;
+  if (search) search.filtersOpened = false;
   store.run();
 }
 </script>
 
 <template>
-  <section class="mechanism-filters" :aria-label="t('search.mechanic.filters')">
-    <div v-show="!state.collapsed" ref="rows">
+  <section
+    class="mechanism-filters"
+    :class="{ band: fill }"
+    :aria-label="t('search.mechanic.filters')"
+  >
+    <div v-show="!state.collapsed" ref="rows" class="mechanism-rows">
       <div v-for="(condition, index) in conditions" :key="index" class="mechanism-row">
         <select
           class="filter-category"
@@ -70,15 +77,6 @@ function clear() {
             :all="t('search.mechanic.all')"
           />
         </select>
-        <button
-          v-if="conditions.length > 1"
-          type="button"
-          class="icon-button filter-remove"
-          :aria-label="t('search.mechanic.remove', { n: index + 1 })"
-          @click="remove(index)"
-        >
-          <i class="icon icon-close"></i>
-        </button>
         <template v-if="condition.category">
           <select
             class="filter-relation"
@@ -105,6 +103,15 @@ function clear() {
             />
           </select>
         </template>
+        <button
+          v-if="conditions.length > 1"
+          type="button"
+          class="icon-button filter-remove"
+          :aria-label="t('search.mechanic.remove', { n: index + 1 })"
+          @click="remove(index)"
+        >
+          <i class="icon icon-close"></i>
+        </button>
       </div>
     </div>
     <div class="mechanism-toolbar">
@@ -157,6 +164,7 @@ function clear() {
   grid-column: 1 / -1;
 }
 .filter-remove {
+  grid-row: 1;
   grid-column: 3;
   height: var(--field);
 }
@@ -190,6 +198,69 @@ function clear() {
   }
   .mechanism-toolbar button,
   .mechanism-toolbar select {
+    min-height: var(--field);
+  }
+}
+.band {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  max-height: none;
+  margin: 0;
+  overflow: visible;
+}
+.band .mechanism-rows {
+  display: grid;
+  gap: 8px;
+}
+.band .mechanism-row {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.band .mechanism-toolbar {
+  justify-content: flex-end;
+}
+.band .mechanism-toolbar:empty {
+  display: none;
+}
+.band .clear {
+  margin-left: 0;
+}
+.band select {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+@media (max-width: 767px) {
+  .band .mechanism-row + .mechanism-row {
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+  }
+}
+@media (min-width: 768px) {
+  .band .mechanism-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) var(--field);
+  }
+  .band .filter-category,
+  .band .mechanism-row:not(:has(.filter-remove)) .filter-category {
+    grid-column: 1;
+  }
+  .band .filter-relation {
+    grid-column: 2;
+  }
+  .band .filter-value {
+    grid-column: 3;
+  }
+  .band .filter-remove {
+    grid-column: 4;
+  }
+}
+@media (min-width: 1024px) {
+  .band {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+  .band .mechanism-toolbar {
     min-height: var(--field);
   }
 }

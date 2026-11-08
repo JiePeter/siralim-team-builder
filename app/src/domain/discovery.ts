@@ -262,6 +262,8 @@ export interface DiscoveryQuery {
   ids?: ReadonlySet<string>;
   /** Attributes of the chosen kind; ignored without a kind. */
   attributes?: Attributes;
+  /** How many items to return; `total` and `matched` always cover every match. */
+  limit?: number;
 }
 
 /** A `cards/<kind>.json` entry. */
@@ -392,7 +394,7 @@ export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): Discov
   }
   const ranked = rankGroups(selected, q);
 
-  const items = ranked.slice(0, RESULT_LIMIT).map((group): DiscoveryItem => {
+  const items = ranked.slice(0, input.limit ?? RESULT_LIMIT).map((group): DiscoveryItem => {
     const fits = (m: Member) => memberWith(index, m, kind, wanted);
     const exact = group.members.find((m) => fold(m.name) === text && (!kind || fits(m)));
     const explicit = group.members.find(fits);

@@ -93,4 +93,11 @@ describe("discovery query", () => {
     };
     expect(outcome(recorded)).toEqual(expected(item));
   });
+
+  it("returns every match when the limit is lifted", () => {
+    const capped = query(found);
+    expect(capped.items).toHaveLength(60);
+    expect(capped.total).toBeGreaterThan(60);
+    expect(query(found, { limit: Infinity }).items).toHaveLength(capped.total);
+  });
 });

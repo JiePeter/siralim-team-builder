@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, shallowRef, watch } from "vue";
 import { storeToRefs } from "pinia";
+import { SwitchRoot, SwitchThumb } from "reka-ui";
 import { synergies } from "@/data";
 import { whereIs } from "@/domain/placement";
 import { useFillStore } from "@/stores/fill";
@@ -27,7 +28,13 @@ const { team, index } = storeToRefs(store);
 const catalog = useCatalog();
 const entity = useEntity();
 const query = useFillStore();
-const { active, matched: mechanicMatches, items: mechanicItems, total } = storeToRefs(query);
+const {
+  active,
+  fromTray,
+  matched: mechanicMatches,
+  items: mechanicItems,
+  total,
+} = storeToRefs(query);
 onMounted(() => query.run());
 
 const phase = ref<"loading" | "ready" | "failed">("loading");
@@ -39,6 +46,15 @@ const shown = ref(PAGE);
 
 /** Tray items that stand for the same Synergies file, such as a creature and its trait, count once. */
 const trayIds = computed(() => [...new Set(team.value.inventory.map((item) => item.id))]);
+const suggesting = computed({
+  get: () => fromTray.value && trayIds.value.length > 0,
+  set: (value) => {
+    fromTray.value = value;
+  },
+});
+watch([suggesting, mechanicItems], () => {
+  shown.value = PAGE;
+});
 
 let request = 0;
 watch(
@@ -97,12 +113,7 @@ const visible = computed(() =>
     (a, b) => ranked.value.get(b.id)!.score - ranked.value.get(a.id)!.score,
   ),
 );
-const count = computed(() => {
-  const found = t("search.results", total.value);
-  return total.value > mechanicItems.value.length
-    ? t("search.showing", { found, shown: mechanicItems.value.length })
-    : found;
-});
+const found = computed(() => t("search.results", total.value));
 const owners = (id: string) => ranked.value.get(id)!.links.map((link) => link.seed.name);
 
 function change(field: "kind" | "mechanism", value: string) {
@@ -120,17 +131,25 @@ function filter(value: string) {
 
 <template>
   <section class="fill" :aria-label="t('app.fill')">
-    <aside class="fill-query">
+    <div class="fill-query">
+      <label class="fill-mode">
+        <span>{{ t("fill.fromTray") }}</span>
+        <SwitchRoot v-model="suggesting" class="fill-switch" :disabled="!trayIds.length">
+          <SwitchThumb class="fill-switch-thumb" />
+        </SwitchRoot>
+      </label>
       <MechanicFilters fill />
-    </aside>
+    </div>
     <div class="fill-results">
-      <template v-if="!trayIds.length">
-        <p v-if="!active" class="muted">{{ t("fill.emptyTray") }}</p>
+      <template v-if="!suggesting">
+        <p v-if="!active" class="muted">
+          {{ trayIds.length ? t("fill.chooseCondition") : t("fill.emptyTray") }}
+        </p>
         <template v-else>
-          <p class="muted">{{ count }}</p>
+          <p class="muted">{{ found }}</p>
           <div class="pairing-cards">
             <ObjectCell
-              v-for="item in mechanicItems"
+              v-for="item in mechanicItems.slice(0, shown)"
               :key="item.id"
               tag="article"
               layout="card"
@@ -158,13 +177,24 @@ function filter(value: string) {
             </ObjectCell>
             <p v-if="!mechanicItems.length" class="muted">{{ t("search.noMatches") }}</p>
           </div>
+          <button
+            v-if="mechanicItems.length > shown"
+            type="button"
+            class="show-more"
+            @click="shown += PAGE"
+          >
+            {{ t("fill.showMore") }}
+          </button>
         </template>
       </template>
       <p v-else-if="phase === 'failed'" class="muted">{{ t("fill.failed") }}</p>
       <p v-else-if="phase === 'loading' && !items.length" class="muted">{{ t("fill.loading") }}</p>
-      <p v-else-if="!items.length" class="muted">
-        {{ active ? t("search.noMatches") : t("fill.none") }}
-      </p>
+      <template v-else-if="!items.length">
+        <p class="muted">{{ active ? t("fill.noSuggestionMatch") : t("fill.none") }}</p>
+        <button v-if="active && total" type="button" class="show-more" @click="suggesting = false">
+          {{ t("fill.showAll", { found }) }}
+        </button>
+      </template>
       <template v-else>
         <div class="pairing-controls">
           <div class="pairing-filter">
@@ -240,8 +270,66 @@ function filter(value: string) {
   gap: var(--space-12);
   padding: var(--gutter);
 }
-.fill-query :deep(.mechanism-filters) {
+.fill-query {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+.fill-mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  min-height: var(--field);
   margin: 0;
+  padding: 0 var(--space-12);
+  background: var(--raised);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  font-size: var(--fs-15);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.fill-mode:has([data-state="unchecked"]) {
+  background: transparent;
+  border-color: var(--strong);
+}
+.fill-mode:has([data-disabled]) {
+  color: var(--muted);
+  cursor: default;
+}
+.fill-switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  min-width: 48px;
+  height: 24px;
+  min-height: 24px;
+  padding: 0;
+  background: var(--ground);
+  border: 1px solid var(--strong);
+  clip-path: none;
+}
+.fill-switch[data-state="checked"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.fill-switch[data-disabled] {
+  opacity: 0.5;
+}
+.fill-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: var(--muted);
+  transition: transform 120ms steps(3);
+}
+.fill-switch-thumb[data-state="checked"] {
+  background: var(--ground);
+  transform: translateX(24px);
 }
 .fill-results {
   display: grid;
@@ -267,13 +355,11 @@ function filter(value: string) {
 .match-name {
   font-weight: 700;
 }
-@media (min-width: 1024px) {
-  .fill {
-    grid-template-columns: 280px minmax(0, 1fr);
-  }
+@media (min-width: 768px) {
   .fill-query {
-    position: sticky;
-    top: calc(var(--header-height) + var(--gutter));
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-12);
   }
 }
 .muted {

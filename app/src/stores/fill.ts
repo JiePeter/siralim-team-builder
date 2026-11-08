@@ -16,12 +16,11 @@ import { discoveryPack, type SearchItem } from "./search";
 
 const noCard: CardFields = { effects: [], facts: [], attrs: {} };
 
-/** The mechanic query on the Fill page: it narrows the suggestions, or lists matches without a tray. */
+/** The mechanic query on the Fill page: it narrows the tray's suggestions, or lists every match. */
 export const useFillStore = defineStore("fill", () => {
   const conditions = ref<Condition[]>([blankCondition()]);
   const scope = ref<Scope>("action");
-  /** The phone layout folds empty mechanic filters behind "+ Filter" until opened. */
-  const filtersOpened = ref(false);
+  const fromTray = ref(true);
   const items = shallowRef<SearchItem[]>([]);
   const total = ref(0);
   const matched = shallowRef<Set<string>>(new Set());
@@ -39,6 +38,7 @@ export const useFillStore = defineStore("fill", () => {
       const result = query(await discoveryPack(), {
         conditions: conditions.value,
         scope: scope.value,
+        limit: active.value ? Infinity : 0,
       });
       const shards = new Map(
         await Promise.all(
@@ -61,5 +61,5 @@ export const useFillStore = defineStore("fill", () => {
     }
   }
 
-  return { conditions, scope, filtersOpened, items, total, matched, facets, active, run };
+  return { conditions, scope, fromTray, items, total, matched, facets, active, run };
 });
