@@ -1,4 +1,4 @@
-import { MAX_FILTERS, type Condition, type Option } from "@/domain/discovery";
+import { MAX_FILTERS, type Condition, type DiscoveryResult, type Option } from "@/domain/discovery";
 
 /** How the mechanic filter rows and their toolbar show for the current conditions. */
 export function filterState(conditions: Condition[]) {
@@ -40,4 +40,32 @@ export function optionGroups(options: Option[], selected: string, namespace = ""
     else groups.push({ group, options: [option] });
   }
   return groups;
+}
+
+/** One line per chosen mechanic filter: its category, then any narrowed interaction and target. */
+export function conditionSummaries(
+  conditions: Condition[],
+  rows: DiscoveryResult["facets"]["conditions"],
+): { index: number; label: string }[] {
+  const label = (options: Option[], selected: string, namespace: string) =>
+    optionGroups(options, selected, namespace)
+      .flatMap((group) => group.options)
+      .find((option) => option.value === selected)!.label;
+  return conditions.flatMap((condition, index) => {
+    const { category, relation, value } = condition;
+    if (!category) return [];
+    const row = rows[index] ?? { categories: [], relations: [], values: [] };
+    return [
+      {
+        index,
+        label: [
+          label(row.categories, category, "category"),
+          relation && label(row.relations, relation, `${category}-relation`),
+          value && label(row.values, value, `${category}-value`),
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      },
+    ];
+  });
 }

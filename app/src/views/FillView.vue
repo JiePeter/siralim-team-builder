@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, shallowRef, watch } from "vue";
 import { storeToRefs } from "pinia";
+import { useDebounceFn } from "@vueuse/core";
+import {
+  TabsContent,
+  TabsList,
+  TabsRoot,
+  TabsTrigger,
+  ToggleGroupItem,
+  ToggleGroupRoot,
+} from "reka-ui";
 import { synergies } from "@/data";
 import { whereIs } from "@/domain/placement";
 import { useFillStore } from "@/stores/fill";
@@ -9,15 +18,24 @@ import { t } from "@/i18n";
 import AddButton from "@/components/AddButton.vue";
 import IdentityLine from "@/components/IdentityLine.vue";
 import MechanicFilters from "@/components/MechanicFilters.vue";
+import ModalDialog from "@/components/ModalDialog.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
 import ObjectSummary from "@/components/ObjectSummary.vue";
 import SynergyCard from "@/components/SynergyCard.vue";
 import { shownAs } from "@/components/assembly";
 import { loadComponent } from "@/components/components";
 import { suggestions, type Seed } from "@/components/fill";
+import { conditionSummaries } from "@/components/filters";
 import { useCatalog } from "@/components/selection";
-import { kindNames, objectRoute, type Hit } from "@/components/presentation";
-import { candidates, cards, categories, matching } from "@/components/synergy";
+import { kindGroups, kindNames, objectRoute, type Hit } from "@/components/presentation";
+import {
+  candidates,
+  cards,
+  categories,
+  matching,
+  mechanismMatches,
+  pairingMechanisms,
+} from "@/components/synergy";
 import { intentOf, useEntity } from "@/components/tray";
 
 const PAGE = 24;
@@ -27,18 +45,49 @@ const { team, index } = storeToRefs(store);
 const catalog = useCatalog();
 const entity = useEntity();
 const query = useFillStore();
-const { active, matched: mechanicMatches, items: mechanicItems, total } = storeToRefs(query);
+const {
+  active,
+  conditions,
+  facets,
+  fromTray,
+  q: keyword,
+  kind: listedKind,
+  kinds: listedKinds,
+  listing,
+  mechanism,
+  matched: mechanicMatches,
+  items: mechanicItems,
+  total,
+} = storeToRefs(query);
 onMounted(() => query.run());
+const rerun = useDebounceFn(() => query.run(), 180);
 
 const phase = ref<"loading" | "ready" | "failed">("loading");
 const seeds = shallowRef<Seed[]>([]);
 const kind = ref<string | null>(null);
-const mechanism = ref<string | null>(null);
-const keyword = ref("");
 const shown = ref(PAGE);
+const editing = ref(false);
 
 /** Tray items that stand for the same Synergies file, such as a creature and its trait, count once. */
 const trayIds = computed(() => [...new Set(team.value.inventory.map((item) => item.id))]);
+const suggesting = computed({
+  get: () => fromTray.value && trayIds.value.length > 0,
+  set: (value) => {
+    fromTray.value = value;
+  },
+});
+const source = computed({
+  get: () => (suggesting.value ? "tray" : "all"),
+  set: (value) => {
+    if (value) suggesting.value = value === "tray";
+  },
+});
+watch([suggesting, mechanicItems], () => {
+  shown.value = PAGE;
+});
+watch(editing, (open) => {
+  if (!open) query.dropBlank();
+});
 
 let request = 0;
 watch(
@@ -97,14 +146,39 @@ const visible = computed(() =>
     (a, b) => ranked.value.get(b.id)!.score - ranked.value.get(a.id)!.score,
   ),
 );
-const count = computed(() => {
-  const found = t("search.results", total.value);
-  return total.value > mechanicItems.value.length
-    ? t("search.showing", { found, shown: mechanicItems.value.length })
-    : found;
-});
+const suggestionCount = computed(
+  () =>
+    matched.value.filter((item) =>
+      item.paths.some((path) => mechanismMatches(path, grouping.value.mechanism ?? "")),
+    ).length,
+);
+const found = computed(() => t("search.results", total.value));
 const owners = (id: string) => ranked.value.get(id)!.links.map((link) => link.seed.name);
 
+const chosen = computed(() => conditionSummaries(conditions.value, facets.value.conditions));
+const relation = computed(() =>
+  suggesting.value && grouping.value.mechanism
+    ? pairingMechanisms[grouping.value.mechanism]
+    : undefined,
+);
+const filterCount = computed(() => chosen.value.length + (relation.value ? 1 : 0));
+
+const tabs = computed(() => {
+  if (suggesting.value) return phase.value === "failed" ? [] : grouping.value.kinds;
+  if (!listing.value) return [];
+  return listedKinds.value.map((k) => ({
+    value: k.value,
+    label: kindGroups.find((group) => group.kinds.includes(k.value))?.label ?? k.label,
+    count: k.count,
+  }));
+});
+const tab = computed(() => (suggesting.value ? (grouping.value.kind ?? "") : listedKind.value));
+
+function chooseTab(value: string | number) {
+  if (suggesting.value) return change("kind", String(value));
+  listedKind.value = String(value);
+  query.run();
+}
 function change(field: "kind" | "mechanism", value: string) {
   kind.value = field === "kind" ? value : grouping.value.kind;
   mechanism.value = field === "mechanism" ? value : "";
@@ -112,25 +186,148 @@ function change(field: "kind" | "mechanism", value: string) {
 }
 function filter(value: string) {
   kind.value = grouping.value.kind;
-  mechanism.value = grouping.value.mechanism;
+  mechanism.value = grouping.value.mechanism ?? "";
   keyword.value = value;
   shown.value = PAGE;
+  rerun();
 }
 </script>
 
 <template>
-  <section class="fill" :aria-label="t('app.fill')">
-    <aside class="fill-query">
-      <MechanicFilters fill />
-    </aside>
-    <div class="fill-results">
-      <template v-if="!trayIds.length">
-        <p v-if="!active" class="muted">{{ t("fill.emptyTray") }}</p>
+  <TabsRoot
+    as="section"
+    class="fill"
+    :aria-label="t('app.fill')"
+    :model-value="tab"
+    @update:model-value="chooseTab"
+  >
+    <div class="fill-controls">
+      <ToggleGroupRoot
+        v-model="source"
+        type="single"
+        class="fill-source"
+        :aria-label="t('fill.source')"
+      >
+        <ToggleGroupItem value="tray" :disabled="!trayIds.length">
+          {{ t("fill.fromTray") }}
+          <span v-if="trayIds.length && phase === 'ready'" class="tally">{{
+            suggestionCount
+          }}</span>
+        </ToggleGroupItem>
+        <ToggleGroupItem value="all">
+          {{ t("search.all") }} <span v-if="listing" class="tally">{{ total }}</span>
+        </ToggleGroupItem>
+      </ToggleGroupRoot>
+      <div class="fill-search">
+        <div class="fill-input">
+          <i class="icon icon-search"></i>
+          <input
+            type="search"
+            :aria-label="t('synergy.placeholder')"
+            :placeholder="t('synergy.placeholder')"
+            autocomplete="off"
+            :value="keyword"
+            @input="filter(($event.target as HTMLInputElement).value)"
+          />
+          <button
+            v-if="keyword"
+            type="button"
+            class="clear"
+            :aria-label="t('synergy.clearFilter')"
+            @click="filter('')"
+          >
+            <i class="icon icon-close"></i>
+          </button>
+        </div>
+        <button
+          type="button"
+          class="fill-filter"
+          :class="{ active: filterCount }"
+          :aria-haspopup="'dialog'"
+          :aria-label="
+            filterCount ? t('search.filtersCount', { count: filterCount }) : t('search.filters')
+          "
+          @click="editing = true"
+        >
+          <i class="icon icon-filter"></i>{{ t("search.filters") }}
+          <span v-if="filterCount" class="tally">{{ filterCount }}</span>
+        </button>
+      </div>
+      <div
+        v-if="filterCount"
+        class="fill-chosen"
+        role="group"
+        :aria-label="t('search.mechanic.filters')"
+      >
+        <span v-for="c in chosen" :key="c.index" class="fill-chip">
+          <button type="button" @click="editing = true">{{ c.label }}</button>
+          <button
+            type="button"
+            :aria-label="t('fill.removeFilter', { name: c.label })"
+            @click="query.removeCondition(c.index)"
+          >
+            <i class="icon icon-close"></i>
+          </button>
+        </span>
+        <span v-if="relation" class="fill-chip">
+          <button type="button" @click="editing = true">{{ relation }}</button>
+          <button
+            type="button"
+            :aria-label="t('fill.removeFilter', { name: relation })"
+            @click="change('mechanism', '')"
+          >
+            <i class="icon icon-close"></i>
+          </button>
+        </span>
+      </div>
+      <TabsList v-if="tabs.length" class="fill-tabs" :aria-label="t('search.type')">
+        <TabsTrigger v-for="g in tabs" :key="g.value" :value="g.value">
+          {{ g.label }} <span class="tally">{{ g.count }}</span>
+        </TabsTrigger>
+      </TabsList>
+    </div>
+    <ModalDialog v-model:open="editing" :title="t('search.mechanic.filters')" sheet>
+      <div class="fill-sheet">
+        <MechanicFilters fill />
+        <div
+          v-if="suggesting && grouping.mechanisms.length > 1"
+          class="fill-relations"
+          role="group"
+          :aria-labelledby="'fill-relations-title'"
+        >
+          <h3 id="fill-relations-title">{{ t("synergy.relationships") }}</h3>
+          <div>
+            <button
+              v-for="g in grouping.mechanisms"
+              :key="g.value"
+              type="button"
+              :aria-pressed="grouping.mechanism === g.value"
+              @click="change('mechanism', g.value)"
+            >
+              {{ g.label }} <span class="tally">{{ g.count }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="fill-sheet-foot">
+          <button type="button" class="primary" @click="editing = false">
+            {{ t("fill.view", { n: suggesting ? suggestionCount : total }) }}
+          </button>
+        </div>
+      </div>
+    </ModalDialog>
+    <component
+      :is="tabs.length ? TabsContent : 'div'"
+      v-bind="tabs.length ? { value: tab } : {}"
+      class="fill-results"
+    >
+      <template v-if="!suggesting">
+        <p v-if="!listing" class="muted">
+          {{ trayIds.length ? t("fill.chooseCondition") : t("fill.emptyTray") }}
+        </p>
         <template v-else>
-          <p class="muted">{{ count }}</p>
           <div class="pairing-cards">
             <ObjectCell
-              v-for="item in mechanicItems"
+              v-for="item in mechanicItems.slice(0, shown)"
               :key="item.id"
               tag="article"
               layout="card"
@@ -158,57 +355,25 @@ function filter(value: string) {
             </ObjectCell>
             <p v-if="!mechanicItems.length" class="muted">{{ t("search.noMatches") }}</p>
           </div>
+          <button
+            v-if="mechanicItems.length > shown"
+            type="button"
+            class="show-more"
+            @click="shown += PAGE"
+          >
+            {{ t("fill.showMore") }}
+          </button>
         </template>
       </template>
       <p v-else-if="phase === 'failed'" class="muted">{{ t("fill.failed") }}</p>
       <p v-else-if="phase === 'loading' && !items.length" class="muted">{{ t("fill.loading") }}</p>
-      <p v-else-if="!items.length" class="muted">
-        {{ active ? t("search.noMatches") : t("fill.none") }}
-      </p>
+      <template v-else-if="!matched.length">
+        <p class="muted">{{ listing ? t("fill.noSuggestionMatch") : t("fill.none") }}</p>
+        <button v-if="listing && total" type="button" class="show-more" @click="suggesting = false">
+          {{ t("fill.showAll", { found }) }}
+        </button>
+      </template>
       <template v-else>
-        <div class="pairing-controls">
-          <div class="pairing-filter">
-            <input
-              type="search"
-              :aria-label="t('synergy.filter')"
-              :placeholder="t('synergy.placeholder')"
-              autocomplete="off"
-              :value="keyword"
-              @input="filter(($event.target as HTMLInputElement).value)"
-            />
-            <button
-              v-if="keyword"
-              type="button"
-              class="icon-button"
-              :aria-label="t('synergy.clearFilter')"
-              @click="filter('')"
-            >
-              <i class="icon icon-close"></i>
-            </button>
-          </div>
-          <div class="pairing-kinds" role="group" :aria-label="t('synergy.types')">
-            <button
-              v-for="g in grouping.kinds"
-              :key="g.value"
-              type="button"
-              :aria-pressed="grouping.kind === g.value"
-              @click="change('kind', g.value)"
-            >
-              {{ g.label }} <span class="count">{{ g.count }}</span>
-            </button>
-          </div>
-          <div class="pairing-mechanisms" role="group" :aria-label="t('synergy.relationships')">
-            <button
-              v-for="g in grouping.mechanisms"
-              :key="g.value"
-              type="button"
-              :aria-pressed="grouping.mechanism === g.value"
-              @click="change('mechanism', g.value)"
-            >
-              {{ g.label }} <span class="count">{{ g.count }}</span>
-            </button>
-          </div>
-        </div>
         <div class="pairing-cards" role="region" :aria-label="t('synergy.results')">
           <SynergyCard
             v-for="card in visible.slice(0, shown)"
@@ -228,8 +393,8 @@ function filter(value: string) {
           {{ t("fill.showMore") }}
         </button>
       </template>
-    </div>
-  </section>
+    </component>
+  </TabsRoot>
 </template>
 
 <style scoped>
@@ -240,8 +405,187 @@ function filter(value: string) {
   gap: var(--space-12);
   padding: var(--gutter);
 }
-.fill-query :deep(.mechanism-filters) {
+.fill-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+}
+.tally {
+  font: 400 16px / 1 var(--pixel-font);
+  font-variant-numeric: tabular-nums;
+}
+.fill-source {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 1px;
+}
+.fill-source > button {
+  gap: var(--space-8);
+  min-width: 0;
+  min-height: var(--field);
+  padding: 0 var(--space-8);
+  background: var(--raised);
+  border: 0;
+  clip-path: none;
+  color: var(--muted);
+  font-size: var(--fs-15);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.fill-source > button:hover:not(:disabled) {
+  background: var(--raised-hover);
+  color: var(--text);
+}
+.fill-source > [data-state="on"],
+.fill-source > [data-state="on"]:hover:not(:disabled) {
+  --focus-ink: var(--on-accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+.fill-search {
+  display: flex;
+  gap: var(--space-8);
+}
+.fill-input {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}
+.fill-input > .icon {
+  position: absolute;
+  z-index: 1;
+  left: var(--space-12);
+  color: var(--muted);
+  pointer-events: none;
+}
+.fill-input > input {
+  flex: 1;
+  min-width: 0;
+  padding-right: var(--field);
+  padding-left: var(--field);
+}
+.fill-input > input::-webkit-search-cancel-button {
+  display: none;
+}
+.fill-input > .clear {
+  position: absolute;
+  right: var(--space-4);
   margin: 0;
+}
+.fill-filter {
+  flex: none;
+  gap: var(--space-8);
+  min-height: var(--field);
+  padding: 0 var(--space-12);
+}
+.fill-filter.active,
+.fill-filter.active:hover {
+  --focus-ink: var(--on-accent);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.fill-chosen {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.fill-chosen::-webkit-scrollbar {
+  display: none;
+}
+.fill-chip {
+  display: flex;
+  flex: none;
+}
+.fill-chip > button {
+  min-height: var(--control);
+  font-size: var(--fs-13);
+  white-space: nowrap;
+}
+.fill-chip > button:first-child {
+  padding: 0 var(--space-8) 0 var(--space-12);
+}
+.fill-chip > button + button {
+  width: var(--control);
+  min-width: var(--control);
+  margin-left: -1px;
+  padding: 0;
+  color: var(--muted);
+}
+.fill-tabs {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: none;
+}
+.fill-tabs::-webkit-scrollbar {
+  display: none;
+}
+.fill-tabs > button {
+  flex: none;
+  gap: 6px;
+  min-height: var(--field);
+  margin-bottom: -1px;
+  padding: 0 var(--space-12);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  clip-path: none;
+  color: var(--muted);
+  font-size: var(--fs-15);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.fill-tabs > button:hover {
+  background: none;
+  color: var(--text);
+}
+.fill-tabs > [aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+}
+.fill-tabs .tally,
+.fill-relations .tally {
+  font-size: 11px;
+}
+.fill-sheet {
+  padding: var(--space-4) 16px 0;
+}
+.fill-relations {
+  margin-top: var(--space-12);
+}
+.fill-relations h3 {
+  margin: 0 0 var(--space-8);
+  color: var(--muted);
+  font-size: var(--fs-13);
+  font-weight: 400;
+}
+.fill-relations > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.fill-relations button {
+  gap: 6px;
+  min-height: var(--control-compact);
+  padding: 0 10px;
+  font-size: var(--fs-13);
+}
+.fill-sheet-foot {
+  position: sticky;
+  bottom: 0;
+  padding: var(--space-12) 0 calc(var(--space-12) + env(safe-area-inset-bottom));
+  background: var(--cell);
+}
+.fill-sheet-foot > .primary {
+  width: 100%;
+  min-height: var(--row);
 }
 .fill-results {
   display: grid;
@@ -267,103 +611,9 @@ function filter(value: string) {
 .match-name {
   font-weight: 700;
 }
-@media (min-width: 1024px) {
-  .fill {
-    grid-template-columns: 280px minmax(0, 1fr);
-  }
-  .fill-query {
-    position: sticky;
-    top: calc(var(--header-height) + var(--gutter));
-  }
-}
 .muted {
   margin: 0;
   color: var(--muted);
-}
-.pairing-filter {
-  display: flex;
-  gap: 4px;
-  max-width: 420px;
-}
-.pairing-filter input {
-  flex: 1;
-  min-width: 0;
-}
-.pairing-filter input::-webkit-search-cancel-button {
-  display: none;
-}
-.pairing-filter .icon-button {
-  width: var(--field);
-  height: var(--field);
-}
-.pairing-kinds,
-.pairing-mechanisms {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 6px;
-  min-height: var(--field);
-  padding-right: 32px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
-  mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
-}
-.pairing-kinds::-webkit-scrollbar,
-.pairing-mechanisms::-webkit-scrollbar {
-  display: none;
-}
-.pairing-kinds {
-  gap: 0;
-  margin-top: 12px;
-  border-bottom: 1px solid var(--line);
-}
-.pairing-mechanisms {
-  min-height: var(--control-compact);
-  margin-top: 10px;
-}
-.pairing-kinds button,
-.pairing-mechanisms button {
-  flex-shrink: 0;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.pairing-kinds button {
-  min-height: var(--field);
-  padding: 0 14px;
-  background-color: transparent;
-  border: 0;
-  clip-path: none;
-  font-size: var(--fs-15);
-}
-.pairing-mechanisms button {
-  min-height: var(--control-compact);
-  padding: 0 10px;
-  background-color: transparent;
-  font-size: var(--fs-13);
-}
-.pairing-kinds button:hover,
-.pairing-mechanisms button:hover {
-  color: var(--text);
-}
-.pairing-kinds [aria-pressed="true"] {
-  box-shadow: inset 0 -2px 0 var(--accent);
-  color: var(--text);
-  font-weight: 700;
-}
-.pairing-mechanisms [aria-pressed="true"] {
-  background-color: var(--raised);
-  border-color: var(--accent);
-  color: var(--text);
-}
-.count {
-  color: var(--muted);
-  font-family: var(--pixel-font);
-  font-size: 16px;
-  font-variant-numeric: tabular-nums;
-}
-[aria-pressed="true"] > .count {
-  color: var(--text);
 }
 .pairing-cards {
   display: grid;
@@ -375,9 +625,27 @@ function filter(value: string) {
   justify-self: start;
 }
 @media (max-width: 767px) {
-  .pairing-kinds button,
-  .pairing-mechanisms button {
-    min-height: var(--field);
+  .fill-search {
+    position: sticky;
+    top: var(--header-height);
+    z-index: 5;
+    margin: calc(-1 * var(--space-8)) calc(-1 * var(--gutter));
+    padding: var(--space-8) var(--gutter);
+    background: var(--ground);
+  }
+}
+@media (min-width: 768px) {
+  .fill-controls {
+    grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+    column-gap: var(--space-12);
+  }
+  .fill-chosen,
+  .fill-tabs {
+    grid-column: 1 / -1;
+  }
+  .fill-chosen {
+    flex-wrap: wrap;
+    overflow-x: visible;
   }
 }
 </style>
