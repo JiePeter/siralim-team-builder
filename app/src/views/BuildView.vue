@@ -1629,7 +1629,7 @@ const dialogWarning = computed(() => {
           @take="takePool"
         >
           <template #current>
-            <div v-if="currentItem" class="picker-current">
+            <div v-if="currentItem && component(currentItem.id)" class="picker-current">
               <ResultCard :item="component(currentItem.id) as never" compact fixed link>
                 <button
                   v-if="canSwap(dialog.target)"
@@ -1673,7 +1673,7 @@ const dialogWarning = computed(() => {
           @take="takeCharacter"
         >
           <template #current>
-            <div v-if="currentCharacter" class="picker-current">
+            <div v-if="currentCharacter && component(currentCharacter)" class="picker-current">
               <ResultCard :item="component(currentCharacter) as never" compact fixed link>
                 <button
                   type="button"
