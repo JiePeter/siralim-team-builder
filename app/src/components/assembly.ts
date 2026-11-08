@@ -163,7 +163,7 @@ export function propertyLabel(list: GemProperty[], item: Equipment, id: string):
   return variant?.label || property?.name || t("editors.properties");
 }
 
-export interface ArtifactEffect {
+interface ArtifactEffect {
   id: string;
   name: string;
   description: string;

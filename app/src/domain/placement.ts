@@ -96,21 +96,21 @@ export function excessTrait(index: TeamIndex, before: Team, after: Team): string
   return null;
 }
 
-export const ARMY_OF_GODS = "perk:312";
+const ARMY_OF_GODS = "perk:312";
 export const AVATAR_RACE = "race:87bbe879c7a5f5784a70";
 
 /**
  * Avatar creatures the party may hold: one, plus one per rank of Army of Gods; none while the
  * Deprived base is set, since Total Deprivation is always active for it.
  */
-export function avatarLimit(index: TeamIndex, character: Team["character"]): number {
+function avatarLimit(index: TeamIndex, character: Team["character"]): number {
   const { effects, specialization } = characterEffects(index, character);
   if (specialization === "Deprived") return 0;
   const army = effects.find((effect) => effect.id === ARMY_OF_GODS && effect.active);
   return 1 + (army?.rank ?? 0);
 }
 
-export interface AvatarCheck {
+interface AvatarCheck {
   limit: number;
   /** Slots whose primary creature is an Avatar. */
   slots: number[];

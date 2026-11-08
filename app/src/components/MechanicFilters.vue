@@ -198,9 +198,6 @@ function clear() {
 .mechanism-toolbar.end {
   justify-content: flex-end;
 }
-.mechanism-toolbar:empty {
-  display: none;
-}
 .in-sheet {
   max-height: none;
   margin: 0;

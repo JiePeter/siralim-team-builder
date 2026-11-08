@@ -57,12 +57,12 @@ export function placementLabel(at: Placement): string {
 export const lineKey = (item: Equipment) => JSON.stringify({ ...item, uid: "", shown: undefined });
 
 /** How many of a component the team and tray hold together, e.g. "Added ×2"; empty for none. */
-export function whereText(where: Whereabouts): string {
+function whereText(where: Whereabouts): string {
   const count = where.placed.length + where.tray.length;
   return count > 1 ? t("tray.addedCount", { count }) : count ? t("tray.added") : "";
 }
 
-export interface Intent {
+interface Intent {
   id: string;
   /** One per team, so Add is offered only while it is nowhere in the team. */
   unique: boolean;

@@ -11,7 +11,6 @@ import EffectText from "./EffectText.vue";
 import ModalDialog from "./ModalDialog.vue";
 import { artifactTrigger, artifactTypeName, shownAs } from "./assembly";
 import { component } from "./components";
-import { attempt } from "./toast";
 import { newUid } from "@/domain/values";
 
 const props = defineProps<{
@@ -102,9 +101,7 @@ function clearTrait() {
 }
 
 function save() {
-  attempt(() =>
-    emit("apply", { ...draft, id: material.value || BLANK_ARTIFACT }, configuration(), taken.value),
-  );
+  emit("apply", { ...draft, id: material.value || BLANK_ARTIFACT }, configuration(), taken.value);
   taken.value = null;
 }
 watch(config, save, { deep: true });
@@ -330,9 +327,5 @@ watch(config, save, { deep: true });
 }
 .artifact-row > .number {
   text-align: right;
-}
-.number {
-  font: 400 16px / 1 var(--pixel-font);
-  font-variant-numeric: tabular-nums;
 }
 </style>

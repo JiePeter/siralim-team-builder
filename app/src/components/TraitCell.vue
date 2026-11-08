@@ -21,7 +21,7 @@ const props = defineProps<{
   hint: string | null;
   warning: string | null;
 }>();
-const emit = defineEmits<{ place: []; drop: []; inspect: [] }>();
+const emit = defineEmits<{ place: []; drop: [] }>();
 
 const drag = useDragSource();
 const label = computed(() => fieldLabels[props.at.field]);
@@ -69,7 +69,7 @@ const picked = computed(() => {
       :class="['equipped', { 'drag-source': picked }]"
       :title="carrier"
       v-bind="drag(at)"
-      @click="selected ? emit('place') : emit('inspect')"
+      @click="emit('place')"
     >
       <CellPlate
         v-if="page || blankType"

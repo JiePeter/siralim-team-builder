@@ -16,10 +16,9 @@ export interface Seed {
   items: SynergyItem[];
 }
 
-/** How one tray item connects to a suggestion: the events its links meet on, rarest first. */
+/** What one tray item adds to a suggestion. */
 export interface Link {
   seed: { id: string; name: string };
-  events: string[];
   weight: number;
 }
 
@@ -43,7 +42,7 @@ export function suggestions(seeds: Seed[], excluded: (id: string) => boolean): S
   const found = new Map<string, Suggestion>();
   const hitKeys = new Map<string, Set<string>>();
   for (const seed of seeds) {
-    const reached = new Map<string, Map<string, { event: string; weight: number }>>();
+    const reached = new Map<string, Map<string, number>>();
     for (const item of seed.items) {
       if (excluded(item.id)) continue;
       let suggestion = found.get(item.id);
@@ -75,21 +74,13 @@ export function suggestions(seeds: Seed[], excluded: (id: string) => boolean): S
       const events = reached.get(item.id) ?? new Map();
       reached.set(item.id, events);
       const weight = 1 / item.point.degree;
-      if (weight > (events.get(item.point.event)?.weight ?? 0))
-        events.set(item.point.event, { event: item.point.event, weight });
+      if (weight > (events.get(item.point.event) ?? 0)) events.set(item.point.event, weight);
     }
     for (const [id, events] of reached) {
-      const shared = [...events.values()].sort(
-        (a, b) => b.weight - a.weight || compareText(a.event, b.event),
-      );
-      const total = shared.reduce((sum, point) => sum + point.weight, 0);
+      const total = [...events.values()].reduce((sum, weight) => sum + weight, 0);
       const weight = Math.min(SEED_CAP, total);
       const suggestion = found.get(id)!;
-      suggestion.links.push({
-        seed: { id: seed.id, name: seed.name },
-        events: shared.map((point) => point.event),
-        weight,
-      });
+      suggestion.links.push({ seed: { id: seed.id, name: seed.name }, weight });
       suggestion.score += weight;
     }
   }

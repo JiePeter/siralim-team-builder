@@ -40,7 +40,6 @@ const text = computed(
       <small :title="text">{{ text }}</small>
     </span>
     <span class="equipment-actions" @click.stop>
-      <slot />
       <slot name="menu" />
     </span>
   </div>

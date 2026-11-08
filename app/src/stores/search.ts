@@ -80,8 +80,6 @@ function searchState() {
   const ready = ref(false);
   /** Search text, a type or a mechanic filter produced the shown results. */
   const narrowed = ref(false);
-  /** The search field takes focus the next time the search page opens. */
-  const wantsFocus = ref(false);
   let version = 0;
 
   async function run() {
@@ -122,17 +120,6 @@ function searchState() {
     }
   }
 
-  /** Start a fresh search for one component kind, as a picker's Open in Search does. */
-  function browse(next: string, text = "", narrowing: Attributes = {}) {
-    q.value = text;
-    kind.value = next;
-    attributes.value = { ...narrowing };
-    conditions.value = [blankCondition()];
-    scope.value = "action";
-    wantsFocus.value = true;
-    return run();
-  }
-
   return {
     q,
     kind,
@@ -144,9 +131,7 @@ function searchState() {
     facets,
     ready,
     narrowed,
-    wantsFocus,
     run,
-    browse,
   };
 }
 

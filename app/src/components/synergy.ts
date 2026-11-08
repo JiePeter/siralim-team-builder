@@ -32,8 +32,8 @@ export interface Card extends Omit<Candidate, "paths"> {
   /** The owner's Perk or rank the shown connection comes from. */
   source: { perk?: string; rank?: number };
   facts: string[];
-  effects: string[];
-  effectSegments: Segment[][];
+  effect: string;
+  effectSegments: Segment[];
   hits: Hit[];
 }
 
@@ -59,9 +59,9 @@ function hitOf(path: SynergyItem): Hit {
   };
 }
 
-export function explanation(
+function explanation(
   paths: SynergyItem[],
-): Pick<Card, "source" | "facts" | "effects" | "effectSegments"> {
+): Pick<Card, "source" | "facts" | "effect" | "effectSegments"> {
   const best = [...paths].sort((a, b) => pathScore(a) - pathScore(b))[0]!;
   const normalized = (text: string) => words(fold(text)).join(" ");
   const body = normalized(best.target_rule.text);
@@ -75,8 +75,8 @@ export function explanation(
   return {
     source: { perk: best.source_perk, rank: best.source_rank },
     facts: [...new Set(facts)],
-    effects: [best.target_rule.text],
-    effectSegments: [best.target_rule.segments],
+    effect: best.target_rule.text,
+    effectSegments: best.target_rule.segments,
   };
 }
 
@@ -111,7 +111,7 @@ export interface Group {
 }
 
 /** The type buttons, then the relationship buttons available within the chosen type. */
-export function categories(items: Candidate[], kind: string | null, mechanism: string | null) {
+export function categories(items: Candidate[], kind: string | null, mechanism: string) {
   const available = items.filter((item) =>
     item.paths.some((path) => path.relation in pairingMechanisms),
   );
@@ -140,11 +140,11 @@ export function categories(items: Candidate[], kind: string | null, mechanism: s
 }
 
 /** Cards of one type and relationship, the most direct connections first. */
-export function cards(items: Candidate[], kind: string | null, mechanism: string | null): Card[] {
+export function cards(items: Candidate[], kind: string | null, mechanism: string): Card[] {
   return items
     .flatMap((item) => {
       if (kindGroup(item.kind) !== kind) return [];
-      const paths = item.paths.filter((p) => mechanismMatches(p, mechanism ?? ""));
+      const paths = item.paths.filter((p) => mechanismMatches(p, mechanism));
       if (!paths.length) return [];
       const { id, name, kind: itemKind, image, classification } = item;
       const card: Card = {

@@ -7,7 +7,6 @@ import ArtifactEditor from "@/components/ArtifactEditor.vue";
 import EffectText from "@/components/EffectText.vue";
 import GemEditor from "@/components/GemEditor.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
-import { routeView } from "@/components/presentation";
 import { candidates, cards, categories } from "@/components/synergy";
 import { useTeamStore } from "@/stores/team";
 
@@ -37,12 +36,11 @@ function path(id: string, kind: string, relation: string): SynergyItem {
 }
 
 describe("ObjectCell", () => {
-  it("marks the selected cell and falls back to the kind icon without a sprite", () => {
+  it("falls back to the kind icon without a sprite", () => {
     const cell = mount(ObjectCell, {
-      props: { data: { kind: "relic" }, selected: true },
+      props: { data: { kind: "relic" }, layout: "tile" },
       slots: { label: "Relic" },
     });
-    expect(cell.classes()).toContain("selected");
     expect(cell.find(".kind-plate img").attributes("src")).toMatch(/category\/relic\.png$/);
   });
 });
@@ -63,14 +61,6 @@ describe("EffectText", () => {
     });
     expect(text.find("strong.inline-ref-current").text()).toBe("Seduction");
     expect(text.findAll("button.inline-ref").map((b) => b.text())).toEqual(["Weak"]);
-  });
-});
-
-describe("routeView", () => {
-  it("shows a God's own Emblems without its name, whatever language prices them", () => {
-    const route = { method: "purchase", requirements: { cost: 10, currency: "苏拉斯莉徽章" } };
-    expect(routeView(route, { godName: "苏拉斯莉" })?.facts).toEqual(["10 Emblems"]);
-    expect(routeView(route)?.facts).toEqual(["10 苏拉斯莉徽章"]);
   });
 });
 

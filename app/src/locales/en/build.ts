@@ -38,7 +38,6 @@ export default {
     specialization: "Specialization",
     anointment: "Anointment",
     artifact: "Artifact",
-    relic: "Relic",
     selectCreature: "Select Creature",
     selectMaterial: "Select Material",
     copyTo: "Copy to",

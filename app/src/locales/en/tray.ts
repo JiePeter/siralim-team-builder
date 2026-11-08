@@ -54,7 +54,6 @@ export default {
     added: "Added",
     addedCount: "Added ×{count}",
     route: {
-      emblems: "Emblems",
       favor: "Favor {rank}",
       rank: "Rank {rank}",
       projectRequired: "Project required",

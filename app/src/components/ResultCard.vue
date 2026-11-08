@@ -95,7 +95,7 @@ function toggle(event: MouseEvent) {
       :limit="open ? Infinity : 2"
       :links="!!link"
       :titled="props.line ? '' : effectName"
-      :sources="open || ['creature', 'material'].includes(item.kind)"
+      :sources="open"
     />
     <p v-else-if="preview" class="result-effect">{{ preview }}</p>
   </article>

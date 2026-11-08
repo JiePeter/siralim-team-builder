@@ -54,7 +54,6 @@ export default {
     added: "已添加",
     addedCount: "已添加 ×{count}",
     route: {
-      emblems: "徽章",
       favor: "恩惠 {rank}",
       rank: "等级 {rank}",
       projectRequired: "需要工程",

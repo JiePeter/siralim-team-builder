@@ -1,9 +1,7 @@
 export default {
   synergy: {
-    filter: "筛选协同效应",
     placeholder: "名称或效果",
     clearFilter: "清除协同效应筛选",
-    types: "协同效应类型",
     relationships: "协同效应关系",
     results: "协同效应结果",
     empty: "未找到协同效应",

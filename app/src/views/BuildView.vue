@@ -53,7 +53,6 @@ import FloatingMenu from "@/components/FloatingMenu.vue";
 import GemEditor from "@/components/GemEditor.vue";
 import ModalDialog from "@/components/ModalDialog.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
-import PreviewDialog from "@/components/PreviewDialog.vue";
 import RelicEditor from "@/components/RelicEditor.vue";
 import TraitCell from "@/components/TraitCell.vue";
 import {
@@ -112,7 +111,6 @@ const fields = computed(() =>
 );
 const TRAIT_FIELDS = ["base", "fusion", "artifact"] as const;
 const dialog = ref<Dialog | null>(null);
-const preview = ref<Equipment | null>(null);
 /** Remakes the Artifact editor after an Undo, so it shows the restored Artifact. */
 const artifactVersion = ref(0);
 const notesField = ref<HTMLTextAreaElement | null>(null);
@@ -162,7 +160,9 @@ const characterSummary = computed(() => {
   const at = index.value;
   if (!at) return "";
   const capacity = characterEffects(at, team.value.character).anointment_capacity;
-  return specializationName.value || `${team.value.character.anointments.length}/${capacity}`;
+  return (
+    chosenSpecialization.value?.name || `${team.value.character.anointments.length}/${capacity}`
+  );
 });
 const avatars = computed(() =>
   index.value
@@ -402,15 +402,8 @@ const dialogTitle = computed(() => {
   }
   return "";
 });
-const specializationKey = computed(
-  () =>
-    index.value?.catalog.specializations.find((s) => s.id === team.value.character.specialization)
-      ?.key ?? "",
-);
-const specializationName = computed(
-  () =>
-    index.value?.catalog.specializations.find((s) => s.id === team.value.character.specialization)
-      ?.name ?? "",
+const chosenSpecialization = computed(() =>
+  index.value?.catalog.specializations.find((s) => s.id === team.value.character.specialization),
 );
 
 async function install(uid: string, target: Position, resolvedId: string) {
@@ -1239,7 +1232,6 @@ const dialogWarning = computed(() => {
                 :warning="fieldWarning(cell.index, field)"
                 @place="openTrait({ slot: cell.index, field })"
                 @drop="attempt(() => placeWithUndo({ slot: cell.index, field }, dropped()))"
-                @inspect="openTrait({ slot: cell.index, field })"
               />
               <div v-if="showNether" class="nether-band">
                 <TraitCell
@@ -1253,7 +1245,6 @@ const dialogWarning = computed(() => {
                   :warning="null"
                   @place="openField(netherAt(cell.index, position))"
                   @drop="attempt(() => placeWithUndo(netherAt(cell.index, position), dropped()))"
-                  @inspect="openField(netherAt(cell.index, position))"
                 />
                 <TraitCell
                   v-if="(team.slots[cell.index]!.nether?.length ?? 0) < NETHER_TRAITS"
@@ -1267,7 +1258,6 @@ const dialogWarning = computed(() => {
                   @drop="
                     attempt(() => placeWithUndo({ slot: cell.index, field: 'nether' }, dropped()))
                   "
-                  @inspect="() => {}"
                 />
               </div>
             </template>
@@ -1392,7 +1382,7 @@ const dialogWarning = computed(() => {
             <template v-for="field in fields" :key="field">
               <DropZone
                 v-if="field === 'nether'"
-                class="gem-area nether-area"
+                class="gem-area"
                 :accepts="accepts({ slot: openSlot, field })"
                 @drop="attempt(() => placeWithUndo({ slot: openSlot, field }, dropped()))"
               >
@@ -1401,7 +1391,7 @@ const dialogWarning = computed(() => {
                   v-for="(trait, position) in slot.nether ?? []"
                   :key="asItem(trait).uid || position"
                   v-bind="drag(netherAt(openSlot, position))"
-                  class="gem equipped"
+                  class="equipped"
                   @click="openField(netherAt(openSlot, position))"
                 >
                   <EquipmentLine :data="component(itemId(trait)!)">
@@ -1439,7 +1429,6 @@ const dialogWarning = computed(() => {
                 :warning="fieldWarning(openSlot, field)"
                 @place="openField({ slot: openSlot, field })"
                 @drop="attempt(() => placeWithUndo({ slot: openSlot, field }, dropped()))"
-                @inspect="openField({ slot: openSlot, field })"
                 @copy="dialog = { type: 'copy', at: { slot: openSlot, field } }"
                 @remove="sendToTray({ slot: openSlot, field })"
               />
@@ -1454,7 +1443,7 @@ const dialogWarning = computed(() => {
                 v-for="(gem, position) in slot.spells ?? []"
                 :key="asItem(gem).uid || position"
                 v-bind="drag(gemPosition(position))"
-                class="gem equipped"
+                class="equipped"
                 @click="
                   selected
                     ? attempt(() => placeWithUndo({ slot: openSlot, field: 'spells' }))
@@ -1686,14 +1675,13 @@ const dialogWarning = computed(() => {
         />
         <CharacterEditor
           :character="team.character"
-          :specialization="specializationName"
-          :royal="specializationKey === 'Royal'"
+          :specialization="chosenSpecialization?.name ?? ''"
+          :royal="chosenSpecialization?.key === 'Royal'"
           :perks="index.perks"
           @apply="(character) => attempt(() => store.setCharacter(character))"
         />
       </template>
     </ModalDialog>
-    <PreviewDialog v-model:item="preview" />
   </section>
 </template>
 
@@ -2124,11 +2112,6 @@ const dialogWarning = computed(() => {
   font-size: var(--fs-13);
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.gem-area .over-limit {
-  background: var(--danger-ground);
-  border-color: var(--danger-line);
-  color: var(--danger-text);
 }
 
 @media (min-width: 1100px) {

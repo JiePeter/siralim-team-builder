@@ -54,9 +54,6 @@ describe("Fill suggestions", () => {
 
   it("rank links to several tray items above one item's rare points", () => {
     expect(ranked.map((s) => s.id)).toEqual(["trait:ember", "trait:hoard", "trait:generic"]);
-    expect(ranked[0]!.links.map((l) => [l.seed.name, l.events])).toEqual([
-      ["Pyre", ["Burning", "After attack"]],
-      ["Cinder", ["Burning"]],
-    ]);
+    expect(ranked[0]!.links.map((l) => l.seed.name)).toEqual(["Pyre", "Cinder"]);
   });
 });

@@ -45,12 +45,11 @@ const open = computed({
 
 <template>
   <ModalDialog v-model:open="open" :title="page?.name ?? ''">
-    <ObjectDetail v-if="page && item" class="choices preview" :data="page" :hits="hits" preview>
+    <ObjectDetail v-if="page && item" class="choices" :data="page" :hits="hits" preview>
       <template #head>
         <PropertyPills v-if="page.kind === 'spell'" :item="item" />
         <ArtifactSummary :item="item" full />
       </template>
-      <slot />
     </ObjectDetail>
   </ModalDialog>
 </template>

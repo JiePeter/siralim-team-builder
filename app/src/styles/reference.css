@@ -11,75 +11,12 @@
   background: var(--raised);
   border: 1px solid var(--line);
 }
-/* Creature canvases are 64px and item icons 16px: plates stay one size per context while each
-   sprite scales by a whole factor where it can. */
-.game-sprite.portrait {
-  width: 96px;
-  height: 96px;
-  padding: 16px;
-}
-.game-sprite.portrait[src*="/creature/"] {
-  width: 128px;
-  height: 128px;
-  padding: 0;
-}
 
 .section-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px 16px;
-}
-.description {
-  max-width: 70ch;
-  padding: 20px 0 4px;
-  white-space: pre-line;
-  font-size: var(--fs-15);
-  line-height: 1.6;
-}
-.object-content section h2 {
-  margin: 32px 0 8px;
-}
-.object-content > section > h2:first-child,
-.object-content .material-acquisition > section > h2:first-child {
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-}
-.object-content .object-summary {
-  font-size: var(--fs-15);
-}
-.object-content > p.muted {
-  margin: 16px 0 0;
-}
-
-.reference-row {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
-}
-.reference-row .identity-icons {
-  margin-left: 4px;
-}
-.reference-row .route-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: var(--fs-13);
-}
-.reference-row .route-facts {
-  margin: 0;
-}
-.reference-trait {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--line);
-}
-.reference-trait > .link {
-  font-size: var(--fs-18);
-}
-.reference-trait p {
-  max-width: 70ch;
-  margin: 8px 0 0;
 }
 
 .object-summary {
@@ -146,10 +83,6 @@
 .object-link .route-facts {
   margin: 0;
 }
-.route-row p {
-  margin: 6px 0;
-  font-size: var(--fs-13);
-}
 .source-line {
   display: flex;
   align-items: flex-start;
@@ -169,11 +102,6 @@
 }
 .source-line > div {
   min-width: 0;
-}
-/* A section that follows a ruled list shares the list's closing rule. */
-.object-content:has(> .source-line:last-child) + section {
-  margin-top: 0;
-  border-top: 0;
 }
 
 dl.creature-stats {
@@ -197,14 +125,6 @@ dl.creature-stats {
   font-variant-numeric: tabular-nums;
 }
 
-.family-switcher {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
-  gap: 4px;
-  margin: 16px 0 20px;
-  padding: 0;
-}
-
 @media (max-width: 767px) {
   dl.creature-stats {
     flex-wrap: nowrap;
@@ -214,42 +134,8 @@ dl.creature-stats {
   .creature-stats > div {
     min-width: 0;
   }
-  .family-switcher {
-    display: flex;
-    margin-inline: -16px;
-    padding-inline: 16px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .family-switcher > * {
-    flex: 0 0 96px;
-  }
 }
 
-.rank-effect {
-  display: grid;
-  grid-template-columns: 80px minmax(0, 1fr);
-  gap: 16px;
-  margin: 0;
-  padding: 12px 10px;
-  border-bottom: 1px solid var(--line);
-  scroll-margin-top: calc(var(--header-height) + 24px);
-}
-.rank-effect p {
-  margin: 0;
-  max-width: 70ch;
-}
-.rank-effect > strong {
-  color: var(--muted);
-  font-size: var(--fs-13);
-}
-.rank-effect.effect-hit > strong {
-  color: var(--text);
-}
-.perk-added {
-  color: var(--placed);
-  font-weight: 700;
-}
 .perk-option {
   padding: 12px 0;
   border-bottom: 1px solid var(--line);
@@ -261,20 +147,6 @@ dl.creature-stats {
 .perk-option .section-head {
   align-items: flex-start;
 }
-.perk-title {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 2px 10px;
-  align-items: center;
-  min-width: 0;
-}
-.perk-title > .game-sprite {
-  grid-row: 1 / span 2;
-}
-.perk-title > strong,
-.perk-title > .muted {
-  grid-column: 2;
-}
 .perk-option .add-control {
   flex: none;
 }
@@ -283,137 +155,12 @@ dl.creature-stats {
   font-size: var(--fs-13);
 }
 
-.realm-creatures {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 0 24px;
-}
-.realm-creatures article {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-}
-.spell-facts {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 12px 0;
-  color: var(--muted);
-}
-
-.god-overview {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 24px;
-  margin: 12px 0;
-  color: var(--muted);
-}
-.god-title {
-  font-size: var(--fs-13);
-}
-.god-realm {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.god-realm > span {
-  font-size: var(--fs-12);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.god-components,
-.god-relic .object-summary,
-.god-shop .shop-products,
-.material-acquisition {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0 28px;
-}
-.material-acquisition > section {
-  min-width: 0;
-}
-.material-acquisition .route-row {
-  padding: 12px 0;
-  border-top: 0;
-  border-bottom: 1px solid var(--line);
-}
-.god-component .reference-row {
-  padding: 6px 0 16px;
-}
-.god-components .reference-row,
-.god-relic .reference-row {
-  border: 0;
-}
-.god-relic,
-.god-shop {
-  margin-top: 20px;
-  padding-top: 4px;
-  border-top: 1px solid var(--line);
-}
-.god-relic .object-summary {
-  margin-top: 12px;
-}
-.god-relic .summary-effect {
-  display: grid;
-  grid-template-columns: 64px minmax(0, 1fr);
-  gap: 12px;
-  margin: 0;
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
-}
-.god-relic .summary-effect > small {
-  margin: 0;
-  color: var(--text);
-}
-.god-relic .summary-effect p {
-  margin: 0;
-}
-.god-shop > .section-head small {
-  color: var(--muted);
-}
-.shop-offer {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--line);
-}
-.shop-offer p {
-  margin: 6px 0 0;
-  font-size: var(--fs-13);
-  white-space: pre-line;
-}
-
-@media (min-width: 1100px) {
-  .god-components,
-  .god-relic .object-summary,
-  .god-shop .shop-products,
-  .material-acquisition {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 @media (max-width: 767px) {
-  .game-sprite.portrait,
-  .game-sprite.portrait[src*="/creature/"] {
-    width: 64px;
-    height: 64px;
-    padding: 16px;
-  }
-  .game-sprite.portrait[src*="/creature/"] {
-    padding: 0;
-  }
-  .rank-effect {
-    grid-template-columns: 64px minmax(0, 1fr);
-    gap: 12px;
-    padding: 12px 0;
-  }
-  .rank-effect.effect-hit,
   .perk-option.effect-hit {
     padding-left: 8px;
     padding-right: 8px;
   }
   .source-line {
     gap: 10px;
-  }
-  .realm-creatures {
-    grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -15,9 +15,6 @@
 .icon-left {
   --icon: var(--icon-left);
 }
-.icon-right {
-  --icon: var(--icon-right);
-}
 .icon-plus {
   --icon: var(--icon-plus);
 }
@@ -41,9 +38,6 @@
 }
 .icon-down {
   --icon: var(--icon-down);
-}
-.icon-eye {
-  --icon: var(--icon-eye);
 }
 .icon-trash {
   --icon: var(--icon-trash);

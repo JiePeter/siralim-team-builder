@@ -11,7 +11,6 @@ import EquipmentLine from "./EquipmentLine.vue";
 import { artifactImage, artifactTypeName } from "./assembly";
 import { component } from "./components";
 import { useDragSource } from "./dragging";
-import { selected } from "./tray";
 
 const props = defineProps<{
   at: Position;
@@ -28,7 +27,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   place: [];
   drop: [];
-  inspect: [];
   copy: [];
   remove: [];
 }>();
@@ -75,12 +73,7 @@ const emptyKind = computed(() =>
     @drop="emit('drop')"
   >
     <small>{{ label }}</small>
-    <div
-      v-if="value"
-      class="equipped"
-      v-bind="drag(at)"
-      @click="selected ? emit('place') : emit('inspect')"
-    >
+    <div v-if="value" class="equipped" v-bind="drag(at)" @click="emit('place')">
       <EquipmentLine :data="data" :name="name" :line="line" :corner="corner">
         <template #menu>
           <button

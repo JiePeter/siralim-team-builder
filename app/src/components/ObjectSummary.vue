@@ -16,30 +16,15 @@ const props = withDefaults(
     data: Partial<ObjectSummary> &
       Pick<ObjectSummary, "id" | "kind" | "name"> & { matched_rules?: Hit[] };
     limit?: number;
-    /** A relic shows only the ranks up to this one. */
-    rank?: number | null;
     links?: boolean;
-    facts?: boolean;
-    /** Effect ids already shown elsewhere on the page. */
-    omit?: string[];
     sources?: boolean;
-    classIcon?: boolean;
-    /** A relic shows only the ranks the visitor arrived for. */
-    matchedOnly?: boolean;
-    contextIds?: string[];
     /** An effect name the surrounding row already shows. */
     titled?: string;
   }>(),
   {
     limit: Infinity,
-    rank: null,
     links: true,
-    facts: true,
-    omit: () => [],
     sources: false,
-    classIcon: true,
-    matchedOnly: false,
-    contextIds: () => [],
     titled: "",
   },
 );
@@ -48,22 +33,17 @@ const spellGem = computed(() => props.data.kind === "spell");
 const ranks = computed(() => hitRanks(props.data.matched_rules || []));
 const effects = computed<SummaryEffect[]>(() => {
   const data = props.data;
-  let list: SummaryEffect[] = (data.effects || []).filter((e) => !props.omit.includes(e.id));
+  let list: SummaryEffect[] = data.effects || [];
   if (data.kind === "enchantment") list = list.filter((e) => e.description?.trim() !== data.name);
   const hit = ranks.value;
-  if (props.matchedOnly && data.kind === "relic" && hit.size)
-    list = list.filter((e) => hit.has(Number(e.rank)));
   if (hit.size)
     list = [
       ...list.filter((e) => hit.has(Number(e.rank))),
       ...list.filter((e) => !hit.has(Number(e.rank))),
     ];
-  if (props.rank !== null && data.kind === "relic")
-    list = list.filter((e) => Number(e.rank) <= props.rank!);
   if (
     !data.effects?.length &&
     data.description &&
-    !props.omit.includes(data.id) &&
     !["specialization", "realm", "god", "shop"].includes(data.kind)
   )
     list = [
@@ -87,22 +67,20 @@ const moreLabel = computed(() => {
   const key = first.value.length ? `more${kind}` : kind.toLowerCase();
   return t(`reference.${key}`, { count: rest.value.length });
 });
-const showFacts = computed(
-  () => props.facts && ((props.data.facts || []).length || (spellGem.value && props.classIcon)),
-);
+const showFacts = computed(() => (props.data.facts || []).length || spellGem.value);
 const named = (e: SummaryEffect) =>
   e.id !== props.data.id &&
   e.name !== props.data.name &&
   e.name !== props.titled &&
   props.data.kind !== "relic";
-const effectContext = (e: SummaryEffect) => [...props.contextIds, props.data.id, e.id];
+const effectContext = (e: SummaryEffect) => [props.data.id, e.id];
 </script>
 
 <template>
   <div class="object-summary">
     <div v-if="showFacts" class="summary-facts">
       <IdentityIcon
-        v-if="spellGem && classIcon"
+        v-if="spellGem"
         :id="links ? data.attrs?.class_id : null"
         :src="data.attrs?.class_icon"
         :label="className(data.attrs?.class ?? '') || t('reference.spell')"

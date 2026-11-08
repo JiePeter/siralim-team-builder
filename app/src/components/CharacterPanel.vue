@@ -26,19 +26,11 @@ const emit = defineEmits<{
 
 const dialogActions = inject(DIALOG_ACTIONS, null);
 const drag = useDragSource();
-const specialization = computed(() =>
-  props.index.catalog.specializations.find((s) => s.id === props.character.specialization),
-);
 const effects = computed(() => characterEffects(props.index, props.character));
 const capacity = computed(() => effects.value.anointment_capacity);
 const native = computed(() =>
   effects.value.effects.filter((e) => e.mode === "Specialization" && e.active),
 );
-const perk = (position: number) => {
-  const id = props.character.anointments[position];
-  const found = id ? props.index.perksById.get(id) : undefined;
-  return found && { ...found, kind: "perk" };
-};
 </script>
 
 <template>
@@ -62,13 +54,13 @@ const perk = (position: number) => {
     >
       <small>{{ $t("editors.specialization") }}</small>
       <div
-        v-if="specialization"
+        v-if="character.specialization"
         class="equipped"
         v-bind="drag({ character: 'characterBase', position: 0 })"
         @click="selected ? emit('place', 'characterBase', 0) : emit('perks')"
       >
         <EquipmentLine
-          :data="component(specialization.id)"
+          :data="component(character.specialization)"
           :line="native.map((e) => e.name).join(' · ') || null"
         >
           <template #menu>
@@ -106,12 +98,12 @@ const perk = (position: number) => {
       @drop="emit('drop', 'characterAnointment', position - 1)"
     >
       <div
-        v-if="perk(position - 1)"
+        v-if="character.anointments[position - 1]"
         class="equipped"
         v-bind="drag({ character: 'characterAnointment', position: position - 1 })"
         @click="emit('place', 'characterAnointment', position - 1)"
       >
-        <EquipmentLine :data="component(perk(position - 1)!.id)">
+        <EquipmentLine :data="component(character.anointments[position - 1]!)">
           <template #menu>
             <button
               type="button"

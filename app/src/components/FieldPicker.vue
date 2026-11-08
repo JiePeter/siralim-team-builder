@@ -191,7 +191,6 @@ function selected(event: CustomEvent, value: string) {
           :placeholder="$t('tray.picker.placeholder')"
         />
         <button
-          v-if="found?.facets.length || conditions.length"
           type="button"
           :class="['filter-toggle', { active: activeFilters }]"
           :aria-expanded="filtersShown"
@@ -249,7 +248,6 @@ function selected(event: CustomEvent, value: string) {
           :key="item.id"
           :value="`data:${item.id}`"
           :disabled="blocked(item.id)"
-          :data-note="note(item.id)?.text"
           :class="tiles ? 'picker-tile' : 'picker-choice'"
           :title="note(item.id)?.text"
           @select="selected($event as never, `data:${item.id}`)"

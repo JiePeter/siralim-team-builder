@@ -124,7 +124,6 @@ export interface RouteView {
 
 export function routeView(
   route: Pick<Route, "method" | "requirements"> & Partial<Route>,
-  { godName = null }: { godName?: string | null } = {},
 ): RouteView | null {
   const req = route.requirements || {},
     method = route.method;
@@ -132,10 +131,7 @@ export function routeView(
   const facts: string[] = route.via ? [route.via] : [];
   const present = (value: unknown) =>
     value !== undefined && value !== null && String(value).trim() !== "";
-  // Only a God's page gives its name, and it lists only that God's shop, priced in its own Emblems.
-  const currency =
-    godName && present(req.currency) ? t("tray.route.emblems") : String(req.currency ?? "");
-  if (present(req.cost)) facts.push(`${req.cost} ${currency}`.trim());
+  if (present(req.cost)) facts.push(`${req.cost} ${req.currency ?? ""}`.trim());
   if (present(req.favor_rank)) facts.push(t("tray.route.favor", { rank: req.favor_rank }));
   if (present(req.rank)) facts.push(t("tray.route.rank", { rank: req.rank }));
   if (req.project_required) facts.push(t("tray.route.projectRequired"));

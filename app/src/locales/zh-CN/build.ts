@@ -38,7 +38,6 @@ export default {
     specialization: "专精",
     anointment: "圣油",
     artifact: "神器",
-    relic: "圣物",
     selectCreature: "选择生物",
     selectMaterial: "选择材料",
     copyTo: "复制到",

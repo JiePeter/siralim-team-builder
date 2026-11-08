@@ -13,13 +13,11 @@ import type { Attributes } from "@/domain/attributes";
 
 const route = useRoute();
 const store = useSearchStore();
-const { q, kind, attributes, items, total, facets, ready, narrowed, wantsFocus } =
-  storeToRefs(store);
+const { q, kind, attributes, items, total, facets, ready, narrowed } = storeToRefs(store);
 const filtersShown = ref(false);
 const activeFilters = computed(
   () => (kind.value ? 1 : 0) + Object.values(attributes.value).filter(Boolean).length,
 );
-const input = ref<HTMLInputElement | null>(null);
 const phone = useMediaQuery("(max-width: 767px)");
 
 const addableKinds = new Set([
@@ -66,8 +64,6 @@ function narrow(next: Attributes) {
 
 onMounted(() => {
   if (!ready.value) store.run();
-  if (wantsFocus.value) input.value?.focus();
-  wantsFocus.value = false;
 });
 </script>
 
@@ -78,7 +74,6 @@ onMounted(() => {
       <div class="search-row">
         <input
           id="search"
-          ref="input"
           v-model="q"
           :placeholder="t('search.placeholder')"
           autocomplete="off"
@@ -205,7 +200,6 @@ onMounted(() => {
   flex-shrink: 0;
   margin-top: 12px;
 }
-/* Mechanic filters narrow independently of the type and its attributes. */
 .result-count {
   flex-shrink: 0;
   min-height: 34px;

@@ -249,7 +249,7 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
 </script>
 
 <template>
-  <div :class="['object-detail', `detail-${kind}`]">
+  <div class="object-detail">
     <header :class="['detail-head', { 'with-stats': kind === 'creature' }]">
       <AddButton v-if="addable" class="detail-plate" :item="data" :plate="data" />
       <CellPlate v-else class="detail-plate" :data="data" />
@@ -391,7 +391,6 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
         v-for="r in relicRanks"
         :key="r.id"
         :class="['detail-rank', { 'effect-hit': ranks.has(Number(r.rank)) }]"
-        :data-rank="r.rank"
         :data-focus-hit="ranks.has(Number(r.rank)) || undefined"
       >
         <b>{{ t("reference.level", { rank: r.rank }) }}</b>
@@ -410,7 +409,6 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
           v-for="p in data.perks"
           :key="p.id"
           :class="{ 'effect-hit': perks.has(p.id) }"
-          :data-perk="p.id"
           :data-focus-hit="perks.has(p.id) || undefined"
         >
           <DetailItem
@@ -567,7 +565,6 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
         />
       </div>
     </section>
-    <slot />
   </div>
 </template>
 
@@ -874,10 +871,6 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
   padding: 10px;
   background: var(--raised);
 }
-.detail-grid > .effect-hit {
-  outline: 1px solid var(--accent);
-  outline-offset: -1px;
-}
 .detail-offers {
   row-gap: 14px;
   padding-top: 7px;
@@ -926,9 +919,6 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
   color: var(--accent);
   font: 400 10px / 19px var(--pixel-font);
   white-space: nowrap;
-}
-.detail-rank.effect-hit {
-  background: var(--raised);
 }
 .detail-ranks.tiers {
   gap: 8px 28px;

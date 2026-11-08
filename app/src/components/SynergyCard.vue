@@ -38,13 +38,11 @@ const source = computed(() => {
     </template>
     <template #detail>
       <p>
-        <template v-for="(text, i) in card.effects" :key="i"
-          ><template v-if="i">{{ "\n\n" }}</template
-          ><EffectText
-            :text="text"
-            :segments="card.effectSegments[i]"
-            :context-ids="[owner, card.id]"
-        /></template>
+        <EffectText
+          :text="card.effect"
+          :segments="card.effectSegments"
+          :context-ids="[owner, card.id]"
+        />
       </p>
       <div v-if="card.facts.length" class="pairing-facts">
         <span v-for="fact in card.facts" :key="fact" class="pill">{{ fact }}</span>

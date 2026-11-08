@@ -68,7 +68,7 @@ const kind = ref<string | null>(null);
 const shown = ref(PAGE);
 const editing = ref(false);
 
-/** Tray items that stand for the same Synergies file, such as a creature and its trait, count once. */
+/** One entry per component in the tray, however many copies it holds. */
 const trayIds = computed(() => [...new Set(team.value.inventory.map((item) => item.id))]);
 const suggesting = computed({
   get: () => fromTray.value && trayIds.value.length > 0,
@@ -149,7 +149,7 @@ const visible = computed(() =>
 const suggestionCount = computed(
   () =>
     matched.value.filter((item) =>
-      item.paths.some((path) => mechanismMatches(path, grouping.value.mechanism ?? "")),
+      item.paths.some((path) => mechanismMatches(path, grouping.value.mechanism)),
     ).length,
 );
 const found = computed(() => t("search.results", total.value));
@@ -244,7 +244,7 @@ function filter(value: string) {
           type="button"
           class="fill-filter"
           :class="{ active: filterCount }"
-          :aria-haspopup="'dialog'"
+          aria-haspopup="dialog"
           :aria-label="
             filterCount ? t('search.filtersCount', { count: filterCount }) : t('search.filters')
           "
@@ -294,7 +294,7 @@ function filter(value: string) {
           v-if="suggesting && grouping.mechanisms.length > 1"
           class="fill-relations"
           role="group"
-          :aria-labelledby="'fill-relations-title'"
+          aria-labelledby="fill-relations-title"
         >
           <h3 id="fill-relations-title">{{ t("synergy.relationships") }}</h3>
           <div>

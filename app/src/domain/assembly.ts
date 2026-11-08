@@ -12,7 +12,7 @@ import {
 } from "./team";
 
 export type SlotField = "base" | "fusion" | "artifact" | "nether" | "spells" | "relic";
-export type ListField = "spells" | "nether";
+type ListField = "spells" | "nether";
 export type CharacterField = "characterBase" | "characterAnointment";
 
 export const fieldLabels: Record<SlotField, string> = {

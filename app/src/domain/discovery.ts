@@ -337,10 +337,6 @@ function addTo(table: Map<string, Set<string>>, key: string, id: string) {
   ids.add(id);
 }
 
-/**
- * Components matching name words (prefix per word), a kind and mechanic filters, with the
- * facet counts for refining each filter. Card fields are joined separately from cards/.
- */
 /** Ids of the groups that meet every active mechanic filter; every group when none is active. */
 export function groupsMeeting(
   index: DiscoveryIndex,
@@ -355,6 +351,10 @@ export function groupsMeeting(
   );
 }
 
+/**
+ * Components matching name words (prefix per word), a kind and mechanic filters, with the
+ * facet counts for refining each filter. Card fields are joined separately from cards/.
+ */
 export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): DiscoveryResult {
   const { labels, references } = index.pack;
   const q = (input.q ?? "").replaceAll("’", "'");
