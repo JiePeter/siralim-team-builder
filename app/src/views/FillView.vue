@@ -166,11 +166,14 @@ const filterCount = computed(() => chosen.value.length + (relation.value ? 1 : 0
 const tabs = computed(() => {
   if (suggesting.value) return phase.value === "failed" ? [] : grouping.value.kinds;
   if (!listing.value) return [];
-  return listedKinds.value.map((k) => ({
-    value: k.value,
-    label: kindGroups.find((group) => group.kinds.includes(k.value))?.label ?? k.label,
-    count: k.count,
-  }));
+  return listedKinds.value.map((k) => {
+    const group = kindGroups.find((candidate) => candidate.kinds.includes(k.value));
+    return {
+      value: k.value,
+      label: (group?.kinds.length === 1 ? group.label : kindNames[k.value]) || k.label,
+      count: k.count,
+    };
+  });
 });
 const tab = computed(() => (suggesting.value ? (grouping.value.kind ?? "") : listedKind.value));
 
@@ -185,8 +188,6 @@ function change(field: "kind" | "mechanism", value: string) {
   shown.value = PAGE;
 }
 function filter(value: string) {
-  kind.value = grouping.value.kind;
-  mechanism.value = grouping.value.mechanism ?? "";
   keyword.value = value;
   shown.value = PAGE;
   rerun();

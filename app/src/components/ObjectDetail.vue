@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, reactive, shallowRef, watch } from "vue";
 import { RouterLink } from "vue-router";
-import { object, type ObjectPage, type ObjectSummary, type Route } from "@/data";
+import { object, type Offer, type ObjectPage, type ObjectSummary, type Route } from "@/data";
 import { className, i18n, t } from "@/i18n";
 import AddButton from "./AddButton.vue";
 import CellPlate from "./CellPlate.vue";
 import CreatureStats from "./CreatureStats.vue";
 import DetailItem from "./DetailItem.vue";
 import EffectText from "./EffectText.vue";
-import { hitPerks, hitRanks, kindNames, objectRoute, type Hit } from "./presentation";
+import { hitPerks, hitRanks, kindNames, objectRoute, routeView, type Hit } from "./presentation";
 
 const props = withDefaults(
   defineProps<{
@@ -67,7 +67,18 @@ watch(
 
 const god = computed(() => (kind.value === "god" ? props.data : partner.value));
 const realm = computed(() => (kind.value === "realm" ? props.data : partner.value));
-const offers = computed(() => god.value?.god_contents?.shops?.[0]?.offers ?? []);
+const offers = computed(() =>
+  kind.value === "shop"
+    ? (props.data.offers ?? [])
+    : (god.value?.god_contents?.shops?.[0]?.offers ?? []),
+);
+/** The Favor rank has its own mark on the offer. */
+const offerFacts = (offer: Offer) =>
+  routeView({
+    method: "purchase",
+    requirements: { ...offer.requirements, favor_rank: "", ...offer.cost },
+    via: offer.via,
+  })?.facts.join(" · ");
 const realmCreatures = computed(() => realm.value?.creatures ?? []);
 const godParts = computed(() => {
   const content = god.value?.god_contents;
@@ -432,7 +443,7 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
             :addable="addableKinds.has(offer.item.kind)"
             :faint="itemFaint(offer.item as Item)"
           >
-            <small>{{ offer.cost.cost }} {{ offer.cost.currency }}</small>
+            <small>{{ offerFacts(offer) }}</small>
           </DetailItem>
           <p v-if="itemText(offer.item as Item)">
             <EffectText
@@ -460,7 +471,7 @@ const shown = <T,>(key: string, list: T[], limit = LIST_LIMIT) =>
           v-for="item in part.items"
           :key="item.id"
           :item="item"
-          :addable="addableKinds.has(item.kind)"
+          :addable="part.key !== 'ultimate_spells' && addableKinds.has(item.kind)"
           :text="itemText(item)"
           :context-ids="contextIds"
         />

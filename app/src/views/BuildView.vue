@@ -36,6 +36,7 @@ import {
   type ArtifactConfig,
   type Equipment,
   type EquipmentRef,
+  type Slot,
 } from "@/domain/team";
 import ArtifactEditor from "@/components/ArtifactEditor.vue";
 import CarrierPicker from "@/components/CarrierPicker.vue";
@@ -184,6 +185,12 @@ const replaced = computed(() =>
   index.value ? replacementNotices(index.value, toRaw(team.value)) : [],
 );
 /** Each notice with the slots it marks; a team-wide one marks none. */
+/** Everything a slot holds besides its Primary. */
+const slotGear = (s: Slot): EquipmentRef[] =>
+  [s.fusion, s.artifact, s.relic, ...(s.spells ?? []), ...(s.nether ?? [])].filter(
+    (ref) => ref !== undefined,
+  );
+
 const notices = computed<{ text: string; slots: number[] }[]>(() => [
   ...(index.value ? buildEffects(index.value, toRaw(team.value), () => undefined).notices : []).map(
     (text) => ({ text, slots: [] }),
@@ -200,7 +207,7 @@ const notices = computed<{ text: string; slots: number[] }[]>(() => [
     slots: [],
   })),
   ...team.value.slots.flatMap((s, i) =>
-    !s.base && (s.fusion || s.artifact || s.relic || s.spells?.length)
+    !s.base && slotGear(s).length
       ? [{ text: t("build.noPrimary", { n: slotIndex(i) }), slots: [i] }]
       : [],
   ),
@@ -352,11 +359,7 @@ const cells = computed(() =>
   team.value.slots.map((s, i) => {
     const base = s.base ? component(itemId(s.base)!) : undefined;
     const fusion = s.base && s.fusion && !blended.value ? component(itemId(s.fusion)!) : null;
-    const others =
-      (["fusion", "artifact", "relic"] as const).filter((f) => s[f]).length +
-      (s.spells?.length ?? 0) +
-      (s.nether?.length ?? 0);
-    const first = s.fusion ?? s.artifact ?? s.relic ?? s.spells?.[0];
+    const first = slotGear(s)[0];
     const label = base?.name ?? "";
     return {
       index: i,
@@ -365,7 +368,7 @@ const cells = computed(() =>
       sprite: s.base && base && spriteOf(base, 0) ? assetUrl(spriteOf(base, 0)!) : null,
       data: base ?? (first ? component(itemId(first)!) : null),
       classFrom: fusion,
-      vacant: !s.base && !others,
+      vacant: !s.base && !first,
     };
   }),
 );
@@ -1627,7 +1630,7 @@ const dialogWarning = computed(() => {
           <EquipmentLine :data="target.data" :line="target.line" />
         </button>
       </div>
-      <template v-else-if="dialog?.type === 'gem' && gemAt(dialog)">
+      <template v-else-if="dialog?.type === 'gem' && index && gemAt(dialog)">
         <EditorActions
           replace
           tray

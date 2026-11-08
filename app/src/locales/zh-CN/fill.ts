@@ -4,7 +4,7 @@ export default {
     fromTray: "托盘建议",
     allInteractions: "全部交互",
     allTargets: "全部目标",
-    emptyTray: "向托盘添加组件，或选择触发条件来查找组件。",
+    emptyTray: "向托盘添加组件，或选择机制来查找组件。",
     chooseCondition: "选择机制或输入名称来查找组件。",
     removeFilter: "移除 {name}",
     view: "查看 {n} 条",

@@ -4,7 +4,7 @@ export default {
     fromTray: "From tray",
     allInteractions: "All interactions",
     allTargets: "All targets",
-    emptyTray: "Add components to the tray, or choose a trigger condition to find components.",
+    emptyTray: "Add components to the tray, or choose a mechanic to find components.",
     chooseCondition: "Choose a mechanic or enter a name to find components.",
     removeFilter: "Remove {name}",
     view: "View {n}",
