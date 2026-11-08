@@ -221,6 +221,7 @@ const blocked = (id: string) =>
         <ListboxGroupLabel class="picker-label">{{ $t("tray.picker.inTray") }}</ListboxGroupLabel>
         <ListboxItem
           v-for="{ item, count, page } in inTray"
+          :disabled="unique && placedOf(item.id).length > 0"
           :key="item.uid"
           :value="item.uid"
           :class="tiles ? 'picker-tile' : 'picker-choice'"

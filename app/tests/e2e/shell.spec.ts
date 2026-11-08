@@ -12,7 +12,7 @@ test("shell loads, opens an object page, and docks navigation on phones", async 
   const name = (await (await page.request.get(`data/${path}`)).json()).name;
   await page.goto(`./#/object/${id}`);
   await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
-  const sprite = page.locator(".object-head img").first();
+  const sprite = page.locator(".detail-plate img").first();
   await expect
     .poll(() => sprite.evaluate((img: HTMLImageElement) => img.naturalWidth))
     .toBeGreaterThan(0);
