@@ -10,12 +10,14 @@ import { t } from "@/i18n";
 import AddButton from "@/components/AddButton.vue";
 import IdentityLine from "@/components/IdentityLine.vue";
 import MechanicFilters from "@/components/MechanicFilters.vue";
+import ModalDialog from "@/components/ModalDialog.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
 import ObjectSummary from "@/components/ObjectSummary.vue";
 import SynergyCard from "@/components/SynergyCard.vue";
 import { shownAs } from "@/components/assembly";
 import { loadComponent } from "@/components/components";
 import { suggestions, type Seed } from "@/components/fill";
+import { conditionSummaries } from "@/components/filters";
 import { useCatalog } from "@/components/selection";
 import { kindNames, objectRoute, type Hit } from "@/components/presentation";
 import { candidates, cards, categories, matching } from "@/components/synergy";
@@ -30,6 +32,8 @@ const entity = useEntity();
 const query = useFillStore();
 const {
   active,
+  conditions,
+  facets,
   fromTray,
   matched: mechanicMatches,
   items: mechanicItems,
@@ -43,6 +47,8 @@ const kind = ref<string | null>(null);
 const mechanism = ref<string | null>(null);
 const keyword = ref("");
 const shown = ref(PAGE);
+const editing = ref(false);
+const chosen = computed(() => conditionSummaries(conditions.value, facets.value.conditions));
 
 /** Tray items that stand for the same Synergies file, such as a creature and its trait, count once. */
 const trayIds = computed(() => [...new Set(team.value.inventory.map((item) => item.id))]);
@@ -138,8 +144,23 @@ function filter(value: string) {
           <SwitchThumb class="fill-switch-thumb" />
         </SwitchRoot>
       </label>
-      <MechanicFilters fill />
+      <div
+        v-if="chosen.length"
+        class="fill-chosen"
+        role="group"
+        :aria-label="t('search.mechanic.filters')"
+      >
+        <button v-for="(line, i) in chosen" :key="i" type="button" @click="editing = true">
+          {{ line }}
+        </button>
+      </div>
+      <button type="button" class="fill-add" @click="editing = true">
+        <i class="icon icon-plus"></i>{{ t("search.mechanic.add") }}
+      </button>
     </div>
+    <ModalDialog v-model:open="editing" :title="t('search.mechanic.filters')" sheet>
+      <div class="fill-sheet"><MechanicFilters fill /></div>
+    </ModalDialog>
     <div class="fill-results">
       <template v-if="!suggesting">
         <p v-if="!active" class="muted">
@@ -272,8 +293,38 @@ function filter(value: string) {
 }
 .fill-query {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 8px;
+}
+.fill-chosen {
+  display: flex;
+  grid-row: 2;
+  grid-column: 1 / -1;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.fill-chosen::-webkit-scrollbar {
+  display: none;
+}
+.fill-chosen button {
+  flex-shrink: 0;
+  min-height: var(--control-compact);
+  padding: 0 10px;
+  background-color: var(--raised);
+  border-color: var(--accent);
+  font-size: var(--fs-13);
+  white-space: nowrap;
+}
+.fill-add {
+  grid-row: 1;
+  grid-column: -2;
+  min-height: var(--field);
+  font-size: var(--fs-13);
+}
+.fill-sheet {
+  padding: 0 16px 16px;
 }
 .fill-mode {
   display: flex;
@@ -357,9 +408,14 @@ function filter(value: string) {
 }
 @media (min-width: 768px) {
   .fill-query {
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     gap: var(--space-12);
+  }
+  .fill-chosen {
+    flex-wrap: wrap;
+    grid-row: 1;
+    grid-column: 2;
+    overflow-x: visible;
   }
 }
 .muted {

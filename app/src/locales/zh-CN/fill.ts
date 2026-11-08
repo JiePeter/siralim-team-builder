@@ -1,6 +1,8 @@
 export default {
   fill: {
     fromTray: "根据托盘建议",
+    allInteractions: "全部交互",
+    allTargets: "全部目标",
     emptyTray: "向托盘添加组件，或选择触发条件来查找组件。",
     chooseCondition: "选择触发条件来查找组件。",
     loading: "加载中…",

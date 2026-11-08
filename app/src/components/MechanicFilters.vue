@@ -57,12 +57,8 @@ function clear() {
 </script>
 
 <template>
-  <section
-    class="mechanism-filters"
-    :class="{ band: fill }"
-    :aria-label="t('search.mechanic.filters')"
-  >
-    <div v-show="!state.collapsed" ref="rows" class="mechanism-rows">
+  <section class="mechanism-filters" :aria-label="t('search.mechanic.filters')">
+    <div v-show="!state.collapsed" ref="rows">
       <div v-for="(condition, index) in conditions" :key="index" class="mechanism-row">
         <select
           class="filter-category"
@@ -77,6 +73,15 @@ function clear() {
             :all="t('search.mechanic.all')"
           />
         </select>
+        <button
+          v-if="conditions.length > 1"
+          type="button"
+          class="icon-button filter-remove"
+          :aria-label="t('search.mechanic.remove', { n: index + 1 })"
+          @click="remove(index)"
+        >
+          <i class="icon icon-close"></i>
+        </button>
         <template v-if="condition.category">
           <select
             class="filter-relation"
@@ -88,6 +93,7 @@ function clear() {
               :options="facetRow(index).relations"
               :selected="condition.relation"
               :namespace="`${condition.category}-relation`"
+              :all="fill ? t('fill.allInteractions') : undefined"
             />
           </select>
           <select
@@ -100,21 +106,13 @@ function clear() {
               :options="facetRow(index).values"
               :selected="condition.value"
               :namespace="`${condition.category}-value`"
+              :all="fill ? t('fill.allTargets') : undefined"
             />
           </select>
         </template>
-        <button
-          v-if="conditions.length > 1"
-          type="button"
-          class="icon-button filter-remove"
-          :aria-label="t('search.mechanic.remove', { n: index + 1 })"
-          @click="remove(index)"
-        >
-          <i class="icon icon-close"></i>
-        </button>
       </div>
     </div>
-    <div class="mechanism-toolbar">
+    <div class="mechanism-toolbar" :class="{ end: fill }">
       <button v-if="state.canAdd" type="button" @click="add">
         <i class="icon icon-plus"></i>{{ t("search.mechanic.add") }}
       </button>
@@ -164,7 +162,6 @@ function clear() {
   grid-column: 1 / -1;
 }
 .filter-remove {
-  grid-row: 1;
   grid-column: 3;
   height: var(--field);
 }
@@ -183,6 +180,12 @@ function clear() {
   align-items: center;
   gap: 6px;
 }
+.mechanism-toolbar.end {
+  justify-content: flex-end;
+}
+.mechanism-toolbar.end .clear {
+  margin-left: 0;
+}
 .mechanism-toolbar button {
   font-size: var(--fs-13);
 }
@@ -198,69 +201,6 @@ function clear() {
   }
   .mechanism-toolbar button,
   .mechanism-toolbar select {
-    min-height: var(--field);
-  }
-}
-.band {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
-  max-height: none;
-  margin: 0;
-  overflow: visible;
-}
-.band .mechanism-rows {
-  display: grid;
-  gap: 8px;
-}
-.band .mechanism-row {
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.band .mechanism-toolbar {
-  justify-content: flex-end;
-}
-.band .mechanism-toolbar:empty {
-  display: none;
-}
-.band .clear {
-  margin-left: 0;
-}
-.band select {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-@media (max-width: 767px) {
-  .band .mechanism-row + .mechanism-row {
-    padding-top: 8px;
-    border-top: 1px solid var(--line);
-  }
-}
-@media (min-width: 768px) {
-  .band .mechanism-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) var(--field);
-  }
-  .band .filter-category,
-  .band .mechanism-row:not(:has(.filter-remove)) .filter-category {
-    grid-column: 1;
-  }
-  .band .filter-relation {
-    grid-column: 2;
-  }
-  .band .filter-value {
-    grid-column: 3;
-  }
-  .band .filter-remove {
-    grid-column: 4;
-  }
-}
-@media (min-width: 1024px) {
-  .band {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-  }
-  .band .mechanism-toolbar {
     min-height: var(--field);
   }
 }

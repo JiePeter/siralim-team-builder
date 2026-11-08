@@ -1,6 +1,8 @@
 export default {
   fill: {
     fromTray: "Suggest from tray",
+    allInteractions: "All interactions",
+    allTargets: "All targets",
     emptyTray: "Add components to the tray, or choose a trigger condition to find components.",
     chooseCondition: "Choose a trigger condition to find components.",
     loading: "Loading…",
