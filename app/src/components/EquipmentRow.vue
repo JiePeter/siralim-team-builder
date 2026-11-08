@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { fieldLabels, type Position } from "@/domain/assembly";
+import { fieldLabels, type SlotField } from "@/domain/assembly";
 import { artifactTypeOf, asItem, BLANK_ARTIFACT, itemId, type EquipmentRef } from "@/domain/team";
 import { t } from "@/i18n";
 import CellPlate from "./CellPlate.vue";
@@ -11,7 +11,9 @@ import { component } from "./components";
 import { useDragSource } from "./dragging";
 
 const props = defineProps<{
-  at: Position;
+  atSlot: number;
+  field: SlotField;
+  atIndex?: number;
   value: EquipmentRef | undefined;
   accepts?: boolean | null;
   /** What a drop here does, shown while a drag is held over the field. */
@@ -30,7 +32,8 @@ const emit = defineEmits<{
 }>();
 
 const drag = useDragSource();
-const label = computed(() => fieldLabels[props.at.field]);
+const at = computed(() => ({ slot: props.atSlot, field: props.field, index: props.atIndex }));
+const label = computed(() => fieldLabels[props.field]);
 const blank = computed(() => itemId(props.value) === BLANK_ARTIFACT);
 const typeKey = computed(() => artifactTypeOf(props.value));
 const artifactType = computed(() => artifactTypeName(typeKey.value));
@@ -47,19 +50,19 @@ const data = computed(() =>
       : undefined,
 );
 const name = computed(() =>
-  props.at.field === "artifact" && !blank.value && data.value
+  props.field === "artifact" && !blank.value && data.value
     ? `${artifactType.value} · ${data.value.name}`
     : undefined,
 );
 const line = computed(() => (blank.value ? t("editors.noTrait") : null));
 const corner = computed(() =>
-  props.at.field === "relic" && props.value ? String(asItem(props.value).rank || 1) : "",
+  props.field === "relic" && props.value ? String(asItem(props.value).rank || 1) : "",
 );
 </script>
 
 <template>
   <DropZone
-    :class="['equipment', `field-${at.field}`, { 'over-limit': warning }]"
+    :class="['equipment', `field-${field}`, { 'over-limit': warning }]"
     :title="warning ?? undefined"
     :accepts="accepts"
     :hint="hint"
@@ -70,7 +73,7 @@ const corner = computed(() =>
       <EquipmentLine :data="data" :name="name" :line="line" :corner="corner">
         <template #menu>
           <button
-            v-if="at.field === 'artifact' && copyable"
+            v-if="field === 'artifact' && copyable"
             type="button"
             class="icon-button"
             :aria-label="$t('editors.copyField', { field: label })"
@@ -98,7 +101,7 @@ const corner = computed(() =>
       :aria-label="label"
       @click="emit('place')"
     >
-      <CellPlate class="empty-key" compact addable :data="{ kind: fieldKind[at.field] }" />
+      <CellPlate class="empty-key" compact addable :data="{ kind: fieldKind[field] }" />
     </button>
     <p v-if="warning" class="field-warning">{{ warning }}</p>
   </DropZone>

@@ -12,18 +12,21 @@ import { useDragSource } from "./dragging";
 import { selected } from "./tray";
 
 const props = defineProps<{
-  at: { slot: number; field: CarriedField; index?: number };
+  atSlot: number;
+  field: CarriedField;
+  atIndex?: number;
   value: EquipmentRef | undefined;
   /** The step the team needs next. */
-  next: boolean;
+  next?: boolean;
   accepts: boolean | null;
-  hint: string | null;
-  warning: string | null;
+  hint?: string | null;
+  warning?: string | null;
 }>();
 const emit = defineEmits<{ place: []; drop: [] }>();
 
 const drag = useDragSource();
-const label = computed(() => fieldLabels[props.at.field]);
+const at = computed(() => ({ slot: props.atSlot, field: props.field, index: props.atIndex }));
+const label = computed(() => fieldLabels[props.field]);
 const page = computed(() => {
   const id = itemId(props.value);
   return id && id !== BLANK_ARTIFACT ? component(id) : undefined;
@@ -33,9 +36,10 @@ const blankType = computed(() =>
   itemId(props.value) === BLANK_ARTIFACT ? artifactTypeOf(props.value) : "",
 );
 const trait = computed(() => (page.value?.kind === "trait" ? page.value : page.value?.effects[0]));
+const contextIds = computed(() => (trait.value ? [page.value!.id, trait.value.id] : []));
 const carrier = computed(() => {
   if (!props.value) return "";
-  const type = props.at.field === "artifact" ? artifactTypeName(artifactTypeOf(props.value)) : "";
+  const type = props.field === "artifact" ? artifactTypeName(artifactTypeOf(props.value)) : "";
   return [type, page.value?.name].filter(Boolean).join(" · ");
 });
 const picked = computed(() => {
@@ -43,16 +47,16 @@ const picked = computed(() => {
   return (
     !!s &&
     "slot" in s &&
-    s.slot === props.at.slot &&
-    s.field === props.at.field &&
-    s.index === props.at.index
+    s.slot === props.atSlot &&
+    s.field === props.field &&
+    s.index === props.atIndex
   );
 });
 </script>
 
 <template>
   <DropZone
-    :class="['trait-cell', `field-${at.field}`, { 'over-limit': warning }]"
+    :class="['trait-cell', `field-${field}`, { 'over-limit': warning }]"
     :title="warning ?? undefined"
     :accepts="accepts"
     :hint="hint"
@@ -81,7 +85,7 @@ const picked = computed(() => {
           <EffectText
             :text="trait.description"
             :segments="trait.segments"
-            :context-ids="[page!.id, trait.id]"
+            :context-ids="contextIds"
             icons
           />
         </p>
@@ -94,7 +98,7 @@ const picked = computed(() => {
       :aria-label="label"
       @click="emit('place')"
     >
-      <CellPlate class="empty-key" compact addable :data="{ kind: fieldKind[at.field] }" />
+      <CellPlate class="empty-key" compact addable :data="{ kind: fieldKind[field] }" />
       <span class="trait-add-label">{{ label }}</span>
     </button>
   </DropZone>

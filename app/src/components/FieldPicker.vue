@@ -10,10 +10,10 @@ import {
   ListboxRoot,
 } from "reka-ui";
 import type { Position } from "@/domain/assembly";
-import { placementRefusal, whereIs } from "@/domain/placement";
+import { placedParts, placementRefusal, type Placement } from "@/domain/placement";
 import { applicable, type Attributes } from "@/domain/attributes";
 import { blankCondition, type Condition, type Scope } from "@/domain/discovery";
-import type { Equipment } from "@/domain/team";
+import { itemId, type Equipment } from "@/domain/team";
 import { matchesText } from "@/domain/values";
 import { t } from "@/i18n";
 import AttributeFilters from "./AttributeFilters.vue";
@@ -32,7 +32,7 @@ import {
 import { candidates } from "./candidates";
 import { component } from "./components";
 import { toastError } from "./toast";
-import { lineKey, placementLabel, useEntity } from "./tray";
+import { lineKey, useEntity } from "./tray";
 
 const PAGE = 50;
 
@@ -139,8 +139,18 @@ const listed = computed(() => !q.value.trim() && !activeFilters.value && !inTray
 const tiles = computed(() => props.field === "relic");
 /** One-per-team components already placed cannot be placed again. */
 const unique = computed(() => props.field === "relic" || props.field === "characterAnointment");
-const placedAt = (id: string) =>
-  whereIs(store.team, id, entity).placed.map(placementLabel).join(", ");
+/** Every placement in the team, grouped by what each component stands for. */
+const placements = computed(() => {
+  const groups = new Map<string, Placement[]>();
+  for (const part of placedParts(store.team)) {
+    const key = entity(itemId(part.ref)!);
+    const group = groups.get(key);
+    if (group) group.push(part.at);
+    else groups.set(key, [part.at]);
+  }
+  return groups;
+});
+const placedOf = (id: string) => placements.value.get(entity(id)) ?? [];
 const refusal = (id: string) =>
   props.target && store.index ? placementRefusal(store.index, store.team, props.target, id) : null;
 const note = (id: string) => {
@@ -149,19 +159,20 @@ const note = (id: string) => {
 };
 /** Copies already in the team, marked on the plate. */
 const placedCount = (id: string) => {
-  const n = whereIs(store.team, id, entity).placed.length;
+  const n = placedOf(id).length;
   return n > 1 ? n : n > 0;
 };
 /** The field already holds this component. */
 const here = (id: string) =>
-  whereIs(store.team, id, entity).placed.some(
+  placedOf(id).some(
     (at) =>
       "slot" in at &&
       at.slot === props.target?.slot &&
       at.field === props.target.field &&
       (props.target.index === undefined || at.index === props.target.index),
   );
-const blocked = (id: string) => here(id) || !!refusal(id) || (unique.value && !!placedAt(id));
+const blocked = (id: string) =>
+  here(id) || !!refusal(id) || (unique.value && placedOf(id).length > 0);
 </script>
 
 <template>

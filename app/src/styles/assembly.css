@@ -164,6 +164,23 @@
 .drag-source {
   opacity: 0.45;
 }
+.build-notices {
+  background: var(--danger-ground);
+  border: 1px solid var(--danger-line);
+  color: var(--danger-text);
+  font-size: var(--fs-13);
+}
+.build-notices ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.build-notices li {
+  padding: 8px 12px;
+}
+.build-notices li + li {
+  border-top: 1px solid var(--danger-rule);
+}
 
 @media (min-width: 768px) {
   .slot {
