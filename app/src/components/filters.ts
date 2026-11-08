@@ -1,13 +1,10 @@
 import { MAX_FILTERS, type Condition, type Option } from "@/domain/discovery";
 
 /** How the mechanic filter rows and their toolbar show for the current conditions. */
-export function filterState(conditions: Condition[], phone: boolean, opened: boolean) {
+export function filterState(conditions: Condition[]) {
   const active = conditions.filter((c) => c.category).length;
-  const collapsed = phone && !opened && !active;
   return {
-    collapsed,
-    canAdd:
-      collapsed || (conditions.length < MAX_FILTERS && conditions.every((c) => c.category !== "")),
+    canAdd: conditions.length < MAX_FILTERS && conditions.every((c) => c.category !== ""),
     showScope: active >= 2,
     showClear: active > 0 || conditions.length > 1,
   };

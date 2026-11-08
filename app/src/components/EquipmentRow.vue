@@ -57,8 +57,8 @@ const name = computed(() =>
     : undefined,
 );
 const line = computed(() => (blank.value ? t("editors.noTrait") : null));
-const level = computed(() =>
-  props.at.field === "relic" && props.value ? asItem(props.value).rank || 1 : 0,
+const corner = computed(() =>
+  props.at.field === "relic" && props.value ? String(asItem(props.value).rank || 1) : "",
 );
 /** The kind an empty field takes, whose frame and icon its key shows. */
 const emptyKind = computed(() =>
@@ -81,7 +81,7 @@ const emptyKind = computed(() =>
       v-bind="drag(at)"
       @click="selected ? emit('place') : emit('inspect')"
     >
-      <EquipmentLine :data="data" :name="name" :line="line" :level="level">
+      <EquipmentLine :data="data" :name="name" :line="line" :corner="corner">
         <template #menu>
           <button
             v-if="at.field === 'artifact' && copyable"

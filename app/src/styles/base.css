@@ -23,6 +23,12 @@ body {
   caret-color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
+/* The footer ends the page, at the bottom of the screen when the content is short. */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
 ::selection {
   background: var(--selection);
   color: #fff;

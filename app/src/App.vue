@@ -342,6 +342,7 @@ nav .active::after {
 }
 .frame {
   display: grid;
+  flex: 1;
   grid-template-columns: minmax(0, 1fr);
 }
 .tray-side {
@@ -349,7 +350,7 @@ nav .active::after {
   top: var(--header-height);
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - var(--header-height));
+  height: calc(100dvh - var(--header-height) - var(--footer-height));
   background: var(--cell);
 }
 .tray-side > .parts-tray {

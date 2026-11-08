@@ -14,7 +14,6 @@ export default {
     anointment: "圣油 {position}",
     character: "角色",
     clearCharacter: "清除角色",
-    shortLabels: { base: "主", fusion: "融", artifact: "神", nether: "下" },
     keys: { swap: "交换", tray: "回托盘", replace: "替换", move: "移动" },
     properties: "词条",
     gemLimit: "一颗法术宝石最多可有 {max} 个词条",

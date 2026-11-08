@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { fieldLabels } from "@/domain/assembly";
-import { t } from "@/i18n";
 import type { CarriedField } from "@/domain/placement";
 import { asItem, itemId, type EquipmentRef } from "@/domain/team";
 import { BLANK_ARTIFACT } from "@/stores/team";
@@ -26,12 +25,6 @@ const emit = defineEmits<{ place: []; drop: []; inspect: [] }>();
 
 const drag = useDragSource();
 const label = computed(() => fieldLabels[props.at.field]);
-const SHORT_LABELS = {
-  base: t("editors.shortLabels.base"),
-  fusion: t("editors.shortLabels.fusion"),
-  artifact: t("editors.shortLabels.artifact"),
-  nether: t("editors.shortLabels.nether"),
-};
 /** The kind an empty field takes, whose frame and icon its key shows. */
 const EMPTY_KIND = { base: "creature", fusion: "creature", artifact: "material", nether: "trait" };
 const page = computed(() => {
@@ -88,10 +81,7 @@ const picked = computed(() => {
         <span class="trait-line"
           ><strong v-if="trait" class="trait-name">{{ trait.name }}</strong
           ><span v-else class="trait-name trait-none">{{ $t("editors.noTrait") }}</span
-          ><small class="trait-label" :aria-label="label"
-            ><span class="label-full">{{ label }}</span
-            ><span class="label-short">{{ SHORT_LABELS[at.field] }}</span></small
-          ></span
+          ><small class="trait-label">{{ label }}</small></span
         >
         <p v-if="trait" class="trait-effect" :title="trait.description">
           <EffectText
@@ -159,9 +149,6 @@ const picked = computed(() => {
   color: var(--muted);
   font-size: var(--fs-12);
   white-space: nowrap;
-}
-.label-short {
-  display: none;
 }
 .trait-name {
   font-size: var(--fs-15);
@@ -259,43 +246,5 @@ const picked = computed(() => {
 }
 .trait-add.next {
   color: var(--text);
-}
-@media (max-width: 767px) {
-  .trait-cell > .equipped,
-  .trait-cell > .equipped[draggable="true"] {
-    min-height: 44px;
-    padding: var(--space-4) var(--space-12) var(--space-4) var(--space-12);
-  }
-  .trait-plate {
-    display: none;
-  }
-  .trait-name {
-    font-size: var(--fs-13);
-    line-height: 18px;
-  }
-  .trait-effect {
-    display: none;
-  }
-  /* Out of the flow, in the cell's top padding, so the name keeps the full width. */
-  .trait-label {
-    position: absolute;
-    top: 1px;
-    right: var(--space-4);
-    font-size: 10px;
-    line-height: 10px;
-  }
-  .label-full {
-    display: none;
-  }
-  .label-short {
-    display: inline;
-  }
-  .trait-add {
-    min-height: 44px;
-    padding: 2px var(--space-12);
-  }
-  .trait-add-label {
-    display: none;
-  }
 }
 </style>

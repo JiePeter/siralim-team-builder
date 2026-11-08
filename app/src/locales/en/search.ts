@@ -39,7 +39,7 @@ export default {
       interaction: "Mechanic interaction {n}",
       target: "Mechanic target {n}",
       all: "All mechanics",
-      add: "Mechanic",
+      add: "Another mechanic",
       scope: "Match scope",
       action: "Same action",
       rule: "Same rule",

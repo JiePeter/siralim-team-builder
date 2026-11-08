@@ -14,7 +14,6 @@ export default {
     anointment: "Anointment {position}",
     character: "Character",
     clearCharacter: "Clear Character",
-    shortLabels: { base: "Pri", fusion: "Fus", artifact: "Art", nether: "Net" },
     keys: { swap: "Swap", tray: "To tray", replace: "Replace", move: "Move" },
     properties: "Properties",
     gemLimit: "A Spell Gem can have at most {max} properties",

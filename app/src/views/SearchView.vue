@@ -148,7 +148,7 @@ onMounted(() => {
 .explore {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
-  min-height: calc(100dvh - var(--header-height));
+  min-height: calc(100dvh - var(--header-height) - var(--footer-height));
 }
 .search-panel {
   position: sticky;
@@ -156,7 +156,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  height: calc(100dvh - var(--header-height));
+  height: calc(100dvh - var(--header-height) - var(--footer-height));
   padding: 8px 16px 0;
   background: var(--cell);
 }
@@ -171,6 +171,10 @@ onMounted(() => {
 }
 .filter-toggle {
   display: none;
+}
+.filter-toggle[aria-expanded="true"] {
+  background: var(--ground);
+  border-color: var(--accent);
 }
 .filter-toggle.active,
 .filter-toggle.active:hover {

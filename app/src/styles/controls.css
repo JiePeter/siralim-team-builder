@@ -365,8 +365,7 @@ button.labelled-key {
 /* Text-like buttons, cells, list rows and bar segments drop the key drawing. */
 .link,
 button.object-cell,
-.choice,
-.drop-target {
+.choice {
   clip-path: none;
 }
 .link:active {
@@ -376,8 +375,7 @@ button.object-cell:active {
   background-color: var(--raised);
   border-color: var(--strong);
 }
-.choice:active,
-.drop-target:active {
+.choice:active {
   background-color: var(--raised);
 }
 .link {
@@ -662,37 +660,6 @@ input[type="number"] {
   color: var(--muted);
 }
 
-/* An empty field is a sunk well; the dashed outline appears only while something can be placed in it. */
-.drop-target {
-  justify-content: flex-start;
-  width: 100%;
-  min-height: var(--field);
-  padding: 0 12px;
-  background: var(--ground);
-  border-color: var(--rest-line);
-  color: var(--muted);
-  font-size: var(--fs-15);
-}
-.drop-target:hover {
-  background: var(--raised);
-  color: var(--text);
-}
-.drop-target .icon {
-  color: var(--accent);
-}
-.drop-target.next .icon {
-  color: inherit;
-}
-.drop-target.next {
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 700;
-  --focus-ink: var(--on-accent);
-  --rest-line: transparent;
-}
-.drop-target.next:hover {
-  background: var(--accent-hover);
-}
 .choice {
   display: flex;
   align-items: center;

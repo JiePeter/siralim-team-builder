@@ -70,8 +70,6 @@ function searchState() {
   const attributes = ref<Attributes>({});
   const conditions = ref<Condition[]>([blankCondition()]);
   const scope = ref<Scope>("action");
-  /** The phone layout folds empty mechanic filters behind "+ Filter" until opened. */
-  const filtersOpened = ref(false);
   const items = shallowRef<SearchItem[]>([]);
   const total = ref(0);
   const facets = shallowRef<DiscoveryResult["facets"]>({
@@ -131,7 +129,6 @@ function searchState() {
     attributes.value = { ...narrowing };
     conditions.value = [blankCondition()];
     scope.value = "action";
-    filtersOpened.value = false;
     wantsFocus.value = true;
     return run();
   }
@@ -142,7 +139,6 @@ function searchState() {
     attributes,
     conditions,
     scope,
-    filtersOpened,
     items,
     total,
     facets,

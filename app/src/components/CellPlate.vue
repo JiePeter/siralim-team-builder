@@ -264,6 +264,11 @@ const badges = computed(() => {
   background: var(--accent);
   color: var(--on-accent);
 }
+/* Compact plates sit in tight rows, so the mark stays inside the plate. */
+.cell-plate.compact .add-mark {
+  top: 0;
+  right: 0;
+}
 /* Half the icon's 24px grid: each 2px cell lands on one whole pixel. */
 .added-check .icon,
 .add-mark .icon {

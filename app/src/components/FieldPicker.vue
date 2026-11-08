@@ -67,7 +67,6 @@ provide(MECHANIC_SEARCH, usePickerSearchStore as unknown as typeof useSearchStor
 const { conditions, scope } = storeToRefs(search);
 conditions.value = [blankCondition()];
 scope.value = "action";
-search.filtersOpened = false;
 search.kind = fieldKind[props.field];
 const activeFilters = computed(
   () =>
@@ -134,6 +133,9 @@ const more = computed(() => {
   const trayed = new Set(inTray.value.map(({ item }) => entity(item.id)));
   return (found.value?.items ?? []).filter((c) => !trayed.has(entity(c.id)) && !here(c.id));
 });
+
+/** Nothing narrows the list and nothing precedes it. */
+const listed = computed(() => !q.value.trim() && !activeFilters.value && !inTray.value.length);
 
 /** A Relic is chosen by its look and name; its rank effects belong to its editor. */
 const tiles = computed(() => props.field === "relic");
@@ -239,7 +241,7 @@ function selected(event: CustomEvent, value: string) {
       </ListboxGroup>
       <ListboxGroup v-if="more.length" :class="{ 'tile-group': tiles }">
         <ListboxGroupLabel class="picker-label"
-          >{{ $t("tray.picker.moreMatches") }}
+          >{{ $t(listed ? "tray.picker.all" : "tray.picker.moreMatches") }}
           <span class="count">{{ more.length }}</span></ListboxGroupLabel
         >
         <ListboxItem
@@ -318,6 +320,10 @@ function selected(event: CustomEvent, value: string) {
   flex: none;
   min-height: var(--field);
   padding: 0 var(--space-12);
+}
+.filter-toggle[aria-expanded="true"] {
+  background: var(--ground);
+  border-color: var(--accent);
 }
 .filter-toggle.active,
 .filter-toggle.active:hover {

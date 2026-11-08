@@ -3,6 +3,7 @@ import { computed, inject } from "vue";
 import type { CharacterField } from "@/domain/assembly";
 import { characterEffects, type Character, type TeamIndex } from "@/domain/team";
 import { DIALOG_ACTIONS } from "./dialog";
+import CellPlate from "./CellPlate.vue";
 import DropZone from "./DropZone.vue";
 import EquipmentLine from "./EquipmentLine.vue";
 import { component } from "./components";
@@ -86,11 +87,11 @@ const perk = (position: number) => {
       <button
         v-else
         type="button"
-        class="drop-target"
+        class="field-add"
         :aria-label="$t('editors.specialization')"
         @click="emit('place', 'characterBase', 0)"
       >
-        <i class="icon icon-plus"></i>{{ $t("editors.specialization") }}
+        <CellPlate class="empty-key" compact addable :data="{ kind: 'specialization' }" />
       </button>
     </DropZone>
     <div class="character-slot-heading">
@@ -131,11 +132,11 @@ const perk = (position: number) => {
       <button
         v-else
         type="button"
-        class="drop-target"
+        class="field-add"
         :aria-label="$t('editors.anointment', { position })"
         @click="emit('place', 'characterAnointment', position - 1)"
       >
-        <i class="icon icon-plus"></i>{{ position }}
+        <CellPlate class="empty-key" compact addable :data="{ kind: 'perk' }" />
       </button>
     </DropZone>
   </section>

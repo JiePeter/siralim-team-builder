@@ -20,8 +20,6 @@ const noCard: CardFields = { effects: [], facts: [], attrs: {} };
 export const useFillStore = defineStore("fill", () => {
   const conditions = ref<Condition[]>([blankCondition()]);
   const scope = ref<Scope>("action");
-  /** The phone layout folds empty mechanic filters behind "+ Filter" until opened. */
-  const filtersOpened = ref(false);
   const items = shallowRef<SearchItem[]>([]);
   const total = ref(0);
   const matched = shallowRef<Set<string>>(new Set());
@@ -61,5 +59,5 @@ export const useFillStore = defineStore("fill", () => {
     }
   }
 
-  return { conditions, scope, filtersOpened, items, total, matched, facets, active, run };
+  return { conditions, scope, items, total, matched, facets, active, run };
 });

@@ -132,7 +132,7 @@ watch(
   { immediate: true },
 );
 const showSlot = computed(() => (phone.value ? page.value === "slot" : slotOpen.value));
-const showTraits = computed(() => (phone.value ? !page.value : !slotOpen.value));
+const showTraits = computed(() => !phone.value && !slotOpen.value);
 
 const characterModal = ref(false);
 /** The Character and Notes dialog; on a phone it follows the route, so Back closes it. */
@@ -161,7 +161,7 @@ const characterSummary = computed(() => {
   const at = index.value;
   if (!at) return "";
   const capacity = characterEffects(at, team.value.character).anointment_capacity;
-  return `${specializationName.value || t("build.noSpecialization")} · ${team.value.character.anointments.length}/${capacity}`;
+  return specializationName.value || `${team.value.character.anointments.length}/${capacity}`;
 });
 const avatars = computed(() =>
   index.value
@@ -711,7 +711,13 @@ function placeFromHere(selection: Selection) {
 }
 
 async function sendToTray(at: Position) {
-  if (await attempt(() => store.unequip(at))) dialog.value = null;
+  const id = itemId(equipmentAt(at));
+  const name = id === BLANK_ARTIFACT ? t("build.artifact") : id && component(id)?.name;
+  const mark = store.restorePoint();
+  if (!(await attempt(() => store.unequip(at)))) return;
+  dialog.value = null;
+  await nextTick();
+  offerUndo(mark, t("build.wentToTray", { name }));
 }
 
 async function sendCharacterToTray(field: CharacterField, position: number) {
@@ -906,20 +912,6 @@ const gemPosition = (position: number): Position => ({
   field: "spells",
   index: position,
 });
-const gemAtSlot = (slot: number, position: number): Position => ({
-  slot,
-  field: "spells",
-  index: position,
-});
-/** Two rows of two keys on a card: the Relic, then Spell Gems up to the usual three. */
-const GEM_KEYS = 3;
-const gearGems = (slot: number) => {
-  const gems = team.value.slots[slot]!.spells ?? [];
-  return gems.length > GEM_KEYS
-    ? { shown: gems.slice(0, GEM_KEYS - 1), hidden: gems.length - GEM_KEYS + 1 }
-    : { shown: gems, hidden: 0 };
-};
-const relicRank = (relic: EquipmentRef) => String(asItem(relic).rank || 1);
 const specialization = computed(() => team.value.character.specialization);
 /** Anointments the Character row has room for; the rest are on the Character page. */
 const ANOINTMENT_KEYS = 5;
@@ -957,7 +949,7 @@ const dialogWarning = computed(() => {
 
 <template>
   <section class="team" :aria-label="$t('build.title')">
-    <div class="team-head">
+    <div class="team-head" :inert="phone && showSlot">
       <input
         class="team-title"
         :aria-label="$t('build.teamName')"
@@ -1178,7 +1170,12 @@ const dialogWarning = computed(() => {
     </div>
     <div :class="['slots', { 'traits-shown': showTraits, 'nether-shown': showNether }]">
       <div class="creature-slots">
-        <div class="slot-sheet" role="group" :aria-label="$t('build.teamSlots')">
+        <div
+          class="slot-sheet"
+          role="group"
+          :aria-label="$t('build.teamSlots')"
+          :inert="phone && showSlot"
+        >
           <div v-for="cell in cells" :key="cell.index" class="slot-column">
             <DropZone
               class="slot-drop"
@@ -1270,84 +1267,10 @@ const dialogWarning = computed(() => {
                   @inspect="() => {}"
                 />
               </div>
-              <div v-if="phone" class="gear-keys">
-                <DropZone :accepts="accepts({ slot: cell.index, field: 'relic' })">
-                  <button
-                    type="button"
-                    class="gear-key"
-                    :aria-label="
-                      [
-                        $t('build.relic'),
-                        team.slots[cell.index]!.relic &&
-                          component(itemId(team.slots[cell.index]!.relic)!)?.name,
-                      ]
-                        .filter(Boolean)
-                        .join(': ')
-                    "
-                    @click="openField({ slot: cell.index, field: 'relic' })"
-                  >
-                    <CellPlate
-                      v-if="
-                        team.slots[cell.index]!.relic &&
-                        component(itemId(team.slots[cell.index]!.relic)!)
-                      "
-                      compact
-                      :data="component(itemId(team.slots[cell.index]!.relic)!)!"
-                      :corner="relicRank(team.slots[cell.index]!.relic!)"
-                    />
-                    <CellPlate v-else class="empty-key" compact addable :data="{ kind: 'relic' }" />
-                  </button>
-                </DropZone>
-                <DropZone
-                  v-for="(gem, position) in gearGems(cell.index).shown"
-                  :key="asItem(gem).uid || position"
-                  :accepts="accepts({ slot: cell.index, field: 'spells' })"
-                >
-                  <button
-                    type="button"
-                    class="gear-key"
-                    :aria-label="
-                      [$t('build.spellGem'), component(itemId(gem)!)?.name]
-                        .filter(Boolean)
-                        .join(': ')
-                    "
-                    @click="openField(gemAtSlot(cell.index, position))"
-                  >
-                    <CellPlate
-                      v-if="component(itemId(gem)!)"
-                      compact
-                      :data="component(itemId(gem)!)!"
-                      :properties="propertyCount(gem)"
-                    />
-                  </button>
-                </DropZone>
-                <button
-                  v-if="gearGems(cell.index).hidden"
-                  type="button"
-                  class="gear-key gear-more"
-                  :aria-label="$t('build.gemsMore', { count: gearGems(cell.index).hidden })"
-                  @click="openSlotPage(cell.index)"
-                >
-                  +{{ gearGems(cell.index).hidden }}
-                </button>
-                <DropZone
-                  v-else-if="gearGems(cell.index).shown.length < GEM_KEYS"
-                  :accepts="accepts({ slot: cell.index, field: 'spells' })"
-                >
-                  <button
-                    type="button"
-                    class="gear-key"
-                    :aria-label="$t('build.spellGem')"
-                    @click="openField({ slot: cell.index, field: 'spells' })"
-                  >
-                    <CellPlate class="empty-key" compact addable :data="{ kind: 'spell' }" />
-                  </button>
-                </DropZone>
-              </div>
             </template>
           </div>
         </div>
-        <div v-if="phone" class="character-row">
+        <div v-if="phone" class="character-row" :inert="showSlot">
           <button
             type="button"
             class="character-entry"
@@ -1356,7 +1279,7 @@ const dialogWarning = computed(() => {
             <strong>{{ $t("build.character") }}</strong>
             <span>{{ characterSummary }}</span>
           </button>
-          <DropZone :accepts="acceptsCharacter('characterBase')">
+          <DropZone class="specialization-key" :accepts="acceptsCharacter('characterBase')">
             <button
               type="button"
               class="gear-key"
@@ -1485,7 +1408,7 @@ const dialogWarning = computed(() => {
                         class="icon-button"
                         :aria-label="$t('build.backToTrayNamed', { item: $t('build.nether') })"
                         :title="$t('build.backToTray')"
-                        @click="attempt(() => store.unequip(netherAt(openSlot, position)))"
+                        @click="sendToTray(netherAt(openSlot, position))"
                       >
                         <i class="icon icon-undo"></i>
                       </button>
@@ -1515,7 +1438,7 @@ const dialogWarning = computed(() => {
                 @drop="attempt(() => placeWithUndo({ slot: openSlot, field }, dropped()))"
                 @inspect="openField({ slot: openSlot, field })"
                 @copy="dialog = { type: 'copy', at: { slot: openSlot, field } }"
-                @remove="attempt(() => store.unequip({ slot: openSlot, field }))"
+                @remove="sendToTray({ slot: openSlot, field })"
               />
             </template>
             <DropZone
@@ -1556,7 +1479,7 @@ const dialogWarning = computed(() => {
                       class="icon-button"
                       :aria-label="$t('build.backToTrayNamed', { item: $t('build.spellGem') })"
                       :title="$t('build.backToTray')"
-                      @click="attempt(() => store.unequip(gemPosition(position)))"
+                      @click="sendToTray(gemPosition(position))"
                     >
                       <i class="icon icon-undo"></i>
                     </button>
@@ -2138,6 +2061,7 @@ const dialogWarning = computed(() => {
 .character-row {
   display: flex;
   align-items: stretch;
+  min-width: 0;
   min-height: var(--row);
   background: var(--cell);
 }
@@ -2147,20 +2071,25 @@ const dialogWarning = computed(() => {
   align-content: center;
   justify-content: stretch;
   min-width: 0;
-  padding: 0 var(--space-8);
+  padding: 0 var(--space-4) 0 var(--space-12);
   background: none;
   clip-path: none;
   text-align: left;
 }
 .character-entry > strong {
+  overflow: hidden;
   color: var(--kind-character);
   font-size: var(--fs-13);
   line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.gear-keys {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-top: 1px solid var(--line);
+/* An empty Specialization and an empty Anointment share a frame, so each keeps its kind's icon. */
+.character-row :deep(.empty-key.kind-plate > img) {
+  visibility: visible;
+}
+.specialization-key {
+  border-right: 1px solid var(--line);
 }
 .gear-key {
   display: grid;
@@ -2168,17 +2097,13 @@ const dialogWarning = computed(() => {
   min-width: 44px;
   height: 100%;
   min-height: 44px;
-  padding: 2px;
+  padding: 0;
   place-items: center;
   background: none;
   clip-path: none;
+  border: 0;
   font-size: var(--fs-12);
   line-height: 14px;
-  --key-line: transparent;
-}
-.gear-more {
-  color: var(--muted);
-  font: 400 16px / 1 var(--pixel-font);
 }
 .picker-current {
   padding-bottom: var(--space-12);
@@ -2222,20 +2147,6 @@ const dialogWarning = computed(() => {
     gap: var(--space-8);
     padding: var(--space-4) var(--gutter) var(--space-24);
   }
-  /* The four card rows and the gear keys, so the whole team fits one screen with its Character. */
-  .traits-shown .slot-column {
-    grid-row: span 5;
-    padding-bottom: 0;
-  }
-  .nether-shown.traits-shown .slot-column {
-    grid-row: span 6;
-  }
-  .traits-shown .slot-cell {
-    align-items: center;
-    gap: var(--space-4);
-    min-height: 44px;
-    padding: var(--space-4) 7px var(--space-4) 11px;
-  }
   /* A long team name shortens before the keys move; the notices fill the second row. */
   .team-head {
     display: grid;
@@ -2258,25 +2169,15 @@ const dialogWarning = computed(() => {
   .notices-toggle > .icon {
     margin-left: auto;
   }
-  .traits-shown .slot-cell .cell-index {
-    display: none;
+  .slot-number {
+    font-size: 24px;
   }
-  .traits-shown .slot-cell::after,
-  .traits-shown .slot-cell.vacant::after {
-    width: 12px;
-    height: 12px;
-    margin-left: auto;
-    -webkit-mask-size: 12px 12px;
-    mask-size: 12px 12px;
+  /* The height of a named tile, so a row of vacant tiles matches it. */
+  .slot-cell {
+    min-height: 122px;
   }
-  .traits-shown .slot-cell :deep(> .cell-label) {
-    font-size: var(--fs-13);
-    white-space: normal;
-  }
-  .slot-backdrop {
-    width: 128px;
-    height: 128px;
-    opacity: 0.22;
+  .open-slot .gem-area {
+    row-gap: var(--space-4);
   }
 }
 </style>

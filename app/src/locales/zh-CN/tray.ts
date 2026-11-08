@@ -79,6 +79,7 @@ export default {
       search: "搜索{label}",
       placeholder: "名称、特性或效果",
       inTray: "托盘中",
+      all: "全部",
       moreMatches: "更多匹配",
       showMore: "再显示 {count} 项",
       noMatches: "没有匹配的{label}",

@@ -221,6 +221,32 @@
   .anointment-slot > * {
     grid-column: 1;
   }
+  /* An open slot keeps its label column and rules, so all its fields read as one table. */
+  .open-slot .equipment,
+  .open-slot .gem-area {
+    grid-template-columns: 72px minmax(0, 1fr);
+    column-gap: var(--space-8);
+    border-bottom: 1px solid var(--line);
+  }
+  .open-slot .equipment > small,
+  .open-slot .gem-area > small {
+    align-self: start;
+    min-height: 44px;
+  }
+  .open-slot .equipment > :not(small),
+  .open-slot .gem-area > :not(small) {
+    grid-column: 2;
+  }
+  .open-slot .equipment > .field-add,
+  .open-slot .gem-area > .field-add,
+  .character-slot .equipment > .field-add {
+    display: flex;
+    justify-self: stretch;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+  }
 }
 
 /* An empty field's key is the kind's frame and the Add mark alone. */
@@ -248,4 +274,11 @@
 .equipment > .field-add,
 .gem-area > .field-add {
   margin-left: var(--space-8);
+}
+/* Touch rows have no grip inset to line up with. */
+@media (pointer: coarse) {
+  .equipment > .field-add,
+  .gem-area > .field-add {
+    margin-left: 0;
+  }
 }

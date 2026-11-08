@@ -38,7 +38,7 @@ function choose(rank: number) {
       :key="effect.rank"
       type="button"
       :class="['relic-rank', { 'outside-target': effect.rank > target }]"
-      :aria-pressed="effect.rank === current"
+      :aria-pressed="effect.rank <= current"
       @click="choose(effect.rank)"
     >
       <span class="relic-number">{{ effect.rank }}</span>

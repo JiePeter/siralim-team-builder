@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, ref } from "vue";
+import { computed, inject } from "vue";
 import { storeToRefs } from "pinia";
-import { useMediaQuery } from "@vueuse/core";
 import { t } from "@/i18n";
 import { useFillStore } from "@/stores/fill";
 import { MECHANIC_SEARCH, useSearchStore } from "@/stores/search";
@@ -12,11 +11,9 @@ import { filterState } from "./filters";
 /** Which page's mechanic query the rows edit; the provided one by default. */
 const props = defineProps<{ fill?: boolean }>();
 const store = props.fill ? useFillStore() : inject(MECHANIC_SEARCH, useSearchStore)();
-const { conditions, scope, facets, filtersOpened } = storeToRefs(store);
-const phone = useMediaQuery("(max-width: 767px)");
-const rows = ref<HTMLElement | null>(null);
+const { conditions, scope, facets } = storeToRefs(store);
 
-const state = computed(() => filterState(conditions.value, phone.value, filtersOpened.value));
+const state = computed(() => filterState(conditions.value));
 const facetRow = (index: number) =>
   facets.value.conditions[index] ?? { categories: [], relations: [], values: [] };
 
@@ -34,13 +31,7 @@ function remove(index: number) {
   store.run();
 }
 
-async function add() {
-  if (state.value.collapsed) {
-    filtersOpened.value = true;
-    await nextTick();
-    rows.value?.querySelector("select")?.focus();
-    return;
-  }
+function add() {
   conditions.value.push(blankCondition());
   store.run();
 }
@@ -48,14 +39,13 @@ async function add() {
 function clear() {
   conditions.value = [blankCondition()];
   scope.value = "action";
-  filtersOpened.value = false;
   store.run();
 }
 </script>
 
 <template>
   <section class="mechanism-filters" :aria-label="t('search.mechanic.filters')">
-    <div v-show="!state.collapsed" ref="rows">
+    <div>
       <div v-for="(condition, index) in conditions" :key="index" class="mechanism-row">
         <select
           class="filter-category"
@@ -107,7 +97,7 @@ function clear() {
         </template>
       </div>
     </div>
-    <div class="mechanism-toolbar">
+    <div v-if="state.canAdd || state.showScope || state.showClear" class="mechanism-toolbar">
       <button v-if="state.canAdd" type="button" @click="add">
         <i class="icon icon-plus"></i>{{ t("search.mechanic.add") }}
       </button>
@@ -129,7 +119,7 @@ function clear() {
         :title="t('search.mechanic.clear')"
         @click="clear"
       >
-        <i class="icon icon-close"></i>
+        <i class="icon icon-trash"></i>
       </button>
     </div>
   </section>

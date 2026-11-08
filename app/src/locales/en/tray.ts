@@ -79,6 +79,7 @@ export default {
       search: "Search {label}",
       placeholder: "Name, trait or effect",
       inTray: "In tray",
+      all: "All",
       moreMatches: "More matches",
       showMore: "Show {count} more",
       noMatches: "No {label} matches",

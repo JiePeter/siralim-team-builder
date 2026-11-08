@@ -39,7 +39,7 @@ export default {
       interaction: "机制交互 {n}",
       target: "机制目标 {n}",
       all: "全部机制",
-      add: "机制",
+      add: "再加一条机制",
       scope: "匹配范围",
       action: "同一动作",
       rule: "同一规则",

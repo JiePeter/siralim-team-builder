@@ -208,23 +208,19 @@ describe("picker pool", () => {
   });
 });
 
-describe("mechanic filter folding", () => {
+describe("mechanic filter toolbar", () => {
   const blank = { category: "", relation: "", value: "" };
   const status = { category: "status", relation: "", value: "" };
 
-  it("folds empty filters behind + Filter on phones until opened", () => {
-    expect(filterState([blank], true, false)).toMatchObject({ collapsed: true, canAdd: true });
-    expect(filterState([blank], true, true)).toMatchObject({ collapsed: false, canAdd: false });
-    expect(filterState([blank], false, false)).toMatchObject({ collapsed: false });
-  });
-
-  it("stays open on phones while a filter is active", () => {
-    expect(filterState([status], true, false)).toMatchObject({ collapsed: false, canAdd: true });
+  it("offers another filter only once every row has a mechanic", () => {
+    expect(filterState([blank]).canAdd).toBe(false);
+    expect(filterState([status]).canAdd).toBe(true);
+    expect(filterState([status, blank]).canAdd).toBe(false);
   });
 
   it("shows the match scope from two active filters", () => {
-    expect(filterState([status, blank], false, false).showScope).toBe(false);
-    expect(filterState([status, status], false, false).showScope).toBe(true);
+    expect(filterState([status, blank]).showScope).toBe(false);
+    expect(filterState([status, status]).showScope).toBe(true);
   });
 });
 

@@ -98,6 +98,7 @@
 
   --header-height: 56px;
   --tabbar-height: 0px;
+  --footer-height: calc(var(--control) + 2 * var(--space-8));
   /* Control heights: one per kind of control. */
   --control: 36px; /* default and icon keys, chips, menu rows */
   --control-compact: 32px; /* row actions beside a name */
