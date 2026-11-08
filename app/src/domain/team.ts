@@ -39,11 +39,24 @@ export type EquipmentRef = string | Equipment;
 /** An Artifact configured before it has a Trait. */
 export const BLANK_ARTIFACT = "artifact:0";
 
+export const DEFAULT_ARTIFACT_TYPE = "Sword";
+
+/** Slot fields that hold one component. */
+export const SINGLE_FIELDS = ["base", "fusion", "artifact", "relic"] as const;
+export type SingleField = (typeof SINGLE_FIELDS)[number];
+
+/** Slot fields that each hold one Trait. */
+export const TRAIT_FIELDS = ["base", "fusion", "artifact"] as const;
+export type TraitField = (typeof TRAIT_FIELDS)[number];
+
 export const itemId = (item: EquipmentRef | undefined) =>
   typeof item === "string" ? item : item?.id;
 
 export const asItem = (item: EquipmentRef): Equipment =>
   typeof item === "string" ? { uid: "", id: item, properties: [] } : item;
+
+export const artifactTypeOf = (item: EquipmentRef | undefined): string =>
+  (item && asItem(item).artifact?.type) || DEFAULT_ARTIFACT_TYPE;
 
 /** Component kinds each slot field holds. */
 export type SlotKinds = Record<Exclude<SlotField, "nether">, string[]>;
@@ -436,7 +449,7 @@ export function validateCharacter(index: TeamIndex, value: unknown): Character {
 
 export function validateArtifact(index: TeamIndex, value: unknown): void {
   if (!v.is(ArtifactShape, value)) fail(t("team.invalidArtifact"));
-  const type = get(value, "type", "Sword");
+  const type = get(value, "type", DEFAULT_ARTIFACT_TYPE);
   if (typeof type !== "string" || !Object.hasOwn(index.catalog.artifact_primary, type)) {
     fail(t("team.invalidArtifactType"));
   }
@@ -566,7 +579,7 @@ export function validateTeam(index: TeamIndex, input: unknown, previous?: unknow
 
   for (const slot of slots) {
     if (!v.is(SlotShape, slot)) fail(t("team.invalidSlot"));
-    for (const field of ["base", "fusion", "artifact", "relic"] as const) {
+    for (const field of SINGLE_FIELDS) {
       if (truthy(slot[field])) instance(slot[field], index.rules.slot_kinds[field]);
     }
     const nether = get(slot, "nether", []);

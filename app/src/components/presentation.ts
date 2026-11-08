@@ -1,6 +1,12 @@
 import type { RouteLocationRaw } from "vue-router";
+import { useMediaQuery, useStorage } from "@vueuse/core";
 import type { Attrs, Classification, Route } from "@/data";
 import { t } from "@/i18n";
+
+export const usePhone = () => useMediaQuery("(max-width: 767px)");
+
+/** Whether Nether Stone fields are shown, kept across visits. */
+export const useShowNether = () => useStorage("siralim-planner.show-nether", false);
 
 const KINDS = [
   "condition",

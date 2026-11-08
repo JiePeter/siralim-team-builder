@@ -9,14 +9,16 @@ import {
 import {
   groupsMeeting,
   memberWith,
+  query,
   rankGroups,
   textMatches,
   type CardFields,
   type Condition,
+  type DiscoveryResult,
   type Scope,
 } from "@/domain/discovery";
 import { memoRequest } from "@/data/memo";
-import { discoveryPack, scatteredIds, textIds } from "@/stores/search";
+import { discoveryPack, fallBackToScattered, textIds } from "@/stores/search";
 import { compareText } from "@/domain/values";
 import { fieldKind, type PickerField } from "./assembly";
 
@@ -67,6 +69,8 @@ export interface Picked {
   matched: Set<string> | null;
   /** Counted over the components that match the text, as Search counts them. */
   facets: AttributeFacet[];
+  /** The options of each mechanic filter row. */
+  conditionFacets: DiscoveryResult["facets"]["conditions"];
 }
 
 /**
@@ -83,18 +87,28 @@ export async function candidates(
 ): Promise<Picked> {
   const kind = fieldKind[field];
   const wanted = applicable(kind, attributes);
-  const [all, index, ids] = await Promise.all([
+  const [all, index, phrased] = await Promise.all([
     compatible(field, catalog),
     discoveryPack(),
     textIds(q),
   ]);
-  const matching = (found: Set<string>) => rankGroups(textMatches(index, q, found), q);
   const accepted = new Set(all.map((c) => index.canonical.get(c.id) ?? c.id));
-  let groups = ids ? matching(ids) : index.groups;
   // The field can accept none of the components holding the phrase.
-  if (ids && !groups.some((g) => accepted.has(g.entity.id))) {
-    groups = matching(await scatteredIds(q));
-  }
+  const { ids, found: groups } = await fallBackToScattered(
+    q,
+    phrased,
+    (matching) => (matching ? rankGroups(textMatches(index, q, matching), q) : index.groups),
+    (found) => found.some((g) => accepted.has(g.entity.id)),
+  );
+  const conditionFacets = query(index, {
+    q,
+    kind,
+    attributes,
+    conditions,
+    scope,
+    ids,
+    limit: 0,
+  }).facets.conditions;
   const order = new Map(groups.map((g, i) => [g.entity.id, i]));
   const position = (id: string) => order.get(index.canonical.get(id) ?? id) ?? Infinity;
   const texted = ids
@@ -109,7 +123,7 @@ export async function candidates(
   );
   const mechanics = conditions.some((c) => c.category);
   if (!ids && !Object.keys(wanted).length && !mechanics)
-    return { items: all, matched: null, facets };
+    return { items: all, matched: null, facets, conditionFacets };
   const meeting = groupsMeeting(index, conditions, scope);
   const met = (id: string) => meeting.has(index.canonical.get(id) ?? id);
   const matched = new Set(
@@ -121,5 +135,6 @@ export async function candidates(
     items: texted.filter((c) => memberWith(index, c, kind, wanted) && met(c.id)),
     matched,
     facets,
+    conditionFacets,
   };
 }

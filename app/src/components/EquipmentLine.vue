@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import type { ObjectPage } from "@/data";
 import CellPlate from "./CellPlate.vue";
+import type { Displayable } from "./presentation";
 
 const props = withDefaults(
   defineProps<{
-    data: ObjectPage | undefined;
+    data:
+      | (Displayable & {
+          kind: string;
+          name: string;
+          description?: string;
+          effects: { name: string; description: string }[];
+        })
+      | undefined;
     /** The first line; defaults to the object's name. */
     name?: string;
     /** The one line under the name; defaults to the first effect. */

@@ -2,11 +2,12 @@
 import { computed, nextTick, ref, toRaw, useId, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { I18nT } from "vue-i18n";
-import { useEventListener, useFileDialog, useMediaQuery, useStorage, useSwipe } from "@vueuse/core";
+import { useEventListener, useFileDialog, useSwipe } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { assetUrl, object, type Carrier } from "@/data";
-import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
+import { useTeamStore } from "@/stores/team";
 import {
+  equipmentAt as equipmentIn,
   fieldLabels,
   isListField,
   type CharacterField,
@@ -29,10 +30,12 @@ import {
 } from "@/domain/placement";
 import {
   asItem,
+  BLANK_ARTIFACT,
   characterEffects,
   isCharacterPart,
   itemId,
   NETHER_TRAITS,
+  TRAIT_FIELDS,
   type ArtifactConfig,
   type Equipment,
   type EquipmentRef,
@@ -46,7 +49,6 @@ import CharacterPanel from "@/components/CharacterPanel.vue";
 import DropZone from "@/components/DropZone.vue";
 import EditorActions from "@/components/EditorActions.vue";
 import EquipmentLine from "@/components/EquipmentLine.vue";
-import ResultCard from "@/components/ResultCard.vue";
 import EquipmentRow from "@/components/EquipmentRow.vue";
 import FieldPicker from "@/components/FieldPicker.vue";
 import FloatingMenu from "@/components/FloatingMenu.vue";
@@ -64,7 +66,7 @@ import {
   useGemProperties,
 } from "@/components/assembly";
 import { component, loadComponent } from "@/components/components";
-import { spriteOf } from "@/components/presentation";
+import { spriteOf, usePhone, useShowNether } from "@/components/presentation";
 import { draggedSelection, dragged, useDragSource, type Selection } from "@/components/dragging";
 import { attempt, toast, toastError } from "@/components/toast";
 import { t } from "@/i18n";
@@ -100,16 +102,15 @@ store.rules();
 const openSlot = ref(0);
 /** On a wider screen, whether a slot is open below the sheet; the Traits table shows otherwise. */
 const slotOpen = ref(false);
-const phone = useMediaQuery("(max-width: 767px)");
+const phone = usePhone();
 /** On a phone a slot or the character opens as its own page, so Back closes it. */
 const page = computed(() => (phone.value ? route.query.page : undefined));
-const showNether = useStorage("siralim-planner.show-nether", false);
+const showNether = useShowNether();
 const fields = computed(() =>
   showNether.value
     ? (["base", "fusion", "artifact", "nether", "relic"] as const)
     : (["base", "fusion", "artifact", "relic"] as const),
 );
-const TRAIT_FIELDS = ["base", "fusion", "artifact"] as const;
 const dialog = ref<Dialog | null>(null);
 /** Remakes the Artifact editor after an Undo, so it shows the restored Artifact. */
 const artifactVersion = ref(0);
@@ -154,7 +155,6 @@ const dialogOpen = computed({
     if (!value) dialog.value = dialog.value?.from ?? null;
   },
 });
-const kindOf = (id: string) => index.value?.kinds.get(id);
 const slot = computed(() => team.value.slots[openSlot.value]!);
 const characterSummary = computed(() => {
   const at = index.value;
@@ -250,10 +250,25 @@ function repeatWarning(at: number, field: SlotField) {
     : null;
 }
 
-function equipmentAt(at: Position) {
-  const s = team.value.slots[at.slot];
-  return isListField(at.field) ? s?.[at.field]?.[at.index ?? 0] : s?.[at.field];
-}
+const equipmentAt = (at: Position) => equipmentIn(team.value, at.slot, at.field, at.index);
+
+const characterAt = (field: CharacterField, position: number) =>
+  field === "characterBase"
+    ? team.value.character.specialization
+    : team.value.character.anointments[position];
+
+/** What a tray item or placed gear selection holds. */
+const selectionItem = (selection: { uid: string } | Position) =>
+  "uid" in selection
+    ? team.value.inventory.find((i) => i.uid === selection.uid)
+    : equipmentAt(selection);
+
+/** The component a placement into `target` takes out; a list field with no position adds to the list. */
+const occupantAt = (target: Position) =>
+  isListField(target.field) && target.index === undefined ? undefined : itemId(equipmentAt(target));
+
+const gearName = (id: string) =>
+  id === BLANK_ARTIFACT ? t("build.artifact") : component(id)?.name;
 
 /** The component being dragged, or else the one chosen for placing. */
 const placingSelection = computed(() => (dragged.value ? draggedSelection() : selected.value));
@@ -265,19 +280,15 @@ const movingMember = computed(() => {
 const placing = computed(() => {
   const s = placingSelection.value;
   if (!s || "member" in s) return null;
-  if ("uid" in s) return team.value.inventory.find((i) => i.uid === s.uid)?.id ?? null;
-  if ("character" in s)
-    return s.character === "characterBase"
-      ? team.value.character.specialization
-      : (team.value.character.anointments[s.position] ?? null);
-  return itemId(equipmentAt(s)) ?? null;
+  if ("character" in s) return characterAt(s.character, s.position) ?? null;
+  return itemId(selectionItem(s)) ?? null;
 });
 const placingKind = computed(() => (placing.value ? component(placing.value)?.kind : undefined));
 /** A configured Artifact stays an Artifact; other creatures, traits and materials move as their trait. */
 const placingConfigured = computed(() => {
   const s = placingSelection.value;
   if (!s || "character" in s || "member" in s) return false;
-  const item = "uid" in s ? team.value.inventory.find((i) => i.uid === s.uid) : equipmentAt(s);
+  const item = selectionItem(s);
   return typeof item === "object" && !!item.artifact;
 });
 
@@ -383,8 +394,6 @@ const dialogTitle = computed(() => {
   const d = dialog.value;
   if (!d) return "";
   switch (d.type) {
-    case "pool":
-      return fieldTitle(d.target);
     case "carrier":
       return d.kind === "creature" ? t("build.selectCreature") : t("build.selectMaterial");
     case "character":
@@ -393,14 +402,10 @@ const dialogTitle = computed(() => {
       return t("build.spellGem");
     case "copy":
       return t("build.copyTo");
-    case "artifact":
-      return fieldTitle({ slot: d.slot, field: "artifact" });
-    case "relic":
-      return fieldTitle({ slot: d.slot, field: "relic" });
     case "perks":
       return t("build.specialization");
   }
-  return "";
+  return dialogAt.value ? fieldTitle(dialogAt.value) : "";
 });
 const chosenSpecialization = computed(() =>
   index.value?.catalog.specializations.find((s) => s.id === team.value.character.specialization),
@@ -412,10 +417,31 @@ async function install(uid: string, target: Position, resolvedId: string) {
   dialog.value = null;
 }
 
-/** Offer to undo what ran since `mark` was taken. */
-function offerUndo(mark: () => () => void, text: string, after?: () => void) {
+/** Run a change; when it takes out the component `read` finds, offer to undo it. */
+async function withUndo({
+  read,
+  run,
+  next,
+  after,
+  swapped,
+}: {
+  read: () => string | null | undefined;
+  run: () => unknown;
+  next?: () => void;
+  /** Runs once an Undo has restored the team. */
+  after?: () => void;
+  /** The component changed places instead of going to the tray. */
+  swapped?: boolean;
+}) {
+  const occupant = read();
+  const mark = store.restorePoint();
+  await run();
+  next?.();
+  // The toast joins the dialog on screen, which `next` may have just closed.
+  await nextTick();
+  if (!occupant || read() === occupant) return;
   const undo = mark();
-  toast(text, {
+  toast(swapped ? t("build.swapped") : t("build.wentToTray", { name: gearName(occupant) }), {
     label: t("build.undo"),
     run: () =>
       attempt(() => {
@@ -425,24 +451,14 @@ function offerUndo(mark: () => () => void, text: string, after?: () => void) {
   });
 }
 
-/** Run a placement into `target`; when that takes a filled field's occupant out, it can be undone. */
-async function placingOver(target: Position, swap: boolean, run: () => unknown, next?: () => void) {
-  const occupied = isListField(target.field) && target.index === undefined;
-  const occupant = occupied ? undefined : itemId(equipmentAt(target));
-  const mark = store.restorePoint();
-  await run();
-  next?.();
-  // The toast joins the dialog on screen, which `next` may have just closed.
-  await nextTick();
-  if (!occupant || itemId(equipmentAt(target)) === occupant) return;
-  const name = occupant === BLANK_ARTIFACT ? t("build.artifact") : component(occupant)?.name;
-  offerUndo(mark, swap ? t("build.swapped") : t("build.wentToTray", { name }));
-}
-
 function placeWithUndo(target: Position, selection: Selection | null = selected.value) {
-  const swap =
+  const swapped =
     !!selection && "slot" in selection && !!traitSwap(index.value!, team.value, selection, target);
-  return placingOver(target, swap, () => place(target, selection));
+  return withUndo({
+    read: () => occupantAt(target),
+    run: () => place(target, selection),
+    swapped,
+  });
 }
 
 /** What a tap on a field does: with something chosen it places it, otherwise it opens the field. */
@@ -490,10 +506,7 @@ function afterPick(target: Position) {
 async function place(target: Position, selection: Selection | null = selected.value) {
   if (!selection) return;
   if ("character" in selection || "member" in selection) throw new Error(t("build.onlyGear"));
-  const moving =
-    "uid" in selection
-      ? team.value.inventory.find((i) => i.uid === selection.uid)?.id
-      : itemId(equipmentAt(selection));
+  const moving = itemId(selectionItem(selection));
   const refused = moving && refusal(target, selection, moving);
   if (refused) throw new Error(refused);
   if ("slot" in selection) {
@@ -553,72 +566,41 @@ async function placeCharacter(
     return;
   }
   selected.value = null;
-  await overCharacter(
-    field,
-    position,
-    () => store.placeCharacterPart(selection.uid, field, position),
-    () => (dialog.value = field === "characterBase" ? { type: "perks" } : null),
+  await overCharacter(field, position, () =>
+    store.placeCharacterPart(selection.uid, field, position),
   );
 }
 
-const characterAt = (field: CharacterField, position: number) =>
-  field === "characterBase"
-    ? team.value.character.specialization
-    : team.value.character.anointments[position];
+/** Run a change to a character part; a Specialization continues into its Perks. */
+function overCharacter(field: CharacterField, position: number, run: () => unknown) {
+  return withUndo({
+    read: () => characterAt(field, position),
+    run,
+    next: () => (dialog.value = field === "characterBase" ? { type: "perks" } : null),
+  });
+}
 
-/** Run a change to a character part; when it takes a filled part out, it can be undone. */
-async function overCharacter(
-  field: CharacterField,
-  position: number,
-  run: () => unknown,
-  next?: () => void,
-) {
-  const occupant = characterAt(field, position);
-  const mark = store.restorePoint();
-  await run();
-  next?.();
-  await nextTick();
-  if (occupant && characterAt(field, position) !== occupant)
-    offerUndo(mark, t("build.wentToTray", { name: component(occupant)?.name }));
+/** Run the choice a picker made for `target`, then continue past the picker. */
+function fillFromPicker(target: Position, run: () => unknown) {
+  attempt(() => withUndo({ read: () => occupantAt(target), run, next: () => afterPick(target) }));
 }
 
 function pickPool(uid: string) {
   const d = dialog.value;
   if (d?.type !== "pool") return;
-  attempt(() =>
-    placingOver(
-      d.target,
-      false,
-      () => place(d.target, { uid }),
-      () => afterPick(d.target),
-    ),
-  );
+  fillFromPicker(d.target, () => place(d.target, { uid }));
 }
 
 function takePool(id: string) {
   const d = dialog.value;
   if (d?.type !== "pool") return;
-  attempt(() =>
-    placingOver(
-      d.target,
-      false,
-      () => store.take(id, d.target),
-      () => afterPick(d.target),
-    ),
-  );
+  fillFromPicker(d.target, () => store.take(id, d.target));
 }
 
 function pickCarrier(option: Carrier) {
   const d = dialog.value;
   if (d?.type !== "carrier") return;
-  attempt(() =>
-    placingOver(
-      d.target,
-      false,
-      () => install(d.uid, d.target, option.id),
-      () => afterPick(d.target),
-    ),
-  );
+  fillFromPicker(d.target, () => install(d.uid, d.target, option.id));
 }
 
 /** A Specialization goes to its field, an Anointment to the next free one. */
@@ -639,12 +621,7 @@ function takeCharacter(id: string) {
   const d = dialog.value;
   if (d?.type !== "character") return;
   attempt(() =>
-    overCharacter(
-      d.field,
-      d.position,
-      () => store.takeCharacterPart(id, d.field, d.position),
-      () => (dialog.value = d.field === "characterBase" ? { type: "perks" } : null),
-    ),
+    overCharacter(d.field, d.position, () => store.takeCharacterPart(id, d.field, d.position)),
   );
 }
 
@@ -654,7 +631,7 @@ async function placeOnTile(target: number) {
   if (!selection) return;
   if (!("member" in selection)) {
     if (!field) throw new Error(t("build.doesNotFit"));
-    openSlot.value = target;
+    setOpenSlot(target);
     // A Primary moving to an empty slot takes its whole slot with it.
     if ("slot" in selection && selection.field === "base" && field === "base") {
       selected.value = null;
@@ -665,8 +642,8 @@ async function placeOnTile(target: number) {
   selected.value = null;
   if (selection.member === target) return;
   await store.swapSlots(selection.member, target);
-  if (openSlot.value === selection.member) openSlot.value = target;
-  else if (openSlot.value === target) openSlot.value = selection.member;
+  if (openSlot.value === selection.member) setOpenSlot(target);
+  else if (openSlot.value === target) setOpenSlot(selection.member);
 }
 
 function tapTile(i: number) {
@@ -677,11 +654,15 @@ function tapTile(i: number) {
   else showSlotPanel(i);
 }
 
-/** Beside the sheet the open slot is in the route too, so it survives a trip to Search. */
-function showSlotPanel(i: number) {
+/** A slot open beside the sheet is in the route too, so it survives a trip to Search. */
+function setOpenSlot(i: number) {
   openSlot.value = i;
+  if (slotOpen.value && !phone.value) router.replace({ query: { slot: String(i + 1) } });
+}
+
+function showSlotPanel(i: number) {
   slotOpen.value = true;
-  router.replace({ query: { slot: String(i + 1) } });
+  setOpenSlot(i);
 }
 
 function openSlotPage(i: number) {
@@ -706,14 +687,14 @@ function placeFromHere(selection: Selection) {
   if (slot !== null) closePage();
 }
 
-async function sendToTray(at: Position) {
-  const id = itemId(equipmentAt(at));
-  const name = id === BLANK_ARTIFACT ? t("build.artifact") : id && component(id)?.name;
-  const mark = store.restorePoint();
-  if (!(await attempt(() => store.unequip(at)))) return;
-  dialog.value = null;
-  await nextTick();
-  offerUndo(mark, t("build.wentToTray", { name }));
+function sendToTray(at: Position) {
+  return attempt(() =>
+    withUndo({
+      read: () => occupantAt(at),
+      run: () => store.unequip(at),
+      next: () => (dialog.value = null),
+    }),
+  );
 }
 
 async function sendCharacterToTray(field: CharacterField, position: number) {
@@ -766,9 +747,7 @@ function copyTargets(at: Position) {
     const occupant = !isListField(at.field) && itemId(target[at.field]);
     const gems = at.field === "spells" ? (target.spells?.length ?? 0) : 0;
     const held = occupant
-      ? t("build.replaces", {
-          name: occupant === BLANK_ARTIFACT ? t("build.artifact") : component(occupant)?.name,
-        })
+      ? t("build.replaces", { name: gearName(occupant) })
       : gems
         ? t("build.spellGemCount", gems)
         : "";
@@ -803,17 +782,18 @@ function applyGem(properties: string[], variants: Record<string, number>) {
 function applyArtifact(item: Equipment, configuration: ArtifactConfig, taken: string | null) {
   const d = dialog.value;
   if (d?.type !== "artifact") return;
-  const before = itemId(team.value.slots[d.slot]?.artifact);
-  const mark = store.restorePoint();
-  attempt(async () => {
-    await store.setArtifact(d.slot, item, configuration, taken);
-    if (before && before !== BLANK_ARTIFACT && before !== item.id)
-      offerUndo(
-        mark,
-        t("build.wentToTray", { name: component(before)?.name }),
-        () => artifactVersion.value++,
-      );
-  });
+  // A blank Artifact has no Trait to send to the tray.
+  const trait = () => {
+    const id = itemId(team.value.slots[d.slot]?.artifact);
+    return id === BLANK_ARTIFACT ? undefined : id;
+  };
+  attempt(() =>
+    withUndo({
+      read: trait,
+      run: () => store.setArtifact(d.slot, item, configuration, taken),
+      after: () => artifactVersion.value++,
+    }),
+  );
 }
 
 function applyRelic(id: string, rank: number) {
@@ -918,20 +898,24 @@ function openCharacter(field: CharacterField, position: number) {
   attempt(() => placeCharacter(field, position));
 }
 
-/** The field a dialog is about and what is in it, to lead the page with. */
-const dialogField = computed<Position | null>(() =>
-  dialog.value?.type === "pool" ? dialog.value.target : null,
-);
-const currentItem = computed(() => {
-  const at = dialogField.value;
-  // A list field opened without a position adds to the list.
-  const item = at && !(isListField(at.field) && at.index === undefined) && equipmentAt(at);
-  return item ? asItem(item) : null;
+/** The field a picker or editor dialog is about. */
+const dialogAt = computed<Position | null>(() => {
+  const d = dialog.value;
+  switch (d?.type) {
+    case "pool":
+      return d.target;
+    case "gem":
+      return d.at;
+    case "artifact":
+    case "relic":
+      return { slot: d.slot, field: d.type };
+  }
+  return null;
 });
 const currentCharacter = computed(() => {
   const d = dialog.value;
-  if (d?.type !== "character") return null;
-  return characterAt(d.field, d.position) ?? null;
+  if (d?.type !== "character") return undefined;
+  return characterAt(d.field, d.position) ?? undefined;
 });
 /** A field can swap with another that holds a Trait. */
 const canSwap = (at: Position) => ["base", "fusion"].includes(at.field) && !!equipmentAt(at);
@@ -1536,37 +1520,31 @@ const dialogWarning = computed(() => {
         <FieldPicker
           :field="dialog.target.field"
           :label="fieldLabels[dialog.target.field]"
-          :team="team"
-          :catalog="index.catalog"
-          :kind-of="kindOf"
           :target="dialog.target"
+          :current="occupantAt(dialog.target)"
           @pick="pickPool"
           @take="takePool"
         >
-          <template #current>
-            <div v-if="currentItem && component(currentItem.id)" class="picker-current">
-              <ResultCard :item="component(currentItem.id) as never" compact fixed link>
-                <button
-                  v-if="canSwap(dialog.target)"
-                  type="button"
-                  class="icon-button"
-                  :aria-label="$t('editors.keys.swap')"
-                  :title="$t('editors.keys.swap')"
-                  @click="placeFromHere(dialogField!)"
-                >
-                  <i class="icon icon-replace"></i>
-                </button>
-                <button
-                  type="button"
-                  class="icon-button"
-                  :aria-label="$t('editors.keys.tray')"
-                  :title="$t('editors.keys.tray')"
-                  @click="sendToTray(dialogField!)"
-                >
-                  <i class="icon icon-undo"></i>
-                </button>
-              </ResultCard>
-            </div>
+          <template #current-actions>
+            <button
+              v-if="canSwap(dialog.target)"
+              type="button"
+              class="icon-button"
+              :aria-label="$t('editors.keys.swap')"
+              :title="$t('editors.keys.swap')"
+              @click="placeFromHere(dialogAt!)"
+            >
+              <i class="icon icon-replace"></i>
+            </button>
+            <button
+              type="button"
+              class="icon-button"
+              :aria-label="$t('editors.keys.tray')"
+              :title="$t('editors.keys.tray')"
+              @click="sendToTray(dialogAt!)"
+            >
+              <i class="icon icon-undo"></i>
+            </button>
           </template>
         </FieldPicker>
       </div>
@@ -1581,29 +1559,22 @@ const dialogWarning = computed(() => {
           :label="
             dialog.field === 'characterBase' ? $t('build.specialization') : $t('build.anointment')
           "
-          :team="team"
-          :catalog="index.catalog"
-          :kind-of="kindOf"
+          :current="currentCharacter"
           @pick="pickCharacter"
           @take="takeCharacter"
         >
-          <template #current>
-            <div v-if="currentCharacter && component(currentCharacter)" class="picker-current">
-              <ResultCard :item="component(currentCharacter) as never" compact fixed link>
-                <button
-                  type="button"
-                  class="icon-button"
-                  :aria-label="$t('editors.keys.tray')"
-                  :title="$t('editors.keys.tray')"
-                  @click="
-                    dialog?.type === 'character' &&
-                    sendCharacterToTray(dialog.field, dialog.position)
-                  "
-                >
-                  <i class="icon icon-undo"></i>
-                </button>
-              </ResultCard>
-            </div>
+          <template #current-actions>
+            <button
+              type="button"
+              class="icon-button"
+              :aria-label="$t('editors.keys.tray')"
+              :title="$t('editors.keys.tray')"
+              @click="
+                dialog?.type === 'character' && sendCharacterToTray(dialog.field, dialog.position)
+              "
+            >
+              <i class="icon icon-undo"></i>
+            </button>
           </template>
         </FieldPicker>
       </div>
@@ -1619,47 +1590,33 @@ const dialogWarning = computed(() => {
           <EquipmentLine :data="target.data" :line="target.line" />
         </button>
       </div>
-      <template v-else-if="dialog?.type === 'gem' && index && gemAt(dialog)">
+      <template v-else-if="dialogAt && index">
         <EditorActions
-          replace
-          tray
-          @replace="dialog?.type === 'gem' && replaceFrom(dialog.at)"
-          @tray="dialog?.type === 'gem' && sendToTray(dialog.at)"
+          :replace="dialogAt.field !== 'artifact' && !!equipmentAt(dialogAt)"
+          :tray="!!equipmentAt(dialogAt)"
+          @replace="replaceFrom(dialogAt!)"
+          @tray="sendToTray(dialogAt!)"
         />
         <GemEditor
+          v-if="dialog?.type === 'gem' && gemAt(dialog)"
           :item="gemAt(dialog)!"
           :properties="gemProperties"
           :compatible="index?.rules.property_compatibility[gemAt(dialog)!.id]"
           @apply="applyGem"
         />
-      </template>
-      <template v-else-if="dialog?.type === 'artifact' && index">
-        <EditorActions
-          :tray="!!artifactOf(dialog.slot)"
-          @tray="
-            dialog?.type === 'artifact' && sendToTray({ slot: dialog.slot, field: 'artifact' })
-          "
-        />
         <ArtifactEditor
+          v-else-if="dialog?.type === 'artifact'"
           :key="artifactVersion"
           :item="artifactOf(dialog.slot)"
           :catalog="index.catalog"
           :team="team"
           :at-slot="dialog.slot"
-          :kind-of="kindOf"
           @apply="applyArtifact"
         />
-      </template>
-      <template v-else-if="dialog?.type === 'relic' && index">
-        <EditorActions
-          replace
-          tray
-          @replace="dialog?.type === 'relic' && replaceFrom({ slot: dialog.slot, field: 'relic' })"
-          @tray="dialog?.type === 'relic' && sendToTray({ slot: dialog.slot, field: 'relic' })"
-        />
         <RelicEditor
+          v-else-if="dialog?.type === 'relic'"
           :id="relicOf(dialog.slot).id"
-          :relics="[...index.relics.values()]"
+          :relic="index.relics.get(relicOf(dialog.slot).id)"
           :rank="relicOf(dialog.slot).rank"
           @apply="applyRelic"
         />
@@ -2095,13 +2052,6 @@ const dialogWarning = computed(() => {
   border: 0;
   font-size: var(--fs-12);
   line-height: 14px;
-}
-.picker-current {
-  padding-bottom: var(--space-12);
-}
-.picker-current :deep(.result-action) {
-  display: flex;
-  gap: var(--space-4);
 }
 .field-notice {
   border-width: 0 0 1px;

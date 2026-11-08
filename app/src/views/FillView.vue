@@ -48,6 +48,7 @@ const query = useFillStore();
 const {
   active,
   conditions,
+  scope,
   facets,
   fromTray,
   q: keyword,
@@ -289,7 +290,15 @@ function filter(value: string) {
     </div>
     <ModalDialog v-model:open="editing" :title="t('search.mechanic.filters')" sheet>
       <div class="fill-sheet">
-        <MechanicFilters fill />
+        <MechanicFilters
+          v-model:conditions="conditions"
+          v-model:scope="scope"
+          :rows="facets.conditions"
+          fill
+          :clearable="!!mechanism"
+          @change="query.run()"
+          @clear="mechanism = ''"
+        />
         <div
           v-if="suggesting && grouping.mechanisms.length > 1"
           class="fill-relations"

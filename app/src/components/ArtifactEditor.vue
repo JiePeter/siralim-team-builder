@@ -2,8 +2,14 @@
 import { computed, reactive, ref, toRaw, watch } from "vue";
 import type { Catalog } from "@/data";
 import { artifactValueText } from "@/domain/artifact";
-import type { ArtifactConfig, Equipment, Team } from "@/domain/team";
-import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
+import {
+  BLANK_ARTIFACT,
+  DEFAULT_ARTIFACT_TYPE,
+  type ArtifactConfig,
+  type Equipment,
+  type Team,
+} from "@/domain/team";
+import { useTeamStore } from "@/stores/team";
 import { statName, t } from "@/i18n";
 import FieldPicker from "./FieldPicker.vue";
 import CellPlate from "./CellPlate.vue";
@@ -19,7 +25,6 @@ const props = defineProps<{
   team: Team;
   /** The slot this Artifact sits in. */
   atSlot: number;
-  kindOf: (id: string) => string | undefined;
 }>();
 const emit = defineEmits<{
   apply: [item: Equipment, configuration: ArtifactConfig, taken: string | null];
@@ -31,13 +36,13 @@ const padded = (ids: string[] | undefined, length: number) =>
 const store = useTeamStore();
 const slots = store.index!.rules.artifact_slots;
 const types = Object.keys(props.catalog.artifact_primary).sort(
-  (a, b) => Number(b === "Sword") - Number(a === "Sword"),
+  (a, b) => Number(b === DEFAULT_ARTIFACT_TYPE) - Number(a === DEFAULT_ARTIFACT_TYPE),
 );
 const draft: Equipment = props.item
   ? structuredClone(toRaw(props.item))
   : { uid: newUid(), id: BLANK_ARTIFACT, properties: [] };
 const config = reactive({
-  type: "Sword",
+  type: DEFAULT_ARTIFACT_TYPE,
   spell: null as string | null,
   ...structuredClone(draft.artifact ?? {}),
   stats: padded(draft.artifact?.stats, slots.stats),
@@ -206,9 +211,6 @@ watch(config, save, { deep: true });
         <FieldPicker
           field="artifactTrait"
           :label="$t('editors.trait')"
-          :team="team"
-          :catalog="catalog"
-          :kind-of="kindOf"
           :target="{ slot: atSlot, field: 'artifact' }"
           @pick="pickTrait"
           @take="takeTrait"

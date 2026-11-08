@@ -6,7 +6,9 @@ import type { CharacterField, SlotField } from "@/domain/assembly";
 import { placementRefusal } from "@/domain/placement";
 import {
   carriersOf,
+  DEFAULT_ARTIFACT_TYPE,
   isCharacterPart,
+  SINGLE_FIELDS,
   type ArtifactConfig,
   type Carriers,
   type Equipment,
@@ -52,7 +54,7 @@ export const artifactTrigger: Record<string, string> = Object.fromEntries(
 
 /** The game's sprite for an Artifact type, at its highest tier. */
 export const artifactImage = (type: string): string =>
-  `/assets/siralim/images/item/artifact/${ARTIFACT_TYPES.includes(type) ? type : "Sword"}_t5.png`;
+  `/assets/siralim/images/item/artifact/${ARTIFACT_TYPES.includes(type) ? type : DEFAULT_ARTIFACT_TYPE}_t5.png`;
 
 /** The name an Artifact type is shown under. */
 export const artifactTypeName = (type: string): string =>
@@ -97,7 +99,7 @@ export function canPlace(
     isCharacterPart(index.catalog, item.id, "characterAnointment")
   )
     return true;
-  const fields: SlotField[] = ["base", "fusion", "artifact", "relic", "spells"];
+  const fields: SlotField[] = [...SINGLE_FIELDS, "spells"];
   if (showNether) fields.push("nether");
   return team.slots.some((_, slot) =>
     fields.some(
@@ -197,7 +199,7 @@ export function artifactEffects(config: ArtifactConfig, catalog: Catalog): Artif
       ? [
           described(
             catalog.spells.find((s) => s.id === config.spell),
-            artifactTrigger[config.type || "Sword"] ?? null,
+            artifactTrigger[config.type || DEFAULT_ARTIFACT_TYPE] ?? null,
           ),
         ]
       : []),

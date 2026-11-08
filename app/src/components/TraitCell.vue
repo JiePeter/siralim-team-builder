@@ -2,11 +2,10 @@
 import { computed } from "vue";
 import { fieldLabels } from "@/domain/assembly";
 import type { CarriedField } from "@/domain/placement";
-import { asItem, itemId, type EquipmentRef } from "@/domain/team";
-import { BLANK_ARTIFACT } from "@/stores/team";
+import { artifactTypeOf, BLANK_ARTIFACT, itemId, type EquipmentRef } from "@/domain/team";
 import CellPlate from "./CellPlate.vue";
 import DropZone from "./DropZone.vue";
-import { artifactImage, artifactTypeName } from "./assembly";
+import { artifactImage, artifactTypeName, fieldKind } from "./assembly";
 import EffectText from "./EffectText.vue";
 import { component } from "./components";
 import { useDragSource } from "./dragging";
@@ -25,23 +24,18 @@ const emit = defineEmits<{ place: []; drop: [] }>();
 
 const drag = useDragSource();
 const label = computed(() => fieldLabels[props.at.field]);
-/** The kind an empty field takes, whose frame and icon its key shows. */
-const EMPTY_KIND = { base: "creature", fusion: "creature", artifact: "material", nether: "trait" };
 const page = computed(() => {
   const id = itemId(props.value);
   return id && id !== BLANK_ARTIFACT ? component(id) : undefined;
 });
 /** An Artifact configured before it has a Trait shows its type. */
 const blankType = computed(() =>
-  itemId(props.value) === BLANK_ARTIFACT ? asItem(props.value!).artifact?.type || "Sword" : "",
+  itemId(props.value) === BLANK_ARTIFACT ? artifactTypeOf(props.value) : "",
 );
 const trait = computed(() => (page.value?.kind === "trait" ? page.value : page.value?.effects[0]));
 const carrier = computed(() => {
   if (!props.value) return "";
-  const type =
-    props.at.field === "artifact"
-      ? artifactTypeName(asItem(props.value).artifact?.type || "Sword")
-      : "";
+  const type = props.at.field === "artifact" ? artifactTypeName(artifactTypeOf(props.value)) : "";
   return [type, page.value?.name].filter(Boolean).join(" · ");
 });
 const picked = computed(() => {
@@ -100,7 +94,7 @@ const picked = computed(() => {
       :aria-label="label"
       @click="emit('place')"
     >
-      <CellPlate class="empty-key" compact addable :data="{ kind: EMPTY_KIND[at.field] }" />
+      <CellPlate class="empty-key" compact addable :data="{ kind: fieldKind[at.field] }" />
       <span class="trait-add-label">{{ label }}</span>
     </button>
   </DropZone>

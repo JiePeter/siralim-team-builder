@@ -1,50 +1,62 @@
 <script setup lang="ts">
 import { computed, inject } from "vue";
-import { storeToRefs } from "pinia";
 import { t } from "@/i18n";
-import { useFillStore } from "@/stores/fill";
-import { MECHANIC_SEARCH, useSearchStore } from "@/stores/search";
-import { blankCondition, type Condition } from "@/domain/discovery";
+import {
+  blankCondition,
+  type Condition,
+  type DiscoveryResult,
+  type Scope,
+} from "@/domain/discovery";
 import { DIALOG_ACTIONS } from "./dialog";
 import FacetOptions from "./FacetOptions.vue";
 import { filterState } from "./filters";
 
-/** Which page's mechanic query the rows edit; the provided one by default. */
-const props = defineProps<{ fill?: boolean }>();
-const search = props.fill ? undefined : inject(MECHANIC_SEARCH, useSearchStore)();
-const fillQuery = search ? undefined : useFillStore();
-const store = search ?? fillQuery!;
-const { conditions, scope, facets } = storeToRefs(store);
+const props = defineProps<{
+  /** The options of each row. */
+  rows: DiscoveryResult["facets"]["conditions"];
+  /** Inside the Fill page's sheet, whose actions row holds the Clear key. */
+  fill?: boolean;
+  /** Clear has something to reset beyond the rows. */
+  clearable?: boolean;
+}>();
+const conditions = defineModel<Condition[]>("conditions", { required: true });
+const scope = defineModel<Scope>("scope", { required: true });
+const emit = defineEmits<{ change: []; clear: [] }>();
 const dialogActions = inject(DIALOG_ACTIONS, null);
 
 const state = computed(() => filterState(conditions.value));
 const facetRow = (index: number) =>
-  facets.value.conditions[index] ?? { categories: [], relations: [], values: [] };
+  props.rows[index] ?? { categories: [], relations: [], values: [] };
 
-function update(condition: Condition, field: keyof Condition, value: string) {
-  condition[field] = value;
-  if (field === "category") {
-    condition.relation = "";
-    condition.value = "";
-  }
-  store.run();
+function commit(next: Condition[]) {
+  conditions.value = next;
+  emit("change");
+}
+
+function update(index: number, field: keyof Condition, value: string) {
+  commit(
+    conditions.value.map((condition, i) => {
+      if (i !== index) return condition;
+      return field === "category"
+        ? { ...blankCondition(), category: value }
+        : { ...condition, [field]: value };
+    }),
+  );
 }
 
 function remove(index: number) {
-  conditions.value.splice(index, 1);
-  store.run();
+  commit(conditions.value.filter((_, i) => i !== index));
 }
 
 function add() {
-  conditions.value.push(blankCondition());
-  store.run();
+  commit([...conditions.value, blankCondition()]);
 }
 
 function clear() {
   conditions.value = [blankCondition()];
   scope.value = "action";
-  if (fillQuery) fillQuery.mechanism = "";
-  store.run();
+  emit("clear");
+  emit("change");
 }
 </script>
 
@@ -55,7 +67,7 @@ function clear() {
     :aria-label="t('search.mechanic.filters')"
   >
     <Teleport
-      v-if="fill && dialogActions && (state.showClear || fillQuery?.mechanism)"
+      v-if="fill && dialogActions && (state.showClear || clearable)"
       defer
       :to="`#${dialogActions}`"
     >
@@ -75,7 +87,7 @@ function clear() {
           class="filter-category"
           :aria-label="t('search.mechanic.category', { n: index + 1 })"
           :value="condition.category"
-          @change="update(condition, 'category', ($event.target as HTMLSelectElement).value)"
+          @change="update(index, 'category', ($event.target as HTMLSelectElement).value)"
         >
           <FacetOptions
             :options="facetRow(index).categories"
@@ -98,7 +110,7 @@ function clear() {
             class="filter-relation"
             :aria-label="t('search.mechanic.interaction', { n: index + 1 })"
             :value="condition.relation"
-            @change="update(condition, 'relation', ($event.target as HTMLSelectElement).value)"
+            @change="update(index, 'relation', ($event.target as HTMLSelectElement).value)"
           >
             <FacetOptions
               :options="facetRow(index).relations"
@@ -111,7 +123,7 @@ function clear() {
             class="filter-value"
             :aria-label="t('search.mechanic.target', { n: index + 1 })"
             :value="condition.value"
-            @change="update(condition, 'value', ($event.target as HTMLSelectElement).value)"
+            @change="update(index, 'value', ($event.target as HTMLSelectElement).value)"
           >
             <FacetOptions
               :options="facetRow(index).values"
@@ -135,7 +147,7 @@ function clear() {
         v-if="state.showScope"
         v-model="scope"
         :aria-label="t('search.mechanic.scope')"
-        @change="store.run()"
+        @change="emit('change')"
       >
         <option value="action">{{ t("search.mechanic.action") }}</option>
         <option value="rule">{{ t("search.mechanic.rule") }}</option>

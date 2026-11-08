@@ -5,14 +5,17 @@ import {
   BLANK_ARTIFACT,
   isCharacterPart,
   itemId,
+  SINGLE_FIELDS,
   type Equipment,
   type EquipmentRef,
+  type SingleField,
   type Slot,
   type Team,
+  type TraitField,
 } from "./team";
 
-export type SlotField = "base" | "fusion" | "artifact" | "nether" | "spells" | "relic";
 type ListField = "spells" | "nether";
+export type SlotField = SingleField | ListField;
 export type CharacterField = "characterBase" | "characterAnointment";
 
 export const fieldLabels: Record<SlotField, string> = {
@@ -32,8 +35,6 @@ export interface Position {
   field: SlotField;
   index?: number;
 }
-
-export type TraitField = "base" | "fusion" | "artifact";
 
 export interface TraitPosition {
   slot: number;
@@ -112,7 +113,7 @@ export function returnEquipment(value: Team, slot: number, field: SlotField, ind
 /** Send everything in a slot to the pool. */
 export function returnSlot(value: Team, slot: number): Team {
   let next = value;
-  for (const field of ["base", "fusion", "artifact", "relic"] as const)
+  for (const field of SINGLE_FIELDS)
     if (next.slots[slot]![field]) next = returnEquipment(next, slot, field);
   for (const field of ["spells", "nether"] as const)
     while (next.slots[slot]![field]?.length) next = returnEquipment(next, slot, field, 0);

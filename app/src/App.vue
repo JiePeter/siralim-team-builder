@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { I18nT } from "vue-i18n";
 import { useMediaQuery } from "@vueuse/core";
-import { isListField } from "@/domain/assembly";
+import { equipmentAt } from "@/domain/assembly";
 import { itemId } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
 import ModalDialog from "@/components/ModalDialog.vue";
@@ -13,7 +13,7 @@ import { shownAs } from "@/components/assembly";
 import { component } from "@/components/components";
 import { dismiss, toastAction, toastFailed, toastText } from "@/components/toast";
 import { bursts, cancelPlacing, selected, trayOpen } from "@/components/tray";
-import { kindNames } from "@/components/presentation";
+import { kindNames, usePhone } from "@/components/presentation";
 import { assetUrl } from "@/data";
 import { LOCALES, locale, setLocale, t, type Locale } from "@/i18n";
 
@@ -25,7 +25,7 @@ const aboutOpen = ref(false);
 const toastElement = ref<HTMLElement | null>(null);
 const { trayCount, team, index } = storeToRefs(useTeamStore());
 const sidebar = useMediaQuery("(min-width: 1100px)");
-const phone = useMediaQuery("(max-width: 767px)");
+const phone = usePhone();
 const searching = computed(() => route.name === "search" || route.name === "object");
 const bumped = ref(false);
 const pageTitle = computed(() => {
@@ -43,11 +43,7 @@ const placing = computed(() => {
   else if ("uid" in s) {
     const item = team.value.inventory.find((i) => i.uid === s.uid);
     id = item && shownAs(index.value, item);
-  } else {
-    const slot = team.value.slots[s.slot];
-    const item = isListField(s.field) ? slot?.[s.field]?.[s.index ?? 0] : slot?.[s.field];
-    id = itemId(item);
-  }
+  } else id = itemId(equipmentAt(team.value, s.slot, s.field, s.index));
   return id ? (component(id)?.name ?? "") : "";
 });
 

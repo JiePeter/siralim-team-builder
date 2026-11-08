@@ -2,13 +2,14 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import { useDebounceFn, useIntersectionObserver, useMediaQuery } from "@vueuse/core";
+import { useDebounceFn, useIntersectionObserver } from "@vueuse/core";
 import { t } from "@/i18n";
 import { useSearchStore } from "@/stores/search";
 import AddButton from "@/components/AddButton.vue";
 import AttributeFilters from "@/components/AttributeFilters.vue";
 import FacetOptions from "@/components/FacetOptions.vue";
 import ResultCard from "@/components/ResultCard.vue";
+import { usePhone } from "@/components/presentation";
 import type { Attributes } from "@/domain/attributes";
 
 const route = useRoute();
@@ -18,7 +19,7 @@ const filtersShown = ref(false);
 const activeFilters = computed(
   () => (kind.value ? 1 : 0) + Object.values(attributes.value).filter(Boolean).length,
 );
-const phone = useMediaQuery("(max-width: 767px)");
+const phone = usePhone();
 
 const addableKinds = new Set([
   "creature",

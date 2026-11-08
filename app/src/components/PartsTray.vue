@@ -2,18 +2,18 @@
 import { computed, inject, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
-import { useEventListener, useStorage, useTimeoutFn } from "@vueuse/core";
-import { BLANK_ARTIFACT, useTeamStore } from "@/stores/team";
+import { useEventListener, useTimeoutFn } from "@vueuse/core";
+import { useTeamStore } from "@/stores/team";
 import { t } from "@/i18n";
 import { MAX_TRAIT_COPIES, placedParts, whereIs } from "@/domain/placement";
-import { asItem, asTrait, type Equipment, type Team } from "@/domain/team";
+import { asItem, asTrait, BLANK_ARTIFACT, type Equipment, type Team } from "@/domain/team";
 import DropZone from "./DropZone.vue";
 import CellPlate from "./CellPlate.vue";
 import PreviewDialog from "./PreviewDialog.vue";
 import PropertyPills from "./PropertyPills.vue";
 import { canPlace, shownAs } from "./assembly";
 import { component } from "./components";
-import { kindGroup, kindGroups } from "./presentation";
+import { kindGroup, kindGroups, useShowNether } from "./presentation";
 import { dragged, draggedSelection, useDragSource } from "./dragging";
 import { attempt, toast } from "./toast";
 import { flashed, lineKey, selected, startPlacing, trayOpen, useEntity } from "./tray";
@@ -30,7 +30,7 @@ const entity = useEntity();
 const drag = useDragSource();
 const preview = ref<Equipment | null>(null);
 const list = ref<HTMLElement | null>(null);
-const showNether = useStorage("siralim-planner.show-nether", false);
+const showNether = useShowNether();
 const kindOf = (id: string) => index.value?.kinds.get(id);
 
 /** One per team, so the tray never holds two of them. */

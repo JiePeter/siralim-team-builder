@@ -55,8 +55,6 @@ interface Library {
 /** A plain copy: domain code clones with structuredClone, which rejects reactive proxies. */
 const plain = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
-export { BLANK_ARTIFACT };
-
 export const useTeamStore = defineStore("team", () => {
   const team = useStorage<Team>(TEAM_KEY, newTeam(), undefined, {
     onError: () => toastError(t("app.team.storageFailed")),

@@ -1,4 +1,4 @@
-import { ref, shallowRef, type InjectionKey } from "vue";
+import { ref, shallowRef } from "vue";
 import { defineStore } from "pinia";
 import MiniSearch, { type SearchResult } from "minisearch";
 import { cards, discovery, type SearchDocument } from "@/data";
@@ -7,16 +7,13 @@ import type { Attributes } from "@/domain/attributes";
 import { toastError } from "@/components/toast";
 import { t } from "@/i18n";
 import {
-  blankCondition,
   discoveryIndex,
   query,
   searchDocuments,
   withCard,
   type CardFields,
-  type Condition,
   type DiscoveryItem,
   type DiscoveryResult,
-  type Scope,
 } from "@/domain/discovery";
 import { fold, hanRuns, words } from "@/domain/values";
 
@@ -62,14 +59,38 @@ export async function textIds(q: string): Promise<Set<string> | undefined> {
   return idsOf(phrased.length ? phrased : hits);
 }
 
+/**
+ * What `attempt` finds with the ids holding the phrase, or with the scattered matches of `q` when
+ * `hasHits` rejects that; `phrased` is `textIds(q)`.
+ */
+export async function fallBackToScattered<T>(
+  q: string,
+  phrased: Set<string> | undefined,
+  attempt: (ids: Set<string> | undefined) => T,
+  hasHits: (found: T) => boolean,
+): Promise<{ ids: Set<string> | undefined; found: T }> {
+  const found = attempt(phrased);
+  if (!phrased || hasHits(found)) return { ids: phrased, found };
+  const ids = await scatteredIds(q);
+  return { ids, found: attempt(ids) };
+}
+
 const noCard: CardFields = { effects: [], facts: [], attrs: {} };
 
-function searchState() {
+/** `items` joined with their entries from the card shards. */
+export async function withCards(items: DiscoveryItem[]): Promise<SearchItem[]> {
+  const shards = new Map(
+    await Promise.all(
+      [...new Set(items.map((i) => i.kind))].map(async (k) => [k, await cards(k)] as const),
+    ),
+  );
+  return items.map((item) => withCard(item, shards.get(item.kind)?.[item.id] ?? noCard));
+}
+
+export const useSearchStore = defineStore("search", () => {
   const q = ref("");
   const kind = ref("");
   const attributes = ref<Attributes>({});
-  const conditions = ref<Condition[]>([blankCondition()]);
-  const scope = ref<Scope>("action");
   const items = shallowRef<SearchItem[]>([]);
   const total = ref(0);
   const facets = shallowRef<DiscoveryResult["facets"]>({
@@ -78,40 +99,33 @@ function searchState() {
     attributes: [],
   });
   const ready = ref(false);
-  /** Search text, a type or a mechanic filter produced the shown results. */
+  /** Search text or a type produced the shown results. */
   const narrowed = ref(false);
   let version = 0;
 
   async function run() {
     const current = ++version;
     try {
-      const [index, ids] = await Promise.all([discoveryPack(), textIds(q.value)]);
-      const search = (matching?: Set<string>) =>
-        query(index, {
-          q: q.value,
-          kind: kind.value,
-          attributes: attributes.value,
-          conditions: conditions.value,
-          scope: scope.value,
-          ids: matching,
-        });
-      let result = search(ids);
+      const [index, phrased] = await Promise.all([discoveryPack(), textIds(q.value)]);
       // The chosen filters can exclude every component holding the phrase.
-      if (ids && !result.total) result = search(await scatteredIds(q.value));
-      const shards = new Map(
-        await Promise.all(
-          [...new Set(result.items.map((i) => i.kind))].map(
-            async (k) => [k, await cards(k)] as const,
-          ),
-        ),
+      const { ids, found: result } = await fallBackToScattered(
+        q.value,
+        phrased,
+        (matching) =>
+          query(index, {
+            q: q.value,
+            kind: kind.value,
+            attributes: attributes.value,
+            ids: matching,
+          }),
+        (found) => found.total > 0,
       );
+      const carded = await withCards(result.items);
       if (current !== version) return;
-      items.value = result.items.map((item) =>
-        withCard(item, shards.get(item.kind)?.[item.id] ?? noCard),
-      );
+      items.value = carded;
       total.value = result.total;
       facets.value = result.facets;
-      narrowed.value = !!ids || !!kind.value || conditions.value.some((c) => c.category);
+      narrowed.value = !!ids || !!kind.value;
       ready.value = true;
     } catch (error) {
       if (current !== version) return;
@@ -124,8 +138,6 @@ function searchState() {
     q,
     kind,
     attributes,
-    conditions,
-    scope,
     items,
     total,
     facets,
@@ -133,11 +145,4 @@ function searchState() {
     narrowed,
     run,
   };
-}
-
-export const useSearchStore = defineStore("search", searchState);
-/** The picker's own search, so replacing a field leaves the Search page's as it was. */
-export const usePickerSearchStore = defineStore("picker-search", searchState);
-
-/** The search a MechanicFilters inside this tree narrows. */
-export const MECHANIC_SEARCH: InjectionKey<typeof useSearchStore> = Symbol("mechanic search");
+});

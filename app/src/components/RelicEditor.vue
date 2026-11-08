@@ -6,22 +6,18 @@ import IdentityLine from "./IdentityLine.vue";
 import ObjectLink from "./ObjectLink.vue";
 import { component } from "./components";
 
-const props = defineProps<{ relics: Relic[]; id: string; rank: number }>();
+const props = defineProps<{ relic?: Relic; id: string; rank: number }>();
 const emit = defineEmits<{ apply: [id: string, rank: number] }>();
 
 const target = ref(props.rank);
-const definition = computed(() => props.relics.find((r) => r.id === props.id));
 const page = computed(() => component(props.id));
 const current = computed(() =>
-  Math.max(
-    0,
-    ...(definition.value?.effects ?? []).map((e) => e.rank).filter((r) => r <= target.value),
-  ),
+  Math.max(0, ...(props.relic?.effects ?? []).map((e) => e.rank).filter((r) => r <= target.value)),
 );
 
 /** Tapping the current rank steps back to the one below it. */
 function choose(rank: number) {
-  const below = (definition.value?.effects ?? []).map((e) => e.rank).filter((r) => r < rank);
+  const below = (props.relic?.effects ?? []).map((e) => e.rank).filter((r) => r < rank);
   const next = rank === current.value ? Math.max(1, ...below) : rank;
   target.value = next;
   emit("apply", props.id, next);
@@ -34,7 +30,7 @@ function choose(rank: number) {
       <ObjectLink :item="page" />
     </IdentityLine>
     <button
-      v-for="effect in definition?.effects ?? []"
+      v-for="effect in relic?.effects ?? []"
       :key="effect.rank"
       type="button"
       :class="['relic-rank', { 'outside-target': effect.rank > target }]"

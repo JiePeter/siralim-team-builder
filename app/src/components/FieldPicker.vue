@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, provide, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { computedAsync } from "@vueuse/core";
 import {
   ListboxContent,
@@ -9,15 +9,13 @@ import {
   ListboxItem,
   ListboxRoot,
 } from "reka-ui";
-import { storeToRefs } from "pinia";
-import type { Catalog } from "@/data";
 import type { Position } from "@/domain/assembly";
 import { placementRefusal, whereIs } from "@/domain/placement";
 import { applicable, type Attributes } from "@/domain/attributes";
-import { blankCondition } from "@/domain/discovery";
-import type { Equipment, Team } from "@/domain/team";
+import { blankCondition, type Condition, type Scope } from "@/domain/discovery";
+import type { Equipment } from "@/domain/team";
 import { matchesText } from "@/domain/values";
-import { MECHANIC_SEARCH, usePickerSearchStore, useSearchStore } from "@/stores/search";
+import { t } from "@/i18n";
 import AttributeFilters from "./AttributeFilters.vue";
 import MechanicFilters from "./MechanicFilters.vue";
 import CellPlate from "./CellPlate.vue";
@@ -33,6 +31,7 @@ import {
 } from "./assembly";
 import { candidates } from "./candidates";
 import { component } from "./components";
+import { toastError } from "./toast";
 import { lineKey, placementLabel, useEntity } from "./tray";
 
 const PAGE = 50;
@@ -41,11 +40,10 @@ const props = defineProps<{
   field: PickerField;
   /** Names the field in the search box. */
   label: string;
-  team: Team;
-  catalog: Catalog;
-  kindOf: (id: string) => string | undefined;
   /** The position a choice goes to, so a choice it refuses says why before it is tapped. */
   target?: Position;
+  /** The component the field holds, shown above the search with `#current-actions`. */
+  current?: string;
 }>();
 const emit = defineEmits<{
   pick: [uid: string];
@@ -55,76 +53,76 @@ const emit = defineEmits<{
 const store = useTeamStore();
 const entity = useEntity();
 const carriers = (id: string) => store.index?.carriers.get(id);
+const kindOf = (id: string) => store.index?.kinds.get(id);
 const displayed = (item: Equipment) => shownAs(store.index, item, props.field);
 
 const q = ref("");
 const attributes = ref<Attributes>({});
+const conditions = ref<Condition[]>([blankCondition()]);
+const scope = ref<Scope>("action");
 const shown = ref(PAGE);
 const filtersShown = ref(false);
 
-const search = usePickerSearchStore();
-provide(MECHANIC_SEARCH, usePickerSearchStore as unknown as typeof useSearchStore);
-const { conditions, scope } = storeToRefs(search);
-conditions.value = [blankCondition()];
-scope.value = "action";
-search.kind = fieldKind[props.field];
 const activeFilters = computed(
   () =>
     Object.keys(applicable(fieldKind[props.field], attributes.value)).length +
     conditions.value.filter((c) => c.category).length,
 );
-watch(
-  [q, attributes],
-  () => {
-    shown.value = PAGE;
-    search.q = q.value;
-    search.attributes = attributes.value;
-    search.run();
-  },
-  { immediate: true },
-);
+watch([q, attributes], () => {
+  shown.value = PAGE;
+});
 
 const found = computedAsync(
   () =>
     candidates(
       props.field,
       q.value,
-      props.catalog,
+      store.index!.catalog,
       attributes.value,
       conditions.value.map((c) => ({ ...c })),
       scope.value,
     ),
   null,
-  { lazy: false },
+  {
+    lazy: false,
+    onError(error) {
+      console.error(error);
+      toastError(t("search.loadFailed"));
+    },
+  },
 );
 
 const trayItems = computed(() => {
-  const inventory = props.team.inventory;
+  const inventory = store.team.inventory;
+  const at = store.index;
+  if (!at) return [];
   if (props.field === "characterBase" || props.field === "characterAnointment")
-    return characterChoices(inventory, props.field, props.catalog);
+    return characterChoices(inventory, props.field, at.catalog);
   if (props.field === "artifactTrait")
     return inventory.filter((item) => {
-      const kind = props.kindOf(item.id);
+      const kind = kindOf(item.id);
       const carried = kind === "trait" ? carriers(item.id) : undefined;
       return kind === "material" || (!!carried && carriedInto(carried, "artifactTrait"));
     });
-  if (!store.index) return [];
-  return poolChoices(inventory, props.field, props.kindOf, store.index.rules.slot_kinds, carriers);
+  return poolChoices(inventory, props.field, kindOf, at.rules.slot_kinds, carriers);
 });
 
 /** Matching tray items; identical instances are one choice with a count. */
 const inTray = computed(() => {
   const matched = found.value?.matched;
   const narrowed = !!activeFilters.value;
-  const lines = new Map<string, { item: Equipment; count: number }>();
+  const lines = new Map<
+    string,
+    { item: Equipment; count: number; page: ReturnType<typeof component> }
+  >();
   for (const item of trayItems.value) {
-    const name = component(displayed(item))?.name ?? "";
-    const named = !narrowed && matchesText(name, q.value);
+    const page = component(displayed(item));
+    const named = !narrowed && matchesText(page?.name ?? "", q.value);
     if (matched && !matched.has(displayed(item)) && !named) continue;
     const key = lineKey(item);
     const line = lines.get(key);
     if (line) line.count++;
-    else lines.set(key, { item, count: 1 });
+    else lines.set(key, { item, count: 1, page });
   }
   return [...lines.values()];
 });
@@ -142,21 +140,21 @@ const tiles = computed(() => props.field === "relic");
 /** One-per-team components already placed cannot be placed again. */
 const unique = computed(() => props.field === "relic" || props.field === "characterAnointment");
 const placedAt = (id: string) =>
-  whereIs(props.team, id, entity).placed.map(placementLabel).join(", ");
+  whereIs(store.team, id, entity).placed.map(placementLabel).join(", ");
 const refusal = (id: string) =>
-  props.target && store.index ? placementRefusal(store.index, props.team, props.target, id) : null;
+  props.target && store.index ? placementRefusal(store.index, store.team, props.target, id) : null;
 const note = (id: string) => {
   const refused = refusal(id);
   return refused ? { text: refused, refused: true } : null;
 };
 /** Copies already in the team, marked on the plate. */
 const placedCount = (id: string) => {
-  const n = whereIs(props.team, id, entity).placed.length;
+  const n = whereIs(store.team, id, entity).placed.length;
   return n > 1 ? n : n > 0;
 };
 /** The field already holds this component. */
 const here = (id: string) =>
-  whereIs(props.team, id, entity).placed.some(
+  whereIs(store.team, id, entity).placed.some(
     (at) =>
       "slot" in at &&
       at.slot === props.target?.slot &&
@@ -164,23 +162,15 @@ const here = (id: string) =>
       (props.target.index === undefined || at.index === props.target.index),
   );
 const blocked = (id: string) => here(id) || !!refusal(id) || (unique.value && !!placedAt(id));
-
-function choose(value: string) {
-  const [source, key] = [value.slice(0, value.indexOf(":")), value.slice(value.indexOf(":") + 1)];
-  if (source === "tray") emit("pick", key);
-  else emit("take", key);
-}
-
-/** A tap on the card or Enter on the list places it. */
-function selected(event: CustomEvent, value: string) {
-  event.preventDefault();
-  choose(value);
-}
 </script>
 
 <template>
   <ListboxRoot class="picker" highlight-on-hover>
-    <slot name="current" />
+    <div v-if="current && component(current)" class="picker-current">
+      <ResultCard :item="component(current)!" compact fixed link>
+        <slot name="current-actions" />
+      </ResultCard>
+    </div>
     <div class="picker-search">
       <div class="picker-input">
         <i class="icon icon-search"></i>
@@ -206,34 +196,38 @@ function selected(event: CustomEvent, value: string) {
           ><span v-if="activeFilters" class="filter-count">{{ activeFilters }}</span>
         </button>
       </div>
-      <div v-show="filtersShown" class="picker-filters">
+      <div v-if="filtersShown" class="picker-filters">
         <AttributeFilters v-if="found?.facets.length" v-model="attributes" :facets="found.facets" />
-        <MechanicFilters />
+        <MechanicFilters
+          v-model:conditions="conditions"
+          v-model:scope="scope"
+          :rows="found?.conditionFacets ?? []"
+        />
       </div>
     </div>
     <ListboxContent class="picker-list">
       <ListboxGroup v-if="inTray.length" :class="{ 'tile-group': tiles }">
         <ListboxGroupLabel class="picker-label">{{ $t("tray.picker.inTray") }}</ListboxGroupLabel>
         <ListboxItem
-          v-for="{ item, count } in inTray"
+          v-for="{ item, count, page } in inTray"
           :key="item.uid"
-          :value="`tray:${item.uid}`"
+          :value="item.uid"
           :class="tiles ? 'picker-tile' : 'picker-choice'"
-          @select="selected($event as never, `tray:${item.uid}`)"
+          @select.prevent="emit('pick', item.uid)"
         >
-          <template v-if="tiles && component(displayed(item))">
-            <CellPlate :data="component(displayed(item))!" :added="count > 1 ? count : false" />
-            <span class="tile-name">{{ component(displayed(item))!.name }}</span>
+          <template v-if="tiles && page">
+            <CellPlate :data="page" :added="count > 1 ? count : false" />
+            <span class="tile-name">{{ page.name }}</span>
           </template>
           <ResultCard
-            v-else-if="component(displayed(item))"
+            v-else-if="page"
             compact
             fixed
-            :item="component(displayed(item))!"
-            :line="component(displayed(item))!.kind === 'specialization' ? '' : undefined"
+            :item="page"
+            :line="page.kind === 'specialization' ? '' : undefined"
           >
             <template #plate>
-              <CellPlate :data="component(displayed(item))!" :added="count > 1 ? count : false" />
+              <CellPlate :data="page" :added="count > 1 ? count : false" />
             </template>
           </ResultCard>
         </ListboxItem>
@@ -246,11 +240,11 @@ function selected(event: CustomEvent, value: string) {
         <ListboxItem
           v-for="item in more.slice(0, shown)"
           :key="item.id"
-          :value="`data:${item.id}`"
+          :value="item.id"
           :disabled="blocked(item.id)"
           :class="tiles ? 'picker-tile' : 'picker-choice'"
           :title="note(item.id)?.text"
-          @select="selected($event as never, `data:${item.id}`)"
+          @select.prevent="emit('take', item.id)"
         >
           <template v-if="tiles">
             <CellPlate :data="item" :added="placedCount(item.id)" />
@@ -284,6 +278,13 @@ function selected(event: CustomEvent, value: string) {
 </template>
 
 <style scoped>
+.picker-current {
+  padding-bottom: var(--space-12);
+}
+.picker-current :deep(.result-action) {
+  display: flex;
+  gap: var(--space-4);
+}
 .picker-search {
   position: sticky;
   top: 0;

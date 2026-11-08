@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { useTeamStore } from "@/stores/team";
 import { statName, t } from "@/i18n";
 import { artifactValueText } from "@/domain/artifact";
-import type { Equipment } from "@/domain/team";
+import { artifactTypeOf, type Equipment } from "@/domain/team";
 import ObjectSummary from "./ObjectSummary.vue";
 import { artifactEffects, artifactTrigger, artifactTypeName } from "./assembly";
 
@@ -13,7 +13,7 @@ store.rules();
 
 const configuration = computed(() => props.item.artifact);
 const catalog = computed(() => store.index?.catalog);
-const type = computed(() => configuration.value?.type || "Sword");
+const type = computed(() => artifactTypeOf(props.item));
 const spellName = (id: string) => catalog.value?.spells.find((s) => s.id === id)?.name || "";
 
 /** Primary stat, then Stats and Tricks, each with its value. */

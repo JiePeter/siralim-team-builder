@@ -82,7 +82,6 @@ describe("ArtifactEditor", () => {
         catalog: catalog as never,
         team: { inventory: [] } as never,
         atSlot: 0,
-        kindOf: () => undefined,
       },
       global: { plugins: [router] },
     });

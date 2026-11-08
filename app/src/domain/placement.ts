@@ -5,7 +5,6 @@ import {
   type CharacterField,
   type Position,
   type SlotField,
-  type TraitField,
   type TraitPosition,
 } from "./assembly";
 import {
@@ -16,11 +15,14 @@ import {
   entityOf,
   NETHER_TRAITS,
   PARTY_SIZE,
+  SINGLE_FIELDS,
+  TRAIT_FIELDS,
   type EquipmentRef,
   type Slot,
   type SpellGemRules,
   type Team,
   type TeamIndex,
+  type TraitField,
 } from "./team";
 
 /** Where a component sits in the team, outside the tray. */
@@ -38,7 +40,7 @@ export interface Whereabouts {
 export function placedParts(team: Team): { ref: EquipmentRef; at: Placement }[] {
   const parts: { ref: EquipmentRef; at: Placement }[] = [];
   team.slots.forEach((slot, i) => {
-    for (const field of ["base", "fusion", "artifact", "relic"] as const) {
+    for (const field of SINGLE_FIELDS) {
       const ref = slot[field];
       if (ref) parts.push({ ref, at: { slot: i, field } });
     }
@@ -185,7 +187,7 @@ export interface TraitSwap {
 }
 
 const isTraitPosition = (at: Position): at is TraitPosition =>
-  at.field === "base" || at.field === "fusion" || at.field === "artifact";
+  (TRAIT_FIELDS as readonly string[]).includes(at.field);
 
 /** The exchange a drop of `source` on `target` makes, or null when they do not exchange Traits. */
 export function traitSwap(

@@ -1,21 +1,16 @@
 import { computed, ref, shallowRef } from "vue";
 import { defineStore } from "pinia";
-import { cards } from "@/data";
 import { toastError } from "@/components/toast";
 import { t } from "@/i18n";
 import {
   blankCondition,
   query,
-  withCard,
-  type CardFields,
   type Condition,
   type DiscoveryResult,
   type Option,
   type Scope,
 } from "@/domain/discovery";
-import { discoveryPack, scatteredIds, textIds, type SearchItem } from "./search";
-
-const noCard: CardFields = { effects: [], facts: [], attrs: {} };
+import { discoveryPack, fallBackToScattered, textIds, withCards, type SearchItem } from "./search";
 
 /** The query on the Fill page: it narrows the tray's suggestions, or lists every match. */
 export const useFillStore = defineStore("fill", () => {
@@ -49,28 +44,23 @@ export const useFillStore = defineStore("fill", () => {
         query(index, { ...filters, q: q.value, ids, kind: within, limit });
       const mechanics = query(index, { ...filters, limit: 0 });
       const wanted = active.value || !!phrased;
-      let ids = phrased;
-      let every = ids ? search(ids, 0) : mechanics;
       // The chosen filters can exclude every component holding the phrase.
-      if (ids && !every.total) {
-        ids = await scatteredIds(q.value);
-        every = search(ids, 0);
-      }
+      const { ids, found: every } = await fallBackToScattered(
+        q.value,
+        phrased,
+        (matching) => (matching ? search(matching, 0) : mechanics),
+        (found) => found.total > 0,
+      );
       const available = every.facets.kinds;
       const within = available.some((k) => k.value === kind.value)
         ? kind.value
         : (available[0]?.value ?? "");
-      const list = wanted ? search(ids, Infinity, within).items : [];
-      const shards = new Map(
-        await Promise.all(
-          [...new Set(list.map((i) => i.kind))].map(async (k) => [k, await cards(k)] as const),
-        ),
-      );
+      const list = await withCards(wanted ? search(ids, Infinity, within).items : []);
       if (current !== version) return;
       kind.value = within;
       kinds.value = available;
       listing.value = wanted;
-      items.value = list.map((item) => withCard(item, shards.get(item.kind)?.[item.id] ?? noCard));
+      items.value = list;
       total.value = every.total;
       matched.value = mechanics.matched;
       facets.value = mechanics.facets;
