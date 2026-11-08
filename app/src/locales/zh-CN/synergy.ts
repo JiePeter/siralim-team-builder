@@ -1,11 +1,5 @@
 export default {
   synergy: {
-    title: "协同效应",
-    loading: "正在加载协同效应…",
-    failed: "无法加载协同效应。",
-    scrollLeft: "向左滚动协同效应",
-    scrollRight: "向右滚动协同效应",
-    close: "关闭协同效应",
     filter: "筛选协同效应",
     placeholder: "名称或效果",
     clearFilter: "清除协同效应筛选",

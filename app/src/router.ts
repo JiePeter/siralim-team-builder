@@ -55,6 +55,7 @@ export const router = createRouter({
         },
       ],
     },
+    { path: "/fill", name: "fill", component: () => import("./views/FillView.vue") },
     { path: "/build", name: "build", component: () => import("./views/BuildView.vue") },
     { path: "/:unknown(.*)*", redirect: "/search" },
   ],

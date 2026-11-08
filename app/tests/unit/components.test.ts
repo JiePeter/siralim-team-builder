@@ -1,20 +1,14 @@
-import { describe, expect, it, vi } from "vitest";
-import { flushPromises, mount } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
+import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { createMemoryHistory, createRouter } from "vue-router";
 import type { GemProperty, SynergyItem } from "@/data";
 import EffectText from "@/components/EffectText.vue";
 import GemEditor from "@/components/GemEditor.vue";
 import ObjectCell from "@/components/ObjectCell.vue";
-import SynergyStrip from "@/components/SynergyStrip.vue";
 import { routeView } from "@/components/presentation";
 import { candidates, cards, categories } from "@/components/synergy";
 import { useTeamStore } from "@/stores/team";
-
-vi.mock("@/data", async (original) => ({
-  ...(await original<typeof import("@/data")>()),
-  synergies: vi.fn(async () => null),
-}));
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -27,6 +21,7 @@ function path(id: string, kind: string, relation: string): SynergyItem {
     kind,
     name: id,
     relation,
+    point: { key: relation, event: relation, degree: 2 },
     strength: "supported",
     shared_constraints: [],
     witness: {},
@@ -145,16 +140,5 @@ describe("Synergies", () => {
     const conditional = { ...path("trait:a", "trait", "Event chain"), strength: "conditional" };
     const items = candidates([conditional, path("trait:b", "trait", "Event chain")]);
     expect(cards(items, "trait", "Event chain").map((c) => c.id)).toEqual(["trait:b", "trait:a"]);
-  });
-
-  it("shows the empty state when the owner has no synergies", async () => {
-    const strip = mount(SynergyStrip, {
-      props: { owner: "trait:x", seed: "trait:x" },
-      global: { plugins: [router] },
-    });
-    await strip.get("button").trigger("click");
-    await flushPromises();
-    expect(strip.get(".pairing-cards").attributes("data-empty")).toBe("true");
-    expect(strip.text()).toContain("No synergies found");
   });
 });

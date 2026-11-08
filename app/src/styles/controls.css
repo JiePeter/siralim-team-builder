@@ -66,6 +66,9 @@
 .icon-team {
   --icon: var(--icon-team);
 }
+.icon-link {
+  --icon: var(--icon-link);
+}
 .icon-character {
   --icon: var(--icon-character);
 }

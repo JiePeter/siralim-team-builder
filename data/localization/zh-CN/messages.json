@@ -45,6 +45,7 @@
   "Healed": "被治疗",
   "Deal damage": "造成伤害",
   "Damage taken": "受到伤害",
+  "Damage": "伤害",
   "Kill": "击杀",
   "Death": "死亡",
   "Resurrect": "复活",
@@ -651,5 +652,14 @@
   "Wide variety of different effects": "大量不同效果",
   "Wide variety of effects with a small focus on changing attacking stat basis": "大量效果，略侧重改变攻击依据的属性值",
   "Wide variety of powerful effects": "大量强力效果",
-  "False Godspawn": "伪神裔"
+  "False Godspawn": "伪神裔",
+  "Minions": "仆从",
+  "random": "随机仆从",
+  "random minion": "随机仆从",
+  "a random minion": "一个随机仆从",
+  "the same minion": "同一仆从",
+  "the stolen minions": "被偷取的仆从",
+  "one of the four horsemen": "四骑士之一",
+  "the sacrificed Lesser Demon stack": "被献祭的次级恶魔堆叠",
+  "a copy of one of the holder's minions": "持有者某个仆从的复制品"
 }

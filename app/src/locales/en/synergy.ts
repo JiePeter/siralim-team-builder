@@ -1,11 +1,5 @@
 export default {
   synergy: {
-    title: "Synergies",
-    loading: "Loading synergies…",
-    failed: "Synergies could not be loaded.",
-    scrollLeft: "Scroll synergies left",
-    scrollRight: "Scroll synergies right",
-    close: "Close synergies",
     filter: "Filter synergies",
     placeholder: "Name or effect",
     clearFilter: "Clear synergy filter",

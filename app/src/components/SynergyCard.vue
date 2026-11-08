@@ -4,15 +4,21 @@ import EffectText from "./EffectText.vue";
 import ObjectCell from "./ObjectCell.vue";
 import ObjectLink from "./ObjectLink.vue";
 import { computed } from "vue";
-import { t } from "@/i18n";
+import { locale, t } from "@/i18n";
 import { useCatalog } from "./selection";
 import type { Card } from "./synergy";
 import { usePlacedText } from "./tray";
 
-const props = defineProps<{ card: Card; owner: string }>();
+const props = defineProps<{
+  card: Card;
+  owner: string;
+  /** Replaces the owner's Perk or rank when the card connects to several owners. */
+  owners?: string[];
+}>();
 const placed = usePlacedText();
 const catalog = useCatalog();
 const source = computed(() => {
+  if (props.owners) return new Intl.ListFormat(locale).format(props.owners);
   const { perk, rank } = props.card.source;
   if (perk) return catalog.value?.perks.find((p) => p.id === perk)?.name ?? "";
   return rank ? t("synergy.rank", { rank }) : "";

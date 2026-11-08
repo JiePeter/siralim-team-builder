@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onWatcherCleanup, ref, shallowRef, watch } from "vue";
+import { computed, nextTick, onWatcherCleanup, shallowRef, watch } from "vue";
 import { useMediaQuery } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { DataNotFound, object, type ObjectPage } from "@/data";
@@ -11,7 +11,6 @@ import EffectText from "@/components/EffectText.vue";
 import GameSprite from "@/components/GameSprite.vue";
 import IdentityLine from "@/components/IdentityLine.vue";
 import ReferenceBody from "@/components/ReferenceBody.vue";
-import SynergyStrip from "@/components/SynergyStrip.vue";
 import { kindNames, normalizeHits, objectRoute, parseHits } from "@/components/presentation";
 import { usePlacedText } from "@/components/tray";
 
@@ -23,23 +22,13 @@ const placed = usePlacedText();
 
 const page = shallowRef<ObjectPage | null>(null);
 const error = shallowRef<unknown>(null);
-const synergyReady = ref(false);
 const hits = computed(() => parseHits(route.query.focus));
 
-const synergyKinds = ["trait", "creature", "material", "spell", "relic", "specialization"];
-const hasSynergies = computed(() => synergyKinds.includes(page.value?.kind ?? ""));
-const synergySeed = computed(
-  () => hits.value.find((h) => h.entity_id?.startsWith("perk:"))?.entity_id || page.value?.id || "",
-);
 const describe = computed(
   () =>
     !!page.value?.description && !["creature", "material", "card_set"].includes(page.value.kind),
 );
 const addable = computed(() => !!page.value?.selectable && page.value.kind !== "enchantment");
-/** A creature or material reads its Synergies under the Trait they come from. */
-const synergyInTrait = computed(
-  () => ["creature", "material"].includes(page.value?.kind ?? "") && !!page.value?.traits?.length,
-);
 const added = computed(() =>
   phone.value && addable.value && page.value ? placed(page.value) : "",
 );
@@ -51,7 +40,6 @@ watch(
     const current = ++version;
     page.value = null;
     error.value = null;
-    synergyReady.value = false;
     let data: ObjectPage;
     try {
       data = await object(id);
@@ -87,8 +75,8 @@ watch(page, (data) => {
 });
 
 // The route changes before the id prop does, so the previous page can still be on screen here.
-watch([page, synergyReady, () => route.fullPath], async ([data, ready]) => {
-  if (!data || data.id !== route.params.id || (hasSynergies.value && !ready)) return;
+watch([page, () => route.fullPath], async ([data]) => {
+  if (!data || data.id !== route.params.id) return;
   await nextTick();
   pageSettled(route.fullPath);
 });
@@ -116,24 +104,8 @@ watch([page, synergyReady, () => route.fullPath], async ([data, ready]) => {
     <div v-if="describe" class="description">
       <EffectText :text="page.description" :segments="page.segments" :context-ids="[page.id]" />
     </div>
-    <SynergyStrip
-      v-if="hasSynergies && !synergyInTrait"
-      :key="page.id + synergySeed"
-      :owner="page.id"
-      :seed="synergySeed"
-      @ready="synergyReady = true"
-    />
     <div class="object-content">
-      <ReferenceBody :data="page" :hits="hits">
-        <template v-if="hasSynergies && synergyInTrait" #trait>
-          <SynergyStrip
-            :key="page.id + synergySeed"
-            :owner="page.id"
-            :seed="synergySeed"
-            @ready="synergyReady = true"
-          />
-        </template>
-      </ReferenceBody>
+      <ReferenceBody :data="page" :hits="hits" />
     </div>
   </article>
   <p v-else-if="error instanceof DataNotFound" class="notice">{{ t("search.objectNotFound") }}</p>
@@ -183,9 +155,6 @@ watch([page, synergyReady, () => route.fullPath], async ([data, ready]) => {
 .object-add :deep(button) {
   padding: 0 18px;
 }
-.object-content :deep(.reference-trait > .synergy:not(.synergy-page)) {
-  margin-top: var(--space-12);
-}
 .notice {
   color: var(--muted);
 }
@@ -211,9 +180,6 @@ watch([page, synergyReady, () => route.fullPath], async ([data, ready]) => {
   }
   .object-names :deep(h1) {
     flex-basis: 100%;
-  }
-  .object-page > .synergy:not(.synergy-page) {
-    margin-top: var(--space-12);
   }
 }
 </style>

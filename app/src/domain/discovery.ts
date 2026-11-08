@@ -242,6 +242,8 @@ export interface Option {
 export interface DiscoveryResult {
   items: DiscoveryItem[];
   total: number;
+  /** Every matching component and its members, beyond the items shown. */
+  matched: Set<string>;
   facets: {
     kinds: Option[];
     conditions: { categories: Option[]; relations: Option[]; values: Option[] }[];
@@ -472,6 +474,7 @@ export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): Discov
   return {
     items,
     total: ranked.length,
+    matched: new Set(ranked.flatMap((g) => [g.entity.id, ...g.members.map((m) => m.id)])),
     facets: {
       kinds: Object.entries(labels.types)
         .filter(([k]) => kindCounts.get(k)?.size)

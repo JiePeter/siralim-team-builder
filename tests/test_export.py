@@ -66,13 +66,15 @@ class ExportContractTests(unittest.TestCase):
             return [[t[0], t[1], render(t)] for t in tokens]
 
         def expand(row):
-            key, relation, strength, rule, constraints, requirements, side, rank, perk = (
+            key, point, strength, rule, constraints, requirements, side, rank, perk = (
                 row + [None] * 5
             )[:9]
+            relation, event, _degree = shared["points"][point]
             optional = {"source_rank": rank, "source_perk": perk and shared["perks"][perk]}
             return {
                 "id": shared["objects"][key]["id"],
                 "relation": shared["relations"][relation],
+                "event_label": event,
                 "strength": shared["strengths"][strength],
                 "shared_constraints": constraints or [],
                 "target_rule": rule,
@@ -84,8 +86,11 @@ class ExportContractTests(unittest.TestCase):
                 **{k: v for k, v in optional.items() if v},
             }
 
+        # Only TRAIT's file is written, so each of its points has one owner.
+        self.assertEqual({degree for *_, degree in shared["points"].values()}, {1})
         for row, original in zip(compact["items"], expected["items"]):
             item = expand(row)
+            self.assertEqual(item["event_label"], original["event_label"])
             rule = shared["rules"][item["target_rule"]]
             target = original["target_rule"]
             self.assertEqual(rule.get("text", joined(rule["segments"])), target["text"])

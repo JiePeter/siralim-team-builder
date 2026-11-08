@@ -9,6 +9,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 from .facts import render
+from .matching import worded
 from .messages import _, use as use_messages
 from .planner import planner_pack
 from .importer import ROOT, DEFAULT_DB
@@ -29,6 +30,7 @@ TOTAL_BUDGET = 500 * 1024 * 1024
 FILE_BUDGET = 5 * 1024 * 1024
 RULE_ID_LENGTH = 6
 FACT_ID_LENGTH = 5
+POINT_ID_LENGTH = 4
 OBJECT_ID_LENGTH = 6
 SYNERGY_RELATIONS = (
     "Event chain",
@@ -245,6 +247,15 @@ def compact_catalog(catalog, formulas=None, original=None):
     return result
 
 
+def point_event(relation, event):
+    """An event's display text; the engine names trigger events in the pack's language already."""
+    if relation in ("Status condition", "Minion support"):
+        return worded(event)
+    if relation == "Amplification":
+        return _(event)
+    return event
+
+
 class SynergyTables:
     """Target rules, facts and object fields repeat across owners; the pack stores each once.
 
@@ -252,11 +263,15 @@ class SynergyTables:
     path direction and status are not shown and are dropped. A fact is stored as its layer,
     name and display text. Rules and facts are keyed by their content, so that one changed rule
     leaves every file that does not use it byte-identical.
+
+    A point is what a link meets on: its relation and event. Its degree is the number of owners
+    with a link through it, counted over every file of the pack, reused or written.
     """
 
     def __init__(self):
-        self.rules, self.objects, self.facts, self.perks = {}, {}, {}, {}
+        self.rules, self.objects, self.facts, self.perks, self.points = {}, {}, {}, {}, {}
         self.fact_keys, self.rule_keys = {}, {}
+        self.degrees = defaultdict(int)
 
     @staticmethod
     def content_key(value, length):
@@ -291,10 +306,10 @@ class SynergyTables:
         return key
 
     def compact(self, result):
-        """Each item as a row: object, relation, strength, rule, then shared constraints,
+        """Each item as a row: object, point, strength, rule, then shared constraints,
         requirements, required target side, source rank and source Perk, without trailing blanks."""
         rows = []
-        used = {"rules": set(), "facts": set(), "objects": set(), "perks": set()}
+        used = {"rules": set(), "facts": set(), "objects": set(), "perks": set(), "points": set()}
         for item in result["items"]:
             lifted = {"id": item["id"], **{k: item[k] for k in SYNERGY_OBJECT_FIELDS if k in item}}
             key = self.content_key(item["id"], OBJECT_ID_LENGTH)
@@ -304,13 +319,21 @@ class SynergyTables:
             constraints = self.fact_ids(item.get("shared_constraints", []))
             requirements = self.fact_ids(witness.get("requirements") or [])
             rule = self.rule(item["target_rule"])
+            point = self.store(
+                self.points,
+                [
+                    RELATION_CODES[item["relation"]],
+                    point_event(item["relation"], item["event_label"]),
+                ],
+                POINT_ID_LENGTH,
+            )
             perk = None
             if item.get("source_perk"):
                 perk = self.store(self.perks, item["source_perk"], OBJECT_ID_LENGTH)
                 used["perks"].add(perk)
             row = [
                 key,
-                RELATION_CODES[item["relation"]],
+                point,
                 STRENGTH_CODES[item["strength"]],
                 rule,
                 constraints,
@@ -324,7 +347,10 @@ class SynergyTables:
             rows.append(row)
             used["rules"].add(rule)
             used["objects"].add(key)
+            used["points"].add(point)
             used["facts"].update(constraints, requirements)
+        for point in used["points"]:
+            self.degrees[point] += 1
         return {"items": rows}, {name: sorted(keys) for name, keys in used.items()}
 
     def adopt(self, entry, previous):
@@ -339,6 +365,9 @@ class SynergyTables:
             self.objects[key] = previous["objects"][key]
         for key in entry["perks"]:
             self.perks[key] = previous["perks"][key]
+        for key in entry["points"]:
+            self.points[key] = previous["points"][key][:2]
+            self.degrees[key] += 1
 
     def shared(self):
         return {
@@ -346,6 +375,7 @@ class SynergyTables:
             "strengths": SYNERGY_STRENGTHS,
             "objects": dict(sorted(self.objects.items())),
             "perks": dict(sorted(self.perks.items())),
+            "points": {k: [*v, self.degrees[k]] for k, v in sorted(self.points.items())},
             "rules": dict(sorted(self.rules.items())),
             "facts": dict(sorted(self.facts.items())),
         }

@@ -1,4 +1,5 @@
-"""Typed, directed effect connections and short conditional continuations.
+"""Pairwise effect links, each backed by evidence specific to the pair, and short conditional
+continuations. Build themes shared by many components are tags, kept outside this graph.
 
 Upstream annotations describe individual rules, not proven builds. We join only
 compatible events/selectors; conditions remain attached to each step.
