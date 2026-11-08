@@ -69,6 +69,9 @@
 .icon-move {
   --icon: var(--icon-move);
 }
+.icon-link {
+  --icon: var(--icon-link);
+}
 .icon-character {
   --icon: var(--icon-character);
 }

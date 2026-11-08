@@ -8,20 +8,16 @@ import { useSearchStore } from "@/stores/search";
 import AddButton from "@/components/AddButton.vue";
 import AttributeFilters from "@/components/AttributeFilters.vue";
 import FacetOptions from "@/components/FacetOptions.vue";
-import MechanicFilters from "@/components/MechanicFilters.vue";
 import ResultCard from "@/components/ResultCard.vue";
 import type { Attributes } from "@/domain/attributes";
 
 const route = useRoute();
 const store = useSearchStore();
-const { q, kind, attributes, conditions, items, total, facets, ready, narrowed, wantsFocus } =
+const { q, kind, attributes, items, total, facets, ready, narrowed, wantsFocus } =
   storeToRefs(store);
 const filtersShown = ref(false);
 const activeFilters = computed(
-  () =>
-    (kind.value ? 1 : 0) +
-    Object.values(attributes.value).filter(Boolean).length +
-    conditions.value.filter((c) => c.category).length,
+  () => (kind.value ? 1 : 0) + Object.values(attributes.value).filter(Boolean).length,
 );
 const input = ref<HTMLInputElement | null>(null);
 const phone = useMediaQuery("(max-width: 767px)");
@@ -120,7 +116,6 @@ onMounted(() => {
           counts
           @update:model-value="narrow"
         />
-        <MechanicFilters class="search-mechanics" />
       </div>
       <div v-if="narrowed" class="result-count muted">{{ count }}</div>
       <div v-if="narrowed" class="results">
@@ -207,10 +202,6 @@ onMounted(() => {
   margin-top: 12px;
 }
 /* Mechanic filters narrow independently of the type and its attributes. */
-.search-mechanics {
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-}
 .result-count {
   flex-shrink: 0;
   min-height: 34px;

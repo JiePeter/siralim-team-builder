@@ -6,6 +6,7 @@ export default {
     back: "Back",
     synergies: "Synergies",
     search: "Search",
+    fill: "Fill",
     build: "Build",
     tray: "Tray",
     trayCount: "Tray: {count}",

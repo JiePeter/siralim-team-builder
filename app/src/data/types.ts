@@ -171,11 +171,15 @@ export interface SynergyObject {
   classification?: Pick<Classification, "class">[];
 }
 
+/** What a link meets on, and how many owners have a link through it. */
+export type StoredPoint = [relation: number, event: string, degree: number];
+
 export interface SynergyRules {
   relations: string[];
   strengths: string[];
   objects: Record<string, SynergyObject>;
   perks: Record<string, string>;
+  points: Record<string, StoredPoint>;
   rules: Record<string, SynergyRule>;
   facts: Record<string, StoredFact>;
 }
@@ -183,7 +187,7 @@ export interface SynergyRules {
 /** Keys and positions into SynergyRules, without trailing blanks. */
 export type StoredSynergy = [
   object: string,
-  relation: number,
+  point: string,
   strength: number,
   rule: string,
   constraints?: string[],
@@ -197,8 +201,15 @@ export interface SynergyFile {
   items: StoredSynergy[];
 }
 
+export interface SynergyPoint {
+  key: string;
+  event: string;
+  degree: number;
+}
+
 export interface SynergyItem extends SynergyObject {
   relation: string;
+  point: SynergyPoint;
   strength: string;
   /** The owner's rank whose rule makes the connection, for an owner with ranks. */
   source_rank?: number;

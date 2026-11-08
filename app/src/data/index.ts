@@ -91,7 +91,7 @@ export async function synergies(owner: string): Promise<Synergies | null> {
     items: file.items.map(
       ([
         key,
-        relation,
+        pointKey,
         strength,
         ruleKey,
         constraints = [],
@@ -104,9 +104,13 @@ export async function synergies(owner: string): Promise<Synergies | null> {
         if (!rule) throw new Error(`${path}: missing rule ${ruleKey}`);
         const target = shared.objects[key];
         if (!target) throw new Error(`${path}: missing object ${key}`);
+        const point = shared.points[pointKey];
+        if (!point) throw new Error(`${path}: missing point ${pointKey}`);
+        const [relation, event, degree] = point;
         return {
           ...target,
           relation: shared.relations[relation]!,
+          point: { key: pointKey, event, degree },
           strength: shared.strengths[strength]!,
           ...(rank ? { source_rank: rank } : {}),
           ...(perk ? { source_perk: shared.perks[perk]! } : {}),

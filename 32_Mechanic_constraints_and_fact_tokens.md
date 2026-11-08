@@ -1,6 +1,8 @@
 # Mechanic constraints and evidence
 
-## Game rules that decide whether a link exists
+## Game rules that decide whether a pairwise link exists
+
+A pairwise link joins two effects through evidence specific to that pair: one effect's action activating the other's trigger, a status one applies and the other reads, a damage channel one deals and the other amplifies. Build themes, such as raising or scaling with Maximum Health, or depending on a class or race, are shared tags: components that raise, read or require the same stat, class or race belong to the tag, and the rules below do not apply to them.
 
 Primary source: the installed game's `localization/codex.csv` (2.0.38). Confirmed unless marked.
 
@@ -18,7 +20,7 @@ Primary source: the installed game's `localization/codex.csv` (2.0.38). Confirme
 | Diminished stat gains past 500% of base; stats cannot drop below 20% of battle start | `L_CODD_COMBAT_ADDITIONAL_TIPS` | Magnitude only; no link effect |
 | "Does not stack": only one copy in the party is fully effective | Codex | Duplicate-copy warning, not a link fact |
 
-## Link categories and evidence
+## Pairwise link categories and evidence
 
 A category changes only with player, developer, patch-note or wiki evidence. Links are judged by category.
 

@@ -3,12 +3,15 @@ import { computed, inject, nextTick, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useMediaQuery } from "@vueuse/core";
 import { t } from "@/i18n";
+import { useFillStore } from "@/stores/fill";
 import { MECHANIC_SEARCH, useSearchStore } from "@/stores/search";
 import { blankCondition, type Condition } from "@/domain/discovery";
 import FacetOptions from "./FacetOptions.vue";
 import { filterState } from "./filters";
 
-const store = inject(MECHANIC_SEARCH, useSearchStore)();
+/** Which page's mechanic query the rows edit; the provided one by default. */
+const props = defineProps<{ fill?: boolean }>();
+const store = props.fill ? useFillStore() : inject(MECHANIC_SEARCH, useSearchStore)();
 const { conditions, scope, facets, filtersOpened } = storeToRefs(store);
 const phone = useMediaQuery("(max-width: 767px)");
 const rows = ref<HTMLElement | null>(null);

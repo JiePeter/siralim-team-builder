@@ -142,6 +142,9 @@ const credits = [
       <RouterLink to="/search" :class="{ active: searching }"
         ><i class="icon icon-search"></i>{{ t("app.search") }}</RouterLink
       >
+      <RouterLink to="/fill" :class="{ active: route.name === 'fill' }"
+        ><i class="icon icon-link"></i>{{ t("app.fill") }}</RouterLink
+      >
       <RouterLink :to="buildLink" :class="{ active: route.name === 'build' }"
         ><i class="icon icon-team"></i>{{ t("app.build") }}</RouterLink
       >
@@ -538,7 +541,7 @@ footer {
     bottom: 0;
     z-index: 20;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     height: var(--tabbar-height);
     padding-bottom: env(safe-area-inset-bottom);
     background: var(--cell);

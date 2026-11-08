@@ -81,11 +81,13 @@ describe("discovery query", () => {
     const args = Object.fromEntries(
       Object.entries({ q, kind, conditions, scope }).filter(([, v]) => v !== undefined),
     );
-    // Attribute facets came after the fixtures were recorded.
+    // Attribute facets and the full match set came after the fixtures were recorded.
     const recorded = () => {
       const result = query(found, args);
       return {
-        ...result,
+        items: result.items,
+        total: result.total,
+        scope: result.scope,
         facets: { kinds: result.facets.kinds, conditions: result.facets.conditions },
       };
     };

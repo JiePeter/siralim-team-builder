@@ -6,6 +6,7 @@ export default {
     back: "返回",
     synergies: "协同效应",
     search: "搜索",
+    fill: "补位",
     build: "组建",
     tray: "托盘",
     trayCount: "托盘：{count}",
