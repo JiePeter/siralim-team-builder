@@ -26,6 +26,14 @@ export interface Condition {
   value: string;
 }
 
+/** A component a text search found: its relevance, and the fields that explain a non-name match. */
+export interface TextHit {
+  score: number;
+  fields: readonly string[];
+}
+
+export type TextHits = ReadonlyMap<string, TextHit>;
+
 type Unit = Feature[];
 
 interface Descriptor {
@@ -176,7 +184,7 @@ function matches(unit: Unit, condition: Condition): boolean {
 }
 
 /** Groups whose text matches `q`: the text index's ids when given, else word prefixes. */
-export function textMatches(index: DiscoveryIndex, q: string, ids?: ReadonlySet<string>): Group[] {
+export function textMatches(index: DiscoveryIndex, q: string, ids?: TextHits): Group[] {
   const terms = words(fold(q));
   const found = terms.length ? ids : undefined;
   return index.groups.filter((group) =>
@@ -184,18 +192,32 @@ export function textMatches(index: DiscoveryIndex, q: string, ids?: ReadonlySet<
   );
 }
 
-/** Exact name first, then an alias, then a name prefix, then the rest; each by name. */
-export function rankGroups<T extends Pick<Group, "entity" | "names">>(groups: T[], q: string): T[] {
+/**
+ * Exact name first, then an alias, then a name prefix, each by name; then matches in a name, then
+ * those found only elsewhere, each by text score.
+ */
+export function rankGroups<T extends Pick<Group, "entity" | "names">>(
+  groups: T[],
+  q: string,
+  hits?: TextHits,
+): T[] {
   const text = fold(q.trim());
   const rank = (group: T) => {
     const name = fold(group.entity.name);
+    const hit = hits?.get(group.entity.id);
+    const rest = hit?.fields.length ? 4 : 3;
     const priority =
-      !text || name === text ? 0 : group.names.has(text) ? 1 : name.startsWith(text) ? 2 : 3;
-    return { priority, name };
+      !text || name === text ? 0 : group.names.has(text) ? 1 : name.startsWith(text) ? 2 : rest;
+    return { priority, name, score: priority >= 3 ? (hit?.score ?? 0) : 0 };
   };
   return groups
     .map((group) => ({ group, key: rank(group) }))
-    .sort((a, b) => a.key.priority - b.key.priority || compareText(a.key.name, b.key.name))
+    .sort(
+      (a, b) =>
+        a.key.priority - b.key.priority ||
+        b.key.score - a.key.score ||
+        compareText(a.key.name, b.key.name),
+    )
     .map((entry) => entry.group);
 }
 
@@ -230,7 +252,11 @@ export interface MatchedRule {
   action: number;
 }
 
-export type DiscoveryItem = Member & { matched_names: string[]; matched_rules: MatchedRule[] };
+export type DiscoveryItem = Member & {
+  matched_names: string[];
+  matched_rules: MatchedRule[];
+  matched_fields?: readonly string[];
+};
 
 export interface Option {
   value: string;
@@ -259,7 +285,7 @@ export interface DiscoveryQuery {
   conditions?: unknown;
   scope?: unknown;
   /** Ids a text index matched for `q`; when given, they replace the word-prefix match. */
-  ids?: ReadonlySet<string>;
+  ids?: TextHits;
   /** Attributes of the chosen kind; ignored without a kind. */
   attributes?: Attributes;
   /** How many items to return; `total` and `matched` always cover every match. */
@@ -392,7 +418,7 @@ export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): Discov
       }
     }
   }
-  const ranked = rankGroups(selected, q);
+  const ranked = rankGroups(selected, q, found);
 
   const items = ranked.slice(0, input.limit ?? RESULT_LIMIT).map((group): DiscoveryItem => {
     const fits = (m: Member) => memberWith(index, m, kind, wanted);
@@ -439,6 +465,7 @@ export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): Discov
     return {
       ...item,
       matched_names: unique(names),
+      matched_fields: found?.get(group.entity.id)?.fields,
       matched_rules: evidence.map(({ entity_id, rank, reference, rule, action }) => ({
         entity_id,
         rank,

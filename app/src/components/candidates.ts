@@ -18,7 +18,7 @@ import {
   type Scope,
 } from "@/domain/discovery";
 import { memoRequest } from "@/data/memo";
-import { discoveryPack, fallBackToScattered, textIds } from "@/stores/search";
+import { discoveryPack, fallBackToScattered, textHits } from "@/stores/search";
 import { compareText } from "@/domain/values";
 import { fieldKind, type PickerField } from "./assembly";
 
@@ -90,14 +90,15 @@ export async function candidates(
   const [all, index, phrased] = await Promise.all([
     compatible(field, catalog),
     discoveryPack(),
-    textIds(q),
+    textHits(q),
   ]);
   const accepted = new Set(all.map((c) => index.canonical.get(c.id) ?? c.id));
   // The field can accept none of the components holding the phrase.
   const { ids, found: groups } = await fallBackToScattered(
     q,
     phrased,
-    (matching) => (matching ? rankGroups(textMatches(index, q, matching), q) : index.groups),
+    (matching) =>
+      matching ? rankGroups(textMatches(index, q, matching), q, matching) : index.groups,
     (found) => found.some((g) => accepted.has(g.entity.id)),
   );
   const conditionFacets = query(index, {

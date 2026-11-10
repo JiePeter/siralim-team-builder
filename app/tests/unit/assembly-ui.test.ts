@@ -12,6 +12,7 @@ import { filterState } from "@/components/filters";
 import { traitSwap } from "@/domain/placement";
 import { TeamError, type TeamRules } from "@/domain/team";
 import { useTeamStore } from "@/stores/team";
+import { textHits } from "@/stores/search";
 
 // The store validates against the pack written by `python -m kb.export`.
 const pack = resolve(__dirname, "../../public/data") + "/";
@@ -250,6 +251,7 @@ describe("attribute filters shared by Search and the picker", () => {
       q: "fire",
       kind: "creature",
       attributes: { class: "Sorcery" },
+      ids: await textHits("fire"),
     });
     const classes = searched.facets.attributes.find((f) => f.name === "class")!.options;
     expect(classes.map((o) => o.value)).toEqual(["Chaos", "Death", "Life", "Nature", "Sorcery"]);

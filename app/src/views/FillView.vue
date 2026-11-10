@@ -18,7 +18,7 @@ import ModalDialog from "@/components/ModalDialog.vue";
 import ResultCard from "@/components/ResultCard.vue";
 import SynergyCard from "@/components/SynergyCard.vue";
 import { conditionSummaries } from "@/components/filters";
-import { kindGroups, kindNames } from "@/components/presentation";
+import { kindGroups, kindNames, matchedLine } from "@/components/presentation";
 import {
   candidates,
   cards,
@@ -283,7 +283,12 @@ function filter(value: string) {
               class="match"
               link
               :item="item"
-              :line="item.matched_names.join(' · ') || kindNames[item.kind] || item.kind"
+              :line="
+                matchedLine(
+                  item.matched_names.join(' · ') || kindNames[item.kind] || item.kind,
+                  item.matched_fields,
+                )
+              "
             >
               <AddButton quick :item="item" />
             </ResultCard>

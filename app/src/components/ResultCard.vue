@@ -9,6 +9,7 @@ import { component } from "./components";
 import {
   carriedEffect,
   kindNames,
+  matchedLine,
   objectRoute,
   playText,
   type Displayable,
@@ -16,7 +17,8 @@ import {
 } from "./presentation";
 
 const props = defineProps<{
-  item: Displayable & SummaryData & { matched_names?: string[] };
+  item: Displayable &
+    SummaryData & { matched_names?: string[]; matched_fields?: readonly string[] };
   /** A clamped effect; a tap opens the full text and sources in place. */
   compact?: boolean;
   /** A tap on the card belongs to its list, so the clamped effect stays closed. */
@@ -55,7 +57,10 @@ const line = computed(() => {
   const names = new Set([effectName.value, ...(props.item.matched_names ?? [])]);
   names.delete("");
   names.delete(undefined);
-  return [...names].join(" · ") || kindNames[props.item.kind] || "";
+  return matchedLine(
+    [...names].join(" · ") || kindNames[props.item.kind] || "",
+    props.item.matched_fields,
+  );
 });
 const preview = computed(() =>
   effect.value.segments ? joinSegments(effect.value.segments) : (effect.value.description ?? ""),

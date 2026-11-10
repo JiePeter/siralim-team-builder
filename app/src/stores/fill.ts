@@ -9,8 +9,9 @@ import {
   type DiscoveryResult,
   type Option,
   type Scope,
+  type TextHits,
 } from "@/domain/discovery";
-import { discoveryPack, fallBackToScattered, textIds, withCards, type SearchItem } from "./search";
+import { discoveryPack, fallBackToScattered, textHits, withCards, type SearchItem } from "./search";
 
 /** The query on the Fill page: it narrows the tray's suggestions, or lists every match. */
 export const useFillStore = defineStore("fill", () => {
@@ -40,9 +41,9 @@ export const useFillStore = defineStore("fill", () => {
   async function run() {
     const current = ++version;
     try {
-      const [index, phrased] = await Promise.all([discoveryPack(), textIds(q.value)]);
+      const [index, phrased] = await Promise.all([discoveryPack(), textHits(q.value)]);
       const filters = { conditions: conditions.value, scope: scope.value };
-      const search = (ids: Set<string> | undefined, limit: number, within = "") =>
+      const search = (ids: TextHits | undefined, limit: number, within = "") =>
         query(index, { ...filters, q: q.value, ids, kind: within, limit });
       const mechanics = query(index, { ...filters, limit: 0 });
       const wanted = active.value || !!phrased;

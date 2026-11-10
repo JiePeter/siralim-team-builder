@@ -9,7 +9,7 @@ export default {
     all: "全部",
     other: "其他",
     results: "{n} 条结果",
-    showing: "{found} · 显示 {shown} 条",
+    matched: { text: "匹配效果", locations: "匹配来源" },
     noMatches: "无匹配结果",
     browseByType: "按类型浏览",
     objectNotFound: "未找到该对象。",

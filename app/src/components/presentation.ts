@@ -38,6 +38,11 @@ export const kindNames: Record<string, string> = Object.fromEntries(
   KINDS.map((kind) => [kind, t(`tray.kinds.${kind}`)]),
 );
 
+/** `line` followed by the fields a text search matched instead of a name. */
+export function matchedLine(line: string, fields: readonly string[] = []): string {
+  return [line, ...fields.map((field) => t(`search.matched.${field}`))].filter(Boolean).join(" · ");
+}
+
 /** Team component kinds listed together, in display order. */
 export const kindGroups: { value: string; label: string; kinds: string[] }[] = [
   { value: "creature", label: t("tray.groups.creature"), kinds: ["creature"] },

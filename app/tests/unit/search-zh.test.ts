@@ -66,6 +66,20 @@ describe("Chinese search", () => {
     expect((await search("10 50", "trait")).total).toBe(wide);
   });
 
+  it("lists every match of a broad search", async () => {
+    const found = await search("攻击");
+    expect(found.total).toBeGreaterThan(60);
+    expect(found.items).toHaveLength(found.total);
+  });
+
+  it("puts name matches first and says where the others matched", async () => {
+    const { items } = await search("炸弹");
+    const firstElsewhere = items.findIndex((item) => item.matched_fields?.length);
+    expect(firstElsewhere).toBeGreaterThan(0);
+    expect(items.slice(firstElsewhere).every((item) => item.matched_fields?.length)).toBe(true);
+    expect(items[firstElsewhere]!.matched_fields).toContain("text");
+  });
+
   it("matches list filters by unbroken Han runs and word prefixes", () => {
     expect(matchesText("法力值", "法力")).toBe(true);
     expect(matchesText("魔法能力", "法力")).toBe(false);

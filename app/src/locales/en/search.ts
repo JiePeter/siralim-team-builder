@@ -9,7 +9,7 @@ export default {
     all: "All",
     other: "Other",
     results: "{n} result | {n} results",
-    showing: "{found} · showing {shown}",
+    matched: { text: "Matched in effect", locations: "Matched in sources" },
     noMatches: "No matches",
     browseByType: "Browse by type",
     objectNotFound: "Object not found.",

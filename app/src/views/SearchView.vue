@@ -8,16 +8,21 @@ import { useSearchStore } from "@/stores/search";
 import AddButton from "@/components/AddButton.vue";
 import AttributeFilters from "@/components/AttributeFilters.vue";
 import FacetOptions from "@/components/FacetOptions.vue";
+import MechanicFilters from "@/components/MechanicFilters.vue";
 import ResultCard from "@/components/ResultCard.vue";
 import { usePhone } from "@/components/presentation";
 import type { Attributes } from "@/domain/attributes";
 
 const route = useRoute();
 const store = useSearchStore();
-const { q, kind, attributes, items, total, facets, ready, narrowed } = storeToRefs(store);
+const { q, kind, attributes, conditions, scope, items, total, facets, ready, narrowed } =
+  storeToRefs(store);
 const filtersShown = ref(false);
 const activeFilters = computed(
-  () => (kind.value ? 1 : 0) + Object.values(attributes.value).filter(Boolean).length,
+  () =>
+    (kind.value ? 1 : 0) +
+    Object.values(attributes.value).filter(Boolean).length +
+    conditions.value.filter((c) => c.category).length,
 );
 const phone = usePhone();
 
@@ -31,12 +36,7 @@ const addableKinds = new Set([
   "perk",
 ]);
 const detail = computed(() => route.name === "object");
-const count = computed(() => {
-  const found = t("search.results", total.value);
-  return total.value > items.value.length
-    ? t("search.showing", { found, shown: items.value.length })
-    : found;
-});
+const count = computed(() => t("search.results", total.value));
 /** Cards are mounted a batch at a time while the end of the list is near the viewport. */
 const BATCH = 20;
 const rendered = ref(BATCH);
@@ -111,6 +111,12 @@ onMounted(() => {
           :model-value="attributes"
           counts
           @update:model-value="narrow"
+        />
+        <MechanicFilters
+          v-model:conditions="conditions"
+          v-model:scope="scope"
+          :rows="facets.conditions"
+          @change="store.run()"
         />
       </div>
       <div v-if="narrowed" class="result-count muted">{{ count }}</div>
@@ -229,6 +235,9 @@ onMounted(() => {
 @media (min-width: 768px) {
   .search-panel {
     border-right: 1px solid var(--line);
+  }
+  .search-filters :deep(.mechanism-filters) {
+    max-height: 25vh;
   }
   .results {
     gap: 0;
