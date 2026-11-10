@@ -1,7 +1,14 @@
 import type { Segment, SynergyItem } from "@/data";
 import { ranks } from "@/domain/facts";
 import { t } from "@/i18n";
-import { compareText, fold, matchesText, words } from "@/domain/values";
+import {
+  compareText,
+  fold,
+  prepareText,
+  textMatcher,
+  words,
+  type PreparedText,
+} from "@/domain/values";
 import { kindGroup, kindGroups, type Hit } from "./presentation";
 
 const MECHANISMS = {
@@ -97,11 +104,21 @@ export function candidates(items: SynergyItem[]): Candidate[] {
   return [...unique.values()];
 }
 
+const searchTexts = new WeakMap<Candidate, PreparedText>();
+
+function searchText(item: Candidate): PreparedText {
+  let text = searchTexts.get(item);
+  if (!text) {
+    text = prepareText([item.name, ...item.paths.map((p) => p.target_rule.text)].join(" "));
+    searchTexts.set(item, text);
+  }
+  return text;
+}
+
 /** Candidates whose name or connecting rule text matches the keyword. */
 export function matching(items: Candidate[], keyword: string): Candidate[] {
-  return items.filter((item) =>
-    matchesText([item.name, ...item.paths.map((p) => p.target_rule.text)].join(" "), keyword),
-  );
+  const matches = textMatcher(keyword);
+  return matches ? items.filter((item) => matches(searchText(item))) : items;
 }
 
 export interface Group {

@@ -79,10 +79,8 @@ export async function object(id: string): Promise<ObjectPage> {
   return page;
 }
 
-/** Synergies for a trait, or for a creature or material through the trait it carries; null when it has none. */
-export async function synergies(owner: string): Promise<Synergies | null> {
-  const path = (await object(owner)).synergies;
-  if (!path) return null;
+/** One Synergies file expanded against the shared tables; every owner of the file shares the result. */
+const expandedSynergies = memoRequest(async (path: string): Promise<Synergies> => {
   const [file, shared] = await Promise.all([
     packFile<SynergyFile>(path),
     packFile<SynergyRules>("synergy-rules.json"),
@@ -128,6 +126,12 @@ export async function synergies(owner: string): Promise<Synergies | null> {
       },
     ),
   };
+});
+
+/** Synergies for a trait, or for a creature or material through the trait it carries; null when it has none. */
+export async function synergies(owner: string): Promise<Synergies | null> {
+  const path = (await object(owner)).synergies;
+  return path ? expandedSynergies(path) : null;
 }
 
 /** Card fields of every component of a kind, by id; empty for a kind without cards. */

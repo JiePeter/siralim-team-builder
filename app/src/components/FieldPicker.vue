@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { computedAsync } from "@vueuse/core";
+import { computedAsync, refDebounced } from "@vueuse/core";
 import {
   ListboxContent,
   ListboxFilter,
@@ -58,6 +58,7 @@ const kindOf = (id: string) => store.index?.kinds.get(id);
 const displayed = (item: Equipment) => shownAs(store.index, item, props.field);
 
 const q = ref("");
+const settledQ = refDebounced(q, 180);
 const attributes = ref<Attributes>({});
 const conditions = ref<Condition[]>([blankCondition()]);
 const scope = ref<Scope>("action");
@@ -77,7 +78,7 @@ const found = computedAsync(
   () =>
     candidates(
       props.field,
-      q.value,
+      settledQ.value,
       store.index!.catalog,
       attributes.value,
       conditions.value.map((c) => ({ ...c })),
@@ -118,7 +119,7 @@ const inTray = computed(() => {
   >();
   for (const item of trayItems.value) {
     const page = component(displayed(item));
-    const named = !narrowed && matchesText(page?.name ?? "", q.value);
+    const named = !narrowed && matchesText(page?.name ?? "", settledQ.value);
     if (matched && !matched.has(displayed(item)) && !named) continue;
     const key = lineKey(item);
     const line = lines.get(key);
@@ -134,7 +135,9 @@ const more = computed(() => {
 });
 
 /** Nothing narrows the list and nothing precedes it. */
-const listed = computed(() => !q.value.trim() && !activeFilters.value && !inTray.value.length);
+const listed = computed(
+  () => !settledQ.value.trim() && !activeFilters.value && !inTray.value.length,
+);
 
 /** A Relic is chosen by its look and name; its rank effects belong to its editor. */
 const tiles = computed(() => props.field === "relic");

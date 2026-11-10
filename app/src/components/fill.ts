@@ -41,10 +41,15 @@ export interface Suggestion {
 export function suggestions(seeds: Seed[], excluded: (id: string) => boolean): Suggestion[] {
   const found = new Map<string, Suggestion>();
   const hitKeys = new Map<string, Set<string>>();
+  const verdicts = new Map<string, boolean>();
+  const isExcluded = (id: string) => {
+    if (!verdicts.has(id)) verdicts.set(id, excluded(id));
+    return verdicts.get(id);
+  };
   for (const seed of seeds) {
     const reached = new Map<string, Map<string, number>>();
     for (const item of seed.items) {
-      if (excluded(item.id)) continue;
+      if (isExcluded(item.id)) continue;
       let suggestion = found.get(item.id);
       if (!suggestion) {
         suggestion = {

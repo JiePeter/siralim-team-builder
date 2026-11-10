@@ -6,6 +6,8 @@ import {
   blankCondition,
   query,
   type Condition,
+  type DiscoveryIndex,
+  type DiscoveryQuery,
   type DiscoveryResult,
   type Option,
   type Scope,
@@ -37,6 +39,14 @@ export const useFillStore = defineStore("fill", () => {
   });
   const active = computed(() => conditions.value.some((c) => c.category));
   let version = 0;
+  let lastMechanics: { key: string; result: DiscoveryResult } | undefined;
+
+  function mechanicResult(index: DiscoveryIndex, filters: DiscoveryQuery) {
+    const key = JSON.stringify(filters);
+    if (lastMechanics?.key !== key)
+      lastMechanics = { key, result: query(index, { ...filters, limit: 0 }) };
+    return lastMechanics.result;
+  }
 
   async function run() {
     const current = ++version;
@@ -44,8 +54,8 @@ export const useFillStore = defineStore("fill", () => {
       const [index, phrased] = await Promise.all([discoveryPack(), textHits(q.value)]);
       const filters = { conditions: conditions.value, scope: scope.value };
       const search = (ids: TextHits | undefined, limit: number, within = "") =>
-        query(index, { ...filters, q: q.value, ids, kind: within, limit });
-      const mechanics = query(index, { ...filters, limit: 0 });
+        query(index, { ...filters, q: q.value, ids, kind: within, limit, facets: false });
+      const mechanics = mechanicResult(index, filters);
       const wanted = active.value || !!phrased;
       // The chosen filters can exclude every component holding the phrase.
       const { ids, found: every } = await fallBackToScattered(

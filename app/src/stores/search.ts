@@ -91,7 +91,7 @@ export async function fallBackToScattered<T>(
   hasHits: (found: T) => boolean,
 ): Promise<{ ids: TextHits | undefined; found: T }> {
   const found = attempt(phrased);
-  if (!phrased || hasHits(found)) return { ids: phrased, found };
+  if (!phrased || !hanRuns(q).length || hasHits(found)) return { ids: phrased, found };
   const ids = await scatteredHits(q);
   return { ids, found: attempt(ids) };
 }

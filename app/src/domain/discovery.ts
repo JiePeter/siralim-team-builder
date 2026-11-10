@@ -290,6 +290,8 @@ export interface DiscoveryQuery {
   attributes?: Attributes;
   /** How many items to return; `total` and `matched` always cover every match. */
   limit?: number;
+  /** False leaves out the condition and attribute facets; kinds are always counted. */
+  facets?: boolean;
 }
 
 /** A `cards/<kind>.json` entry. */
@@ -418,7 +420,7 @@ export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): Discov
       }
     }
   }
-  const ranked = rankGroups(selected, q, found);
+  const ranked = input.limit === 0 ? selected : rankGroups(selected, q, found);
 
   const items = ranked.slice(0, input.limit ?? RESULT_LIMIT).map((group): DiscoveryItem => {
     const fits = (m: Member) => memberWith(index, m, kind, wanted);
@@ -486,7 +488,9 @@ export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): Discov
   const context = candidates.filter(
     (g) => (!kind || g.kinds.has(kind)) && hasMemberWith(index, g, kind, wanted),
   );
-  const rows = (conditions.length ? conditions : [blankCondition()]).map((current, position) => {
+  const facetRows =
+    input.facets === false ? [] : conditions.length ? conditions : [blankCondition()];
+  const rows = facetRows.map((current, position) => {
     const others = conditions.filter((c, i) => i !== position && c.category);
     const categories = new Map<string, Set<string>>();
     const relations = new Map<string, Set<string>>();
@@ -521,14 +525,15 @@ export function query(index: DiscoveryIndex, input: DiscoveryQuery = {}): Discov
         .filter(([k]) => kindCounts.get(k)?.size)
         .map(([k, label]) => ({ value: k, label, count: kindCounts.get(k)!.size })),
       conditions: rows,
-      attributes: kind
-        ? attributeFacets(
-            kind,
-            narrowed.flatMap((g) => g.members.filter((m) => ofKind(m, kind)).map((m) => m.id)),
-            index.pack.attributes,
-            wanted,
-          )
-        : [],
+      attributes:
+        kind && input.facets !== false
+          ? attributeFacets(
+              kind,
+              narrowed.flatMap((g) => g.members.filter((m) => ofKind(m, kind)).map((m) => m.id)),
+              index.pack.attributes,
+              wanted,
+            )
+          : [],
     },
     scope,
   };

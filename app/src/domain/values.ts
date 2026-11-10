@@ -48,10 +48,31 @@ export function prefixed(have: readonly string[], terms: readonly string[]): boo
   return terms.every((term) => have.some((word) => word.startsWith(term)));
 }
 
-/** Whether `text` has every word of `q` as a word prefix and every Han run of `q` unbroken. */
-export function matchesText(text: string, q: string): boolean {
+/** A text folded and split once, to match against any number of queries. */
+export interface PreparedText {
+  folded: string;
+  words: string[];
+}
+
+export function prepareText(text: string): PreparedText {
   const folded = fold(text);
-  return prefixed(words(folded), words(fold(q))) && hanRuns(q).every((run) => folded.includes(run));
+  return { folded, words: unique(words(folded)) };
+}
+
+/**
+ * A test for a prepared text having every word of `q` as a word prefix and every Han run of `q`
+ * unbroken; undefined when `q` has no words, which every text matches.
+ */
+export function textMatcher(q: string): ((text: PreparedText) => boolean) | undefined {
+  const terms = words(fold(q));
+  if (!terms.length) return undefined;
+  const runs = hanRuns(q);
+  return (text) => runs.every((run) => text.folded.includes(run)) && prefixed(text.words, terms);
+}
+
+export function matchesText(text: string, q: string): boolean {
+  const matches = textMatcher(q);
+  return !matches || matches(prepareText(text));
 }
 
 /** Python string order (code points), for sort keys. */
